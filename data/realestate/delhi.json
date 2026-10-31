@@ -1,0 +1,213 @@
+{
+  "region": "delhi",
+  "anchor": {
+    "hpi_yoy_pct": 5.0,
+    "scope": "50-city composite",
+    "source": "National Housing Bank RESIDEX press release, Oct-Dec 2025 (Q3 FY26), HPI @ Assessment Prices, year-on-year change",
+    "period": "2025-Q4"
+  },
+  "land_value": {
+    "cells": 28075,
+    "p10": 32.5,
+    "p50": 80.1,
+    "p90": 149.2,
+    "p99": 208.2,
+    "spread_p90_p10": 4.59,
+    "mean_abs_premium_pct": {
+      "jobs": 25.0,
+      "metro": 2.4,
+      "amenity": 13.1,
+      "neigh": 14.1,
+      "green": 2.1,
+      "risk": 3.1,
+      "noise": 1.4
+    },
+    "inputs_missing": []
+  },
+  "supply": {
+    "base_far": 2.0,
+    "new_floor_km2_2016_2023": 165.96,
+    "vacant_km2": 65.81,
+    "headroom_km2": 673.0,
+    "hotspots": [
+      {
+        "digipin": "39JK4L6",
+        "new_floor_m2": 192718,
+        "build_rate": 523886,
+        "far_now": 0.13,
+        "headroom_m2": 29285,
+        "urban_2035_pct": 61.6
+      },
+      {
+        "digipin": "39JL6MM",
+        "new_floor_m2": 173480,
+        "build_rate": 470952,
+        "far_now": 0.17,
+        "headroom_m2": 35727,
+        "urban_2035_pct": 36.8
+      },
+      {
+        "digipin": "39J3MP4",
+        "new_floor_m2": 170362,
+        "build_rate": 463578,
+        "vacant_ha": 0.51,
+        "far_now": 1.79,
+        "headroom_m2": 9768,
+        "urban_2035_pct": 28.1
+      },
+      {
+        "digipin": "39JF634",
+        "new_floor_m2": 166930,
+        "build_rate": 455081,
+        "far_now": 0.64,
+        "headroom_m2": 65262,
+        "urban_2035_pct": 62.2
+      },
+      {
+        "digipin": "3C78KKL",
+        "new_floor_m2": 128554,
+        "build_rate": 350425,
+        "vacant_ha": 3.58,
+        "far_now": 0.1,
+        "headroom_m2": 24097,
+        "urban_2035_pct": 81.6
+      },
+      {
+        "digipin": "3C77K53",
+        "new_floor_m2": 126340,
+        "build_rate": 343939,
+        "vacant_ha": 1.56,
+        "far_now": 0.68,
+        "headroom_m2": 48642,
+        "urban_2035_pct": 91.8
+      },
+      {
+        "digipin": "39JFM57",
+        "new_floor_m2": 116630,
+        "build_rate": 317829,
+        "vacant_ha": 1.6,
+        "far_now": 0.62,
+        "headroom_m2": 50134,
+        "urban_2035_pct": 52.5
+      },
+      {
+        "digipin": "39JF645",
+        "new_floor_m2": 116113,
+        "build_rate": 316518,
+        "far_now": 0.46,
+        "headroom_m2": 68438,
+        "urban_2035_pct": 20.4
+      },
+      {
+        "digipin": "39JF7TP",
+        "new_floor_m2": 115410,
+        "build_rate": 314676,
+        "far_now": 1.34,
+        "headroom_m2": 33649,
+        "urban_2035_pct": 89.4
+      },
+      {
+        "digipin": "3C7T55J",
+        "new_floor_m2": 114128,
+        "build_rate": 309867,
+        "vacant_ha": 5.17,
+        "urban_2035_pct": 9.8
+      }
+    ]
+  },
+  "calibration": {
+    "colonies": 244,
+    "spearman": 0.67,
+    "by_category": {
+      "A": {
+        "colonies": 6,
+        "median_value_index": 164.9,
+        "circle_rate": 774000
+      },
+      "B": {
+        "colonies": 18,
+        "median_value_index": 179.6,
+        "circle_rate": 245520
+      },
+      "C": {
+        "colonies": 9,
+        "median_value_index": 143.0,
+        "circle_rate": 159840
+      },
+      "D": {
+        "colonies": 37,
+        "median_value_index": 139.5,
+        "circle_rate": 127680
+      },
+      "E": {
+        "colonies": 27,
+        "median_value_index": 142.6,
+        "circle_rate": 70080
+      },
+      "F": {
+        "colonies": 58,
+        "median_value_index": 119.2,
+        "circle_rate": 56640
+      },
+      "G": {
+        "colonies": 50,
+        "median_value_index": 116.0,
+        "circle_rate": 46200
+      },
+      "H": {
+        "colonies": 39,
+        "median_value_index": 43.1,
+        "circle_rate": 23280
+      }
+    },
+    "knots": [
+      [
+        26.0,
+        23280
+      ],
+      [
+        45.0,
+        23280
+      ],
+      [
+        76.4,
+        46200
+      ],
+      [
+        101.9,
+        46200
+      ],
+      [
+        114.9,
+        56640
+      ],
+      [
+        122.3,
+        56640
+      ],
+      [
+        130.1,
+        56640
+      ],
+      [
+        142.9,
+        70080
+      ],
+      [
+        156.6,
+        127680
+      ],
+      [
+        175.8,
+        159840
+      ],
+      [
+        200.4,
+        774000
+      ]
+    ],
+    "within_2x": 0.766,
+    "rate_source": "Delhi Revenue Department circle rates for residential land, 2014 revision (categories A\u2013H)",
+    "colony_source": "MCD colony list with A\u2013H categories (MCD property-tax colony categorisation, as published from the MCD/MapmyIndia colony app); colonies placed by name match to Overture Maps divisions 2026-10-21.0 (neighbourhood/locality) or OpenStreetMap Nominatim; ambiguous names dropped"
+  }
+}

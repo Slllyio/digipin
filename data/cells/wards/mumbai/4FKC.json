@@ -1,0 +1,1 @@
+{"version":1,"dataset":"wards","region":"mumbai","level":7,"fields":["ward","ward_no","zone","body"],"cells":["4FKCTT6","4FKCTTT"],"columns":{"ward":["R/C","R/C"],"ward_no":["R/C","R/C"],"zone":[null,null],"body":["BMC","BMC"]}}

@@ -9,6 +9,7 @@ const DISHAPanel = (() => {
     let _currentData = null;
     let _currentContext = '';
     let _isStreaming = false;
+    let _agentStop = null;        // AbortController for the running agent (Stop / close end it)
     let _isCityScanning = false;
     let _settingsOpen = false;
 
@@ -26,6 +27,9 @@ const DISHAPanel = (() => {
                 send();
             }
         });
+
+        // `/layer` + `@score` pick-list while typing (js/disha-mentions.js).
+        if (typeof DishaMentions !== 'undefined') DishaMentions.attachAutocomplete(inputEl);
 
         // Settings gear click
         const gearBtn = document.getElementById('disha-settings-btn');
@@ -400,6 +404,7 @@ const DISHAPanel = (() => {
         panelEl.classList.remove('open');
         if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.restoreFocus) FloatingDialogs.restoreFocus(panelEl);
         DISHA.cancel();
+        if (_agentStop) _agentStop.abort();
         _isStreaming = false;
         _isCityScanning = false;
     }
@@ -415,22 +420,278 @@ const DISHAPanel = (() => {
 
         document.getElementById('disha-suggestions').style.display = 'none';
 
-        if (!DISHA.isConnected()) {
-            const summary = DISHA.offlineSummary(_currentCell, _currentData);
-            addMessage('disha', summary);
+        // "find open data for flooding" is answered from the catalog, no model needed.
+        if (typeof OpenDataFinder !== 'undefined' && OpenDataFinder.isQuery(question)) {
+            await handleDataSearch(OpenDataFinder.isQuery(question).query);
             return;
         }
 
-        // Smart context: filter by question type instead of sending everything
-        _currentContext = DISHA.buildFilteredContext(_currentCell, _currentData, question);
+        // `/layer` turns layers on; `@score` pins scores into the ranking.
+        const mentions = await _applyMentions(question);
+        if (mentions.done) return;
+        const pins = mentions.pins;
+        const modelQuestion = mentions.question;
 
-        const intent = DISHA.detectIntent(question);
+        // Notable-here / what-if / compare / city-ranking questions are answered
+        // from the cell store (js/urban-insights.js), with or without a model.
+        const intel = (typeof DishaIntel !== 'undefined' && !/^\/agent\b/i.test(question)) ? DishaIntel.match(modelQuestion, DishaIntel.cities()) : null;
+        if (intel) {
+            const msg = addMessage('disha', '');
+            const text = await DishaIntel.answer(msg.querySelector('.disha-msg-content'), intel, { cell: _currentCell });
+            scrollToBottom();
+            if (text && DISHA.isConnected()) {
+                _currentContext = await _withEvidence(DISHA.buildFilteredContext(_currentCell, _currentData, modelQuestion));
+                await streamResponse(`${modelQuestion}\n\nExplain the computed result above in plain language for a planner, citing [C#] tags where they apply.`,
+                    `=== COMPUTED RESULT (from the cell store) ===\n${text}`);
+            }
+            return;
+        }
+
+        if (!DISHA.isConnected()) {
+            const summary = DISHA.offlineSummary(_currentCell, _currentData);
+            addMessage('disha', summary);
+            if (typeof DishaIntel !== 'undefined' && _currentCell) {
+                const msg = addMessage('disha', '');
+                await DishaIntel.answer(msg.querySelector('.disha-msg-content'), { type: 'insights' }, { cell: _currentCell });
+                scrollToBottom();
+            }
+            return;
+        }
+
+        // Agent mode: multi-step planning questions run the Urban Analyst Agent
+        // (a tool-using ReAct loop) instead of the single-shot answer.
+        if (typeof DISHAAgent !== 'undefined' && DISHA.isAgentQuestion(question) && _currentCell) {
+            await handleAgent(DISHA.stripAgentPrefix(question));
+            return;
+        }
+
+        // Smart context: filter by question type instead of sending everything,
+        // then add the cited cell-store evidence ([C#] tags) for this cell.
+        _currentContext = await _withEvidence(DISHA.buildFilteredContext(_currentCell, _currentData, modelQuestion));
+
+        // A pinned @score only means something to a ranking, so it implies one.
+        const intent = pins.length ? 'city_scan' : DISHA.detectIntent(modelQuestion);
 
         if (intent === 'city_scan') {
-            await handleCityScan(question);
+            await handleCityScan(modelQuestion, pins, question);
         } else {
-            await streamResponse(question);
+            await streamResponse(modelQuestion);
         }
+    }
+
+    /** Prepend the selected cell's cited cell-store evidence to a context block. */
+    let _citations = [];
+    async function _withEvidence(context) {
+        _citations = [];
+        if (typeof DishaIntel === 'undefined' || !_currentCell) return context;
+        const ev = await DishaIntel.evidence(_currentCell);
+        if (!ev.text) return context;
+        _citations = ev.citations;
+        return `${ev.text}\n\n${context}`;
+    }
+
+    /** Answer "find open data for X" with catalog cards (offline-safe). */
+    async function handleDataSearch(query) {
+        const msg = addMessage('disha', '');
+        const content = msg.querySelector('.disha-msg-content');
+        content.textContent = '';
+        if (!query) {
+            content.textContent = 'Tell me the theme, e.g. “find open data for flooding” or “datasets on population”.';
+            return;
+        }
+        try {
+            const catalog = await OpenDataFinder.load();
+            const candidates = (typeof DishaMentions !== 'undefined') ? DishaMentions.layerCandidates() : [];
+            OpenDataFinder.renderResults(content, OpenDataFinder.search(query, catalog), query, {
+                candidates,
+                showLayer: (c) => DishaMentions.showLayer(c),
+            });
+        } catch {
+            content.textContent = 'The dataset catalog could not be loaded (offline?). Try again when you are connected.';
+        }
+        scrollToBottom();
+    }
+
+    /**
+     * Resolve `/layer` and `@score` tokens in a question: turn the layers on,
+     * report each token as a ✓/✗ chip, and return the question rewritten for
+     * the model plus the pinned score ids. `done` = nothing left to answer.
+     */
+    async function _applyMentions(question) {
+        const none = { question, pins: [], done: false };
+        if (typeof DishaMentions === 'undefined') return none;
+        const tok = DishaMentions.extract(question);
+        if (!tok.layers.length && !tok.scores.length) return none;
+
+        const L = DishaMentions.resolve(tok.layers, DishaMentions.layerCandidates());
+        const S = DishaMentions.resolve(tok.scores, DishaMentions.scoreCandidates());
+        const chips = [];
+        for (const c of L.matched) {
+            let ok = false;
+            try { ok = await DishaMentions.showLayer(c); } catch { ok = false; }
+            chips.push({ ok, label: `${c.name} on`, type: '/' + c.token, error: 'couldn’t turn it on here' });
+        }
+        S.matched.forEach(c => chips.push({ ok: true, label: `Pinned ${c.name}` }));
+        const miss = (sigil) => (u) => chips.push({
+            ok: false, type: sigil + u.token,
+            error: u.suggestions.length ? `not found, try ${u.suggestions.join(', ')}` : 'not found',
+        });
+        L.unknown.forEach(miss('/'));
+        S.unknown.forEach(miss('@'));
+
+        const msg = addMessage('disha', '');
+        const content = msg.querySelector('.disha-msg-content');
+        content.textContent = '';
+        _renderActionChips(content, chips);
+
+        const rewritten = DishaMentions.rewrite(question, S.matched);
+        return { question: rewritten, pins: S.matched.map(m => m.id), done: !rewritten && !S.matched.length };
+    }
+
+    // ===== PLAN BEFORE RUN =====
+    const SKIP_PLANS_KEY = 'digipin_skip_plans';
+
+    function _skipPlans() {
+        try { return localStorage.getItem(SKIP_PLANS_KEY) === '1'; } catch { return false; }
+    }
+
+    function _providerName() {
+        if (typeof DISHAProviders === 'undefined' || !DISHAProviders.isConnected()) return null;
+        const a = DISHAProviders.getActive && DISHAProviders.getActive();
+        return (a && a.name) || null;
+    }
+
+    function _gridReady() {
+        return typeof PrecomputedScores !== 'undefined' && PrecomputedScores.isEnabled && PrecomputedScores.isEnabled();
+    }
+
+    /** A plan is worth showing for multi-score rankings, unless the user opted out. */
+    function _shouldShowPlan(parsed) {
+        return !!parsed && Object.keys(parsed.weights || {}).length >= 2 && !_skipPlans();
+    }
+
+    /**
+     * Show the ranking's steps and wait for the user. Resolves to the (possibly
+     * trimmed) parsed weighting on Run, or null on Edit / Cancel.
+     */
+    function _confirmPlan(parsed, originalQuestion) {
+        return new Promise(resolve => {
+            let current = { ...parsed, weights: { ...parsed.weights } };
+            const messagesEl = document.getElementById('disha-messages');
+            const card = document.createElement('div');
+            card.className = 'disha-msg disha-msg-disha';
+            const content = document.createElement('div');
+            content.className = 'disha-msg-content disha-plan';
+            card.appendChild(content);
+
+            const header = document.createElement('div');
+            header.className = 'disha-scan-header';
+            header.textContent = 'Plan';
+            const intro = document.createElement('div');
+            intro.className = 'disha-plan-intro';
+            intro.textContent = 'Here’s what I’ll do. Remove any score you don’t want, then run it.';
+            const list = document.createElement('ol');
+            list.className = 'disha-plan-steps';
+            const actions = document.createElement('div');
+            actions.className = 'disha-plan-actions';
+
+            const btn = (label, cls) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'disha-plan-btn ' + cls;
+                b.textContent = label;
+                return b;
+            };
+            const run = btn('Run', 'primary');
+            const edit = btn('Edit question', '');
+            const cancel = btn('Cancel', '');
+            const skipLbl = document.createElement('label');
+            skipLbl.className = 'disha-plan-skip';
+            const skip = document.createElement('input');
+            skip.type = 'checkbox';
+            skipLbl.appendChild(skip);
+            skipLbl.appendChild(document.createTextNode(' Run without asking next time'));
+
+            const render = () => {
+                list.textContent = '';
+                const steps = Text2Map.plan(current, { gridReady: _gridReady(), provider: _providerName() });
+                steps.forEach((st, i) => {
+                    const li = document.createElement('li');
+                    const t = document.createElement('div');
+                    t.className = 'disha-plan-title';
+                    t.textContent = st.title;
+                    li.appendChild(t);
+                    if (i === 0) {
+                        // Weights as removable chips instead of a line of text.
+                        const chips = document.createElement('div');
+                        chips.className = 'disha-plan-weights';
+                        Object.entries(current.weights).forEach(([id, w]) => {
+                            const chip = document.createElement('span');
+                            chip.className = 'disha-plan-weight' + (w < 0 ? ' neg' : '');
+                            const pin = (current.pinned || []).includes(id) ? ' (pinned)' : '';
+                            chip.textContent = `${Text2Map.scoreLabel(id)} ${w > 0 ? '+' : '−'}${Math.abs(w).toFixed(1)}${pin}`;
+                            const x = document.createElement('button');
+                            x.type = 'button';
+                            x.textContent = '×';
+                            x.setAttribute('aria-label', 'Remove ' + Text2Map.scoreLabel(id));
+                            x.addEventListener('click', () => {
+                                delete current.weights[id];
+                                render();
+                            });
+                            chip.appendChild(x);
+                            chips.appendChild(chip);
+                        });
+                        li.appendChild(chips);
+                    } else {
+                        const d = document.createElement('div');
+                        d.className = 'disha-plan-detail';
+                        d.textContent = st.detail;
+                        li.appendChild(d);
+                    }
+                    const src = document.createElement('div');
+                    src.className = 'disha-plan-source';
+                    src.textContent = st.source;
+                    li.appendChild(src);
+                    list.appendChild(li);
+                });
+                run.disabled = Object.keys(current.weights).length === 0;
+            };
+
+            const finish = (value) => {
+                [run, edit, cancel, skip].forEach(el => { el.disabled = true; });
+                card.classList.add('disha-plan-done');
+                resolve(value);
+            };
+            run.addEventListener('click', () => {
+                if (skip.checked) {
+                    try { localStorage.setItem(SKIP_PLANS_KEY, '1'); } catch { /* storage blocked */ }
+                }
+                const ids = Object.keys(current.weights);
+                if (current.primaryScore && current.weights[current.primaryScore] == null) {
+                    current.primaryScore = ids.reduce((a, b) => (Math.abs(current.weights[b]) > Math.abs(current.weights[a]) ? b : a));
+                }
+                finish(current);
+            });
+            edit.addEventListener('click', () => {
+                const inputEl = document.getElementById('disha-input');
+                finish(null);
+                if (inputEl) { inputEl.disabled = false; inputEl.value = originalQuestion; inputEl.focus(); }
+            });
+            cancel.addEventListener('click', () => finish(null));
+
+            actions.appendChild(run);
+            actions.appendChild(edit);
+            actions.appendChild(cancel);
+            content.appendChild(header);
+            content.appendChild(intro);
+            content.appendChild(list);
+            content.appendChild(actions);
+            content.appendChild(skipLbl);
+            render();
+            messagesEl.appendChild(card);
+            scrollToBottom();
+            run.focus();
+        });
     }
 
     /** Populate the input with a suggestion chip's text and submit it. */
@@ -452,7 +713,7 @@ const DISHAPanel = (() => {
     }
 
     /** Run the city-wide scan flow: rank DIGIPIN cells for the question, render results, then stream an AI summary. */
-    async function handleCityScan(question) {
+    async function handleCityScan(question, pins = [], originalQuestion = question) {
         _isCityScanning = true;
         // Drop any previous answer's highlight before this scan starts.
         if (typeof Text2MapResultsLayer !== 'undefined') {
@@ -482,13 +743,30 @@ const DISHAPanel = (() => {
             // keyword fallback) and rank the precomputed DIGIPIN grid instantly.
             // Falls back internally to the live sampler when the viewport isn't
             // covered. Older path (DISHA.cityScan) kept if Text2Map is absent.
-            let results, label = null;
+            let results, label = null, out = null;
             if (typeof Text2Map !== 'undefined') {
                 scanText.textContent = 'Understanding your question...';
                 const bounds = _cityScanBounds();
-                const out = await Text2Map.run(question, bounds, (status) => {
+                let parsed = await Text2Map.parse(question);
+                if (pins.length && typeof DishaMentions !== 'undefined') {
+                    parsed = DishaMentions.applyPins(
+                        parsed || { weights: {}, primaryScore: pins[0], label: 'Pinned scores', source: 'keyword' }, pins);
+                }
+                // Plan before run: show the steps + weights and wait for a go-ahead.
+                if (_shouldShowPlan(parsed)) {
+                    scanText.textContent = 'Waiting for you to confirm the plan...';
+                    parsed = await _confirmPlan(parsed, originalQuestion);
+                    if (!parsed) {
+                        statusMsg.remove();
+                        resetInputState();
+                        _isCityScanning = false;
+                        return;
+                    }
+                    scanText.textContent = 'Ranking...';
+                }
+                out = parsed ? await Text2Map.rank(parsed, question, bounds, (status) => {
                     scanText.textContent = status;
-                });
+                }) : null;
                 results = out ? out.results : null;
                 label = out?.parsed?.label || null;
                 if (out && out.mode === 'precomputed') {
@@ -514,7 +792,7 @@ const DISHAPanel = (() => {
             statusMsg.remove();
             _isCityScanning = false;
 
-            addScanResultsCard(results, question);
+            addScanResultsCard(results, question, out);
 
             // Close the "ask → map" loop: paint the ranked cells on the map and
             // frame them, so the answer is a map, not just a list.
@@ -531,7 +809,7 @@ const DISHAPanel = (() => {
     }
 
     /** Append a chat card listing ranked scan results with score bars, fly-to clicks, and GeoJSON export. */
-    function addScanResultsCard(results, question) {
+    function addScanResultsCard(results, question, out) {
         const messagesEl = document.getElementById('disha-messages');
         const card = document.createElement('div');
         card.className = 'disha-msg disha-msg-disha';
@@ -596,6 +874,13 @@ const DISHAPanel = (() => {
         hint.textContent = 'Click a result to fly to that location on the map';
         content.appendChild(hint);
 
+        // Where these numbers came from (source card, js/provenance.js).
+        if (out && out.parsed && typeof Provenance !== 'undefined') {
+            const meta = Provenance.forRanking(out.parsed, out.mode, { provider: _providerName() });
+            const el = Provenance.renderCard(meta);
+            if (el) content.appendChild(el);
+        }
+
         // Export the ranked cells as GeoJSON (QGIS / geojson.io / gov workflows).
         if (typeof DataFetcher !== 'undefined' && DataFetcher.exportRankedToGeoJSON) {
             const geo = document.createElement('button');
@@ -604,6 +889,26 @@ const DISHAPanel = (() => {
             geo.title = 'Export these ranked DIGIPIN cells as GeoJSON';
             geo.addEventListener('click', () => DataFetcher.exportRankedToGeoJSON(results, 'digipin_ranked.geojson'));
             content.appendChild(geo);
+        }
+
+        // Keep this answer as its own layer (source scores are never changed).
+        if (typeof CellIngest !== 'undefined' && typeof CellLayers !== 'undefined') {
+            const keep = document.createElement('button');
+            keep.className = 'disha-scan-export';
+            keep.textContent = 'Save as layer';
+            keep.title = 'Add these ranked cells to the Layers panel as a layer you can restyle, extrude or share';
+            keep.addEventListener('click', async () => {
+                keep.disabled = true;
+                try {
+                    const spec = CellIngest.saveRanking(results, question);
+                    await CellLayers.show(spec.id, { field: 'score', extrude: true });
+                    keep.textContent = `Saved as “${spec.title}”`;
+                } catch (e) {
+                    keep.textContent = e && e.message ? e.message : 'Could not save';
+                    keep.disabled = false;
+                }
+            });
+            content.appendChild(keep);
         }
 
         card.appendChild(content);
@@ -619,10 +924,58 @@ const DISHAPanel = (() => {
         results.forEach(r => {
             const chip = document.createElement('span');
             chip.className = 'disha-action-chip ' + (r.ok ? 'ok' : 'fail');
-            chip.textContent = (r.ok ? '✓ ' : '✗ ') + (r.ok ? r.label : `${r.type}: ${r.error}`);
+            chip.textContent = r.skipped ? `Skipped ${r.type}` : (r.ok ? '✓ ' : '✗ ') + (r.ok ? r.label : `${r.type}: ${r.error}`);
             wrap.appendChild(chip);
         });
         parent.appendChild(wrap);
+    }
+
+    /**
+     * Ask the user before a slow/heavy agent step (DISHATools `confirm` tools).
+     * Resolves true (once), 'always' (this step type for the rest of the run) or
+     * false (skip); rejects with an AbortError when Stop is pressed meanwhile.
+     */
+    function _askConfirm(step, signal) {
+        return new Promise((resolve, reject) => {
+            const el = addMessage('disha', '');
+            const content = el.querySelector('.disha-msg-content');
+            while (content.firstChild) content.removeChild(content.firstChild);
+            content.classList.add('disha-confirm');
+            const q = document.createElement('div');
+            q.className = 'disha-confirm-text';
+            q.textContent = `Next step: ${step.text}. Go ahead?`;
+            const row = document.createElement('div');
+            row.className = 'disha-confirm-actions';
+            const done = (label, value, err) => {
+                row.remove();
+                const chip = document.createElement('span');
+                chip.className = 'disha-action-chip ' + (value ? 'ok' : 'fail');
+                chip.textContent = label;
+                content.appendChild(chip);
+                if (signal) signal.removeEventListener('abort', onAbort);
+                if (err) reject(err); else resolve(value);
+            };
+            const onAbort = () => {
+                const e = new Error('stopped'); e.name = 'AbortError';
+                done('Stopped', false, e);
+            };
+            [['Allow', true, 'Allowed'], ['Allow for this chat', 'always', 'Allowed for this chat'], ['Skip', false, 'Skipped']]
+                .forEach(([text, value, label]) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'disha-confirm-btn' + (value === true ? ' primary' : '');
+                    b.textContent = text;
+                    b.addEventListener('click', () => done(label, value));
+                    row.appendChild(b);
+                });
+            content.append(q, row);
+            if (signal) {
+                if (signal.aborted) { onAbort(); return; }
+                signal.addEventListener('abort', onAbort);
+            }
+            scrollToBottom();
+            row.querySelector('button').focus();
+        });
     }
 
     // ===== STREAM RESPONSE =====
@@ -666,6 +1019,8 @@ const DISHAPanel = (() => {
                 const hasActions = typeof DISHAActions !== 'undefined';
                 const shown = hasActions ? DISHAActions.stripActions(fullResponse) : fullResponse;
                 applyFormattedResponse(contentEl, shown);
+                // [C#] tags → source-card chips for the cell-store datasets cited.
+                if (typeof DishaIntel !== 'undefined') DishaIntel.decorate(contentEl, _citations);
                 // Show cached indicator if response was from cache
                 if (meta && meta.cached) {
                     const badge = document.createElement('span');
@@ -693,6 +1048,82 @@ const DISHAPanel = (() => {
             },
             cityScanContext || null
         );
+    }
+
+    // ===== AGENT FLOW =====
+    /** Run the multi-step Urban Analyst Agent, rendering its per-step reasoning and action chips live. */
+    async function handleAgent(question) {
+        _isStreaming = true;
+        const sendBtn = document.getElementById('disha-send');
+        const stopBtn = document.getElementById('disha-stop');
+        const inputEl = document.getElementById('disha-input');
+        sendBtn.style.display = 'none';
+        stopBtn.style.display = 'inline-flex';
+        inputEl.disabled = true;
+
+        // A "thinking" bubble until the first reasoning/step renders.
+        const thinkingEl = addMessage('disha', '');
+        let thinkingCleared = false;
+        const clearThinking = () => { if (!thinkingCleared) { thinkingCleared = true; thinkingEl.remove(); } };
+
+        const ground = {
+            cell: _currentCell,
+            data: _currentData,
+            context: _currentCell ? DISHA.buildFilteredContext(_currentCell, _currentData, question) : '',
+            bounds: _cityScanBounds(),
+        };
+
+        // Stop (or closing the panel) while a confirmation is up ends the run.
+        const stopCtl = new AbortController();
+        _agentStop = stopCtl;
+        const onStop = () => stopCtl.abort();
+        stopBtn.addEventListener('click', onStop);
+        const hooks = {
+            confirm: (step) => { clearThinking(); return _askConfirm(step, stopCtl.signal); },
+            onAssistant: (text, meta) => {
+                clearThinking();
+                const el = addMessage('disha', '');
+                const content = el.querySelector('.disha-msg-content');
+                applyFormattedResponse(content, text);   // clears then renders
+                if (!meta.final) content.classList.add('disha-agent-step');
+                scrollToBottom();
+            },
+            onChips: (results) => {
+                if (!results || !results.length) return;
+                clearThinking();
+                const el = addMessage('disha', '');
+                const content = el.querySelector('.disha-msg-content');
+                while (content.firstChild) content.removeChild(content.firstChild);
+                _renderActionChips(content, results);
+                scrollToBottom();
+            },
+        };
+
+        try {
+            const finalText = await DISHAAgent.run(question, ground, hooks);
+            clearThinking();
+            if (!finalText || !finalText.trim()) {
+                addMessage('disha', 'No answer produced. Try rephrasing, or check the AI provider in Settings.');
+            } else {
+                renderSuggestions(DISHA.getSuggestions(_currentData || {}, finalText));
+            }
+        } catch (err) {
+            clearThinking();
+            // Stop button → DISHA.cancel() → AbortError. Treat as cancellation:
+            // leave whatever already rendered, show no error.
+            if (!(err && err.name === 'AbortError')) {
+                const el = addMessage('disha', '');
+                const content = el.querySelector('.disha-msg-content');
+                content.textContent = `Agent error: ${err.message}`;
+                content.classList.add('disha-error');
+            }
+        } finally {
+            stopBtn.removeEventListener('click', onStop);
+            _agentStop = null;
+            if (typeof DISHAActions !== 'undefined' && DISHAActions._resetAgentState) DISHAActions._resetAgentState();
+            _isStreaming = false;
+            resetInputState();
+        }
     }
 
     /** Restore the input row to its idle state after a response or scan finishes. */

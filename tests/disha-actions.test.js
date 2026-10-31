@@ -101,3 +101,171 @@ describe('DISHAActions.executeActions', () => {
         expect(DA.executeActions(many, 3)).toHaveLength(3);
     });
 });
+
+describe('DISHAActions.executeAgentActions (agent tools, async)', () => {
+    let origDigiPin, origDataFetcher, origText2Map, origIso;
+    beforeEach(() => {
+        DA._resetAgentState();
+        origDigiPin = globalThis.DigiPin;
+        origDataFetcher = globalThis.DataFetcher;
+        origText2Map = globalThis.Text2Map;
+        origIso = globalThis.Isochrone;
+        // Deterministic stubs for the read-tool data path.
+        globalThis.DigiPin = { decode: () => ({ lat: 22.7, lng: 75.8 }) };
+        globalThis.DataFetcher = {
+            fetchAllFeatures: async () => ({
+                scores: {
+                    safety: { value: 72, label: 'Safety' },
+                    healthcare_access: { value: 18, label: 'Healthcare' },
+                    empty: { value: 0, label: 'Empty' },
+                },
+            }),
+        };
+        globalThis.Text2Map = {
+            run: async () => ({ results: [
+                { code: '39J49LL8T4', lat: 22.71, lng: 75.81, score: 83, area: 'Rajwada' },
+                { code: '39J49LM2K5', lat: 22.72, lng: 75.82, score: 74, area: 'Palasia' },
+            ] }),
+        };
+        globalThis.Isochrone = { show: () => {} };
+    });
+    afterEach(() => {
+        globalThis.DigiPin = origDigiPin;
+        globalThis.DataFetcher = origDataFetcher;
+        globalThis.Text2Map = origText2Map;
+        globalThis.Isochrone = origIso;
+        delete globalThis.MapModule;
+        DA._resetAgentState();
+    });
+
+    it('getCellData returns a {label, observation} with the non-zero scores', async () => {
+        const res = await DA.executeAgentActions([{ type: 'getcelldata', params: { code: '39J49LL8T4' } }]);
+        expect(res[0]).toMatchObject({ type: 'getcelldata', ok: true });
+        expect(res[0].observation).toContain('safety=72');
+        expect(res[0].observation).toContain('healthcare_access=18');
+        expect(res[0].observation).not.toContain('empty=0');
+    });
+
+    it('rejects a hallucinated DIGIPIN code via validateArgs (no throw)', async () => {
+        const res = await DA.executeAgentActions([{ type: 'getcelldata', params: { code: 'not a code!' } }]);
+        expect(res[0]).toMatchObject({ ok: false });
+        expect(res[0].error).toMatch(/invalid DIGIPIN/);
+    });
+
+    it('enforces the per-run map-mutation cap for state-changing tools', async () => {
+        globalThis.MapModule = { flyTo: () => {}, getMap: () => ({}) };
+        const counters = { mutations: 0 };
+        const res = await DA.executeAgentActions([
+            { type: 'flyto', params: { lat: 1, lng: 2 } },
+            { type: 'flyto', params: { lat: 3, lng: 4 } },
+        ], { max: 3, mapMutationCap: 1, counters });
+        expect(res[0].ok).toBe(true);
+        expect(res[1]).toMatchObject({ ok: false });
+        expect(res[1].error).toMatch(/limit/);
+    });
+
+    it('reports unknown actions without throwing', async () => {
+        const res = await DA.executeAgentActions([{ type: 'teleport', params: {} }]);
+        expect(res[0]).toMatchObject({ ok: false, error: 'unknown action' });
+    });
+
+    it('rankCells ranks via Text2Map and indexes codes for later tools', async () => {
+        const res = await DA.executeAgentActions([{ type: 'rankcells', params: { brief: 'health-centre gap' } }]);
+        expect(res[0]).toMatchObject({ type: 'rankcells', ok: true });
+        expect(res[0].observation).toContain('39J49LL8T4');
+        // A code rankCells surfaced now resolves in getCellData without decoding.
+        const follow = await DA.executeAgentActions([{ type: 'getcelldata', params: { code: '39J49LL8T4' } }]);
+        expect(follow[0].ok).toBe(true);
+    });
+
+    it('compareCells builds a metric matrix across 2+ cells', async () => {
+        const res = await DA.executeAgentActions([{ type: 'comparecells', params: { codes: '39J49LL8T4,39J49LM2K5' } }]);
+        expect(res[0]).toMatchObject({ type: 'comparecells', ok: true });
+        expect(res[0].observation).toMatch(/compareCells/);
+    });
+
+    it('compareCells errors (no throw) when fewer than 2 cells resolve', async () => {
+        const res = await DA.executeAgentActions([{ type: 'comparecells', params: { codes: '39J49LL8T4' } }]);
+        expect(res[0]).toMatchObject({ ok: false });
+        expect(res[0].error).toMatch(/at least 2/);
+    });
+
+    it('generateSiteBrief returns a narrative observation', async () => {
+        const res = await DA.executeAgentActions([{ type: 'generatesitebrief', params: { code: '39J49LL8T4' } }]);
+        expect(res[0]).toMatchObject({ type: 'generatesitebrief', ok: true });
+        expect(res[0].observation).toMatch(/siteBrief/);
+    });
+
+    it('runIsochrone dispatches to Isochrone.show (state tool, label only)', async () => {
+        let shown = null;
+        globalThis.Isochrone = { show: (lat, lng) => { shown = [lat, lng]; } };
+        const res = await DA.executeAgentActions([{ type: 'runisochrone', params: { code: '39J49LL8T4' } }]);
+        expect(res[0]).toMatchObject({ type: 'runisochrone', ok: true });
+        expect(shown).toEqual([22.7, 75.8]);
+    });
+
+    it('liveNow gathers the live feeds for a cell and returns the text summary', async () => {
+        const LN = globalThis.LiveNow;
+        const realGather = LN.gather;
+        let at = null;
+        LN.gather = async (t) => { at = t; return { correlations: [{ severity: 'high', title: 'River rising', detail: 'Yamuna up 3x' }], checks: [['x', true]] }; };
+        try {
+            const res = await DA.executeAgentActions([{ type: 'livenow', params: { code: '39J49LL8T4' } }]);
+            expect(res[0]).toMatchObject({ type: 'livenow', ok: true });
+            expect(at).toMatchObject({ lat: 22.7, lng: 75.8 });
+            expect(res[0].observation).toMatch(/- \[high\] River rising: Yamuna up 3x/);
+        } finally {
+            LN.gather = realGather;
+        }
+    });
+
+    it('satellitePasses lists the next passes over a cell, filtered by kind', async () => {
+        const SP = globalThis.SatPasses;
+        const realPasses = SP.passes;
+        let asked = null;
+        const t = Date.now() + 26 * 3600e3;
+        SP.passes = async (lat, lng) => {
+            asked = [lat, lng];
+            return [
+                { label: 'Sentinel-2B', meta: SP.metaFor('SENTINEL-2B'), t, offsetKm: 40.2, covers: 'all', outlook: 'Likely clear (12% cloud forecast)' },
+                { label: 'Sentinel-1A', meta: SP.metaFor('SENTINEL-1A'), t: t + 3600e3, offsetKm: 110, covers: 'part', outlook: 'Radar: cloud does not matter' },
+            ];
+        };
+        try {
+            const res = await DA.executeAgentActions([{ type: 'satellitepasses', params: { code: '39J49LL8T4', kind: 'optical' } }]);
+            expect(res[0]).toMatchObject({ type: 'satellitepasses', ok: true });
+            expect(asked).toEqual([22.7, 75.8]);
+            expect(res[0].observation).toMatch(/Sentinel-2B \(10 m, 290 km swath\): .* IST, in 26 h; 40 km off the ground track, whole view covered; Likely clear/);
+            expect(res[0].observation).not.toMatch(/Sentinel-1A/);
+            const all = await DA.executeAgentActions([{ type: 'satellitepasses', params: { code: '39J49LL8T4' } }]);
+            expect(all[0].observation).toMatch(/Sentinel-1A .*swath edge; Radar/);
+        } finally {
+            SP.passes = realPasses;
+        }
+    });
+});
+
+describe('DISHAActions trafficHour', () => {
+    it('opens the traffic map at an hour, the peak, or plays the day', () => {
+        const real = globalThis.TrafficOverlay;
+        const calls = [];
+        let vis = false;
+        globalThis.TrafficOverlay = {
+            isVisible: () => vis, attach: () => { vis = true; calls.push('attach'); },
+            setHour: (h) => calls.push(['hour', h]), play: () => calls.push('play'), stop: () => calls.push('stop'),
+            hourLabel: real.hourLabel,
+        };
+        try {
+            const r = DA.executeActions([
+                { type: 'traffichour', params: { hour: '18' } },
+                { type: 'traffichour', params: { hour: 'peak' } },
+                { type: 'traffichour', params: { hour: 'play' } },
+            ]);
+            expect(r.every(x => x.ok)).toBe(true);
+            expect(r[0].label).toBe('Traffic at 18:00 · evening peak');
+            expect(calls).toEqual(['attach', 'stop', ['hour', 18], 'stop', ['hour', null], 'play']);
+            const bad = DA.executeActions([{ type: 'traffichour', params: { hour: '25' } }]);
+            expect(bad[0].ok).toBe(false);
+        } finally { globalThis.TrafficOverlay = real; }
+    });
+});

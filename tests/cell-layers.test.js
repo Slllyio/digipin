@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // CellLayers is exposed by tests/setup.js. Map rendering needs a live
 // MapLibre map, so these lock the pure paint/legend builders that make the
@@ -50,6 +50,12 @@ describe('CellLayers.heightExpr()', () => {
         expect(CL.heightExpr({ key: 'f', type: 'boolean' }, 200)).toEqual(['case', ['==', ['get', 'f'], true], 200, 0]);
         expect(CL.heightExpr({ key: 'c', type: 'category' }, 200)).toBe(70);
     });
+    it("height: 'abs' extrudes by the size of a change either side of 0", () => {
+        const e = JSON.stringify(CL.heightExpr({ key: 'd', type: 'number', height: 'abs', domain: [-4, 4] }, 600));
+        expect(e).toContain('"abs"');
+        expect(e).toContain('600');
+        expect(e).toContain(',4]');
+    });
 });
 
 describe('CellLayers.legendStops()', () => {
@@ -81,5 +87,51 @@ describe('CellLayers.panelGroups()', () => {
         const g = CL.panelGroups().find(x => x.group === 'Ingested data');
         expect(g.rows).toContainEqual({ id: 'user_g', title: 'G', level: 8 });
         globalThis.CellStore.unregister('user_g');
+    });
+
+    it('lists only datasets that cover the given city', () => {
+        const spy = vi.spyOn(globalThis.CellStore, 'datasetsFor').mockImplementation(city =>
+            [{ id: 'a', title: 'A', level: 7, regions: [{ name: 'pune' }] }]
+                .filter(d => !city || d.regions.some(r => r.name === city.region)));
+        expect(CL.panelGroups({ region: 'pune' })[0].rows.map(r => r.id)).toEqual(['a']);
+        expect(CL.panelGroups({ region: 'guna' })).toEqual([]);
+        spy.mockRestore();
+    });
+});
+
+describe('CellLayers.filterExpr()', () => {
+    const cat = { key: 'los', type: 'category', domain: ['A', 'B'] };
+    it('nothing hidden, or a numeric field → no filter', () => {
+        expect(CL.filterExpr(cat, [])).toBeNull();
+        expect(CL.filterExpr(cat, undefined)).toBeNull();
+        expect(CL.filterExpr({ key: 'v', type: 'number' }, ['A'])).toBeNull();
+    });
+    it('hidden categories are excluded by string value', () => {
+        expect(CL.filterExpr(cat, ['A', 'B'])).toEqual(
+            ['!', ['in', ['to-string', ['get', 'los']], ['literal', ['A', 'B']]]]);
+    });
+});
+
+describe('CellLayers inspector helpers', () => {
+    const spec = {
+        title: 'Walkability', level: 8, source: 'OSM', license: 'ODbL',
+        fields: [
+            { key: 'score', label: 'Score', type: 'number', unit: 'pts' },
+            { key: 'band', label: 'Band', type: 'category' },
+            { key: 'note', label: 'Note', type: 'category' },
+        ],
+    };
+    const props = { digipin: 'ABC-123', score: 61.2345, band: 'High', note: '' };
+
+    it('rows skip empty values, round numbers, add units and flag the active field', () => {
+        const rows = CL.inspectorRows(spec, props, 'score');
+        expect(rows).toEqual([
+            { label: 'Score', value: '61.23 pts', primary: true },
+            { label: 'Band', value: 'High', primary: false },
+        ]);
+    });
+    it('copy text has a header, one line per field and the source', () => {
+        expect(CL.inspectorText(spec, props)).toBe(
+            'Walkability · ABC-123 · L8\nScore: 61.23 pts\nBand: High\nSource: OSM (ODbL)');
     });
 });

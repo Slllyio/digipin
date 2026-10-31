@@ -178,6 +178,7 @@ const SunStudy = (() => {
         const { lat, lng } = _latlng();
         const { altitude, azimuth } = solarPosition(lat, lng, _date);
         try { _map.setLight(lightFor(altitude, azimuth)); } catch { return false; }
+        if (typeof SunShadows !== 'undefined') SunShadows.apply(_map, altitude, azimuth);
         _updateReadout(altitude, azimuth);
         _updateAccess();
         _drawChart();
@@ -313,13 +314,31 @@ const SunStudy = (() => {
             </div>
             <div class="sun-access">—</div>
             <canvas class="sun-chart" width="222" height="64" aria-label="Sun-path altitude chart"></canvas>
-            <div class="sun-hint">Enable <b>3D Mode</b> / Buildings to see the cast shadows.</div>`;
+            <button class="sun-hours-btn" type="button">Sun hours at map centre</button>
+            <div class="sun-hours-out" aria-live="polite"></div>
+            <button class="sun-hours-btn sun-far-btn" type="button">Density (FAR) of selected cell</button>
+            <div class="sun-far-out sun-hours-out" aria-live="polite"></div>
+            <div class="sun-hint">Turn on <b>3D</b> to see buildings cast shadows; the sky follows the hour.</div>`;
         el.querySelector('.sun-close').addEventListener('click', () => toggle());
         const dateEl = el.querySelector('.sun-date');
         const slider = el.querySelector('.sun-time');
         const onInput = () => { _stop(); _setFromSlider(dateEl.value, Number(slider.value)); applyToMap(); };
         dateEl.addEventListener('change', onInput);
         slider.addEventListener('input', onInput);
+        el.querySelector('.sun-hours-btn').addEventListener('click', () => {
+            const out = el.querySelector('.sun-hours-out');
+            const r = (typeof SunHours !== 'undefined') ? SunHours.analyseHere(dateEl.value) : null;
+            if (!r) { out.textContent = 'Sun hours need the map and the Buildings overlay.'; return; }
+            out.className = 'sun-hours-out sun-' + SunHours.band(r.sunHours);
+            out.textContent = SunHours.summary(r, formatHM)
+                + (r.buildingCount ? ` · ${r.buildingCount} buildings in view` : ' · no buildings in view (open sky assumed)');
+        });
+        el.querySelector('.sun-far-btn').addEventListener('click', () => {
+            const out = el.querySelector('.sun-far-out');
+            const r = (typeof FloorArea !== 'undefined') ? FloorArea.analyseSelection() : { error: 'Density analysis unavailable.' };
+            out.className = 'sun-far-out sun-hours-out';
+            out.textContent = r.error ? r.error : FloorArea.summary(r);
+        });
         el.querySelector('.sun-play').addEventListener('click', () => (_playing ? _stop() : _play()));
         document.body.appendChild(el);
         _setFromSlider(dateEl.value, Number(slider.value));
@@ -333,6 +352,7 @@ const SunStudy = (() => {
             _stop();
             _panel.remove();
             _panel = null;
+            if (typeof SunShadows !== 'undefined') SunShadows.clear(_map);
             return false;
         }
         if (_map && typeof _map.setLight !== 'function') {
@@ -348,7 +368,31 @@ const SunStudy = (() => {
 
     function isActive() { return !!_panel; }
 
-    return { toggle, isActive, applyToMap, solarPosition, lightFor, toJulian, sunTimes, formatHM,
+    /** { date: 'YYYY-MM-DD', min } of the open study (slider minutes, solar time), or null. */
+    function getState() {
+        if (!_panel) return null;
+        const d = _panel.querySelector('.sun-date'), t = _panel.querySelector('.sun-time');
+        return d && t && d.value ? { date: d.value, min: Number(t.value) } : null;
+    }
+
+    /** Open the study (through its toolbar button, so that stays in step) at a date and minute. */
+    function setState(st) {
+        if (!st || !/^\d{4}-\d{2}-\d{2}$/.test(st.date || '') || !(st.min >= 0 && st.min < 1440)) return false;
+        if (!_panel) {
+            const btn = typeof document !== 'undefined' && document.getElementById('btn-sun');
+            if (btn) btn.click(); else toggle();
+        }
+        if (!_panel) return false;
+        const d = _panel.querySelector('.sun-date'), t = _panel.querySelector('.sun-time');
+        d.value = st.date;
+        t.value = String(Math.round(st.min / 5) * 5);
+        _stop();
+        _setFromSlider(d.value, Number(t.value));
+        applyToMap();
+        return true;
+    }
+
+    return { toggle, isActive, getState, setState, applyToMap, solarPosition, lightFor, toJulian, sunTimes, formatHM,
         dayAltitudes, peakAltitude };
 })();
 

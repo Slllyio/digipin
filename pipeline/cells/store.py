@@ -15,6 +15,7 @@ pyarrow; only ``write_parquet`` needs pyarrow (imported lazily).
 """
 from __future__ import annotations
 
+import gzip
 import json
 import math
 import os
@@ -29,15 +30,23 @@ from pipeline._lib import digipin
 from pipeline.cells.schema import SCHEMA_VERSION, DatasetSpec, FieldSpec, validate
 
 CATALOG = "catalog.json"
+# Regions above this many cells are split into per-prefix shards so the browser
+# fetches only the part it needs (a clicked cell, a viewport).
+SHARD_THRESHOLD = 8192
 _JSON_DECIMALS = 4
 
 
 @dataclass
 class CellTable:
-    """A dataset's rows: ``codes[i]`` is the cell, ``columns[key][i]`` its value."""
+    """A dataset's rows: ``codes[i]`` is the cell, ``columns[key][i]`` its value.
+
+    In a temporal table (``times`` set) ``columns[key][i]`` is a list with one
+    value per entry of ``times`` (None where that step has no data).
+    """
     level: int
     codes: list
     columns: dict
+    times: Optional[list] = None
 
     def __len__(self) -> int:
         return len(self.codes)
@@ -166,6 +175,42 @@ def bin_records(records: Iterable[dict], level: int, fields: list) -> CellTable:
     return CellTable(level=level, codes=codes, columns=cols)
 
 
+def series_table(level: int, times: list, rows: dict, keys: list) -> CellTable:
+    """Temporal CellTable from ``{code: {key: [v per step]}}``.
+
+    Codes are truncated to ``level``; non-finite values become None and cells
+    whose every series is all-None are dropped, as in ``bin_records``.
+    """
+    n = len(times)
+    clean = {}
+    for code, series in rows.items():
+        c = cell_code(level, code=code)
+        if c is None:
+            continue
+        out = {}
+        for k in keys:
+            vals = list(series.get(k) or [])
+            if len(vals) != n:
+                raise ValueError(f"cell {c} field {k!r}: {len(vals)} values for {n} steps")
+            out[k] = [None if v is None or not math.isfinite(float(v)) else float(v) for v in vals]
+        if any(v is not None for k in keys for v in out[k]):
+            clean[c] = out
+    codes = sorted(clean)
+    return CellTable(level=level, codes=codes,
+                     columns={k: [clean[c][k] for c in codes] for k in keys}, times=list(times))
+
+
+def _flat(values: list) -> list:
+    """Column values, with temporal series flattened into one list."""
+    out = []
+    for v in values:
+        if isinstance(v, (list, tuple)):
+            out.extend(v)
+        else:
+            out.append(v)
+    return out
+
+
 def _coerce(f: FieldSpec, v):
     if v is None:
         return None
@@ -183,7 +228,7 @@ def _coerce(f: FieldSpec, v):
 
 def data_domain(f: FieldSpec, values: list):
     """[min, max] for numbers, sorted category list for categories, None otherwise."""
-    present = [v for v in values if v is not None]
+    present = [v for v in _flat(values) if v is not None]
     if not present:
         return None
     if f.type == "number":
@@ -208,21 +253,73 @@ def resolved_spec(spec: DatasetSpec, table: CellTable) -> DatasetSpec:
 def _round(v):
     if isinstance(v, float):
         return round(v, _JSON_DECIMALS)
+    if isinstance(v, (list, tuple)):
+        return [_round(x) for x in v]
     return v
 
 
+def _scale_for(values: list) -> Optional[float]:
+    """Smallest 10**-d (d <= 4) that turns every number into an integer, or
+    None when the column isn't numeric or needs more than 4 decimals."""
+    nums = [v for v in _flat(values) if v is not None]
+    if not nums or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in nums):
+        return None
+    for d in range(5):
+        m = 10 ** d
+        if all(abs(v * m - round(v * m)) < 1e-6 for v in nums):
+            return None if d == 0 else round(1 / m, d)
+    return None
+
+
+def _quantise(v, scale):
+    if v is None:
+        return None
+    if isinstance(v, (list, tuple)):
+        return [_quantise(x, scale) for x in v]
+    return int(round(v / scale))
+
+
+def _dequantise(v, scale):
+    if v is None:
+        return None
+    if isinstance(v, list):
+        return [_dequantise(x, scale) for x in v]
+    return round(v * scale, 6)
+
+
 def write_json(path: Path, spec: DatasetSpec, region: str, table: CellTable) -> None:
-    """Columnar JSON: {version, dataset, region, level, fields, cells, columns}."""
+    """Columnar JSON: {version, dataset, region, level, fields, cells, columns}.
+
+    A ``.json.gz`` path writes it gzipped with number columns quantised to
+    integers: ``columns[k]`` holds ints and ``scale[k]`` the multiplier back
+    (0.001 → three decimals, exact for values already rounded to that).
+    """
     keys = spec.field_keys()
+    gz = str(path).endswith(".gz")
     doc = {
         "version": SCHEMA_VERSION,
         "dataset": spec.id,
         "region": region,
         "level": table.level,
         "fields": keys,
+        **({"times": table.times} if table.times is not None else {}),
         "cells": table.codes,
         "columns": {k: [_round(v) for v in table.columns[k]] for k in keys},
     }
+    if gz:
+        scales = {k: _scale_for(doc["columns"][k]) for k in keys}
+        scales = {k: v for k, v in scales.items() if v}
+        for k, sc in scales.items():
+            doc["columns"][k] = _quantise(doc["columns"][k], sc)
+        if scales:
+            doc["scale"] = scales
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        # mtime=0 → byte-identical output for identical data (clean git diffs).
+        with open(tmp, "wb") as fh:
+            fh.write(gzip.compress(json.dumps(doc, separators=(",", ":")).encode(), 9, mtime=0))
+        os.replace(tmp, path)
+        return
     _atomic_write(path, json.dumps(doc, separators=(",", ":")))
 
 
@@ -236,8 +333,12 @@ def _polygon_wkb(b: dict) -> bytes:
     return out
 
 
-def write_parquet(path: Path, spec: DatasetSpec, table: CellTable) -> None:
-    """GeoParquet 1.1: digipin/level/lat/lng + bbox covering + WKB geometry + fields."""
+def write_parquet(path: Path, spec: DatasetSpec, table: CellTable, meta: Optional[dict] = None) -> None:
+    """GeoParquet 1.1: digipin/level/lat/lng + bbox covering + WKB geometry + fields.
+
+    ``meta`` overrides the ``digipin_cells`` metadata block (default: the
+    spec's catalog entry), for regenerating from a published catalog.
+    """
     import pyarrow as pa
     import pyarrow.parquet as pq
 
@@ -251,6 +352,12 @@ def write_parquet(path: Path, spec: DatasetSpec, table: CellTable) -> None:
     ptype = {"number": pa.float64(), "category": pa.string(), "boolean": pa.bool_()}
     for f in spec.fields:
         vals = table.columns[f.key]
+        if table.times is not None:
+            # One list<double> per cell, aligned with the `times` metadata;
+            # DuckDB: SELECT digipin, unnest(field) … or field[i].
+            arrays[f.key] = pa.array(
+                [[None if x is None else float(x) for x in v] for v in vals], pa.list_(pa.float64()))
+            continue
         if f.type == "number":
             vals = [None if v is None else float(v) for v in vals]
         arrays[f.key] = pa.array(vals, ptype[f.type])
@@ -273,11 +380,11 @@ def write_parquet(path: Path, spec: DatasetSpec, table: CellTable) -> None:
         }},
     }
     meta = {b"geo": json.dumps(geo).encode(),
-            b"digipin_cells": json.dumps(spec.to_json()).encode()}
+            b"digipin_cells": json.dumps(meta or spec.to_json()).encode()}
     t = pa.table(arrays).replace_schema_metadata(meta)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    pq.write_table(t, tmp, compression="zstd")
+    pq.write_table(t, tmp, compression="zstd", compression_level=19)
     os.replace(tmp, path)
 
 
@@ -306,8 +413,32 @@ def _merge_domain(f: dict, old: Optional[dict]) -> None:
         f["domain"] = sorted(set(a) | set(b))
 
 
+def shard_prefix_len(level: int, cells: int) -> Optional[int]:
+    """Auto shard key length: None (one file) for small regions, else
+    ``level - 3`` so each shard spans at most 4**3 x 4**3 = 4,096 cells."""
+    if cells <= SHARD_THRESHOLD or level <= 3:
+        return None
+    return max(1, level - 3)
+
+
+def shard_table(table: CellTable, prefix_len: int) -> dict:
+    """{prefix: CellTable} splitting ``table`` by code prefix (order preserved)."""
+    out: dict[str, CellTable] = {}
+    for i, code in enumerate(table.codes):
+        key = code[:prefix_len]
+        t = out.get(key)
+        if t is None:
+            t = out[key] = CellTable(level=table.level, codes=[], columns={k: [] for k in table.columns},
+                                     times=table.times)
+        t.codes.append(code)
+        for k, col in table.columns.items():
+            t.columns[k].append(col[i])
+    return out
+
+
 def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
-                   has_parquet: bool, explicit_domains: set) -> dict:
+                   has_parquet: bool, explicit_domains: set,
+                   shards: Optional[dict] = None, ext: str = ".json") -> dict:
     """Upsert this dataset/region into catalog.json; returns the dataset entry."""
     path = root / CATALOG
     try:
@@ -329,9 +460,11 @@ def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
         "name": region,
         "cells": len(table),
         "bbox": extent,
-        "json": f"{spec.id}/{region}.json",
+        "json": (f"{spec.id}/{region}/{{prefix}}{ext}" if shards else f"{spec.id}/{region}{ext}"),
         "parquet": f"{spec.id}/{region}.parquet" if has_parquet else None,
     }
+    if shards:
+        reg["shards"] = shards
     others = [r for r in (old or {}).get("regions", []) if r.get("name") != region]
     entry["regions"] = sorted(others + [reg], key=lambda r: r["name"])
 
@@ -345,28 +478,89 @@ def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
     return entry
 
 
+# Regions bigger than this many values are written as .json.gz (≈5x smaller
+# on disk and in the Pages deploy; static hosts serve them as-is).
+GZIP_MIN_VALUES = 50_000
+
+
+def _n_values(table: CellTable) -> int:
+    steps = len(table.times) if table.times is not None else 1
+    return len(table) * max(1, len(table.columns)) * steps
+
+
 def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
-                  parquet: bool = True) -> dict:
+                  parquet: bool = True, shard: object = "auto",
+                  compress: Optional[bool] = None) -> dict:
     """Validate, then write JSON (+ GeoParquet) and register in the catalog.
 
     ``parquet=True`` requires pyarrow; pass False for a JSON-only store.
+    ``shard``: "auto" (split big regions, see ``shard_prefix_len``), None (one
+    file) or an int prefix length. Sharded JSON goes to
+    ``<id>/<region>/<prefix>.json``; the GeoParquet copy is always one file.
+    ``compress`` writes ``.json.gz`` with quantised integer columns (see
+    ``write_json``); by default temporal datasets and any region holding more
+    than ``GZIP_MIN_VALUES`` values are compressed, small ones stay plain.
     Returns a small summary dict.
     """
     validate(spec)
     if table.level != spec.level:
         raise ValueError(f"table level {table.level} != spec level {spec.level}")
+    steps = list(spec.time.steps) if spec.time is not None else None
+    if (table.times is None) != (steps is None) or (steps is not None and list(table.times) != steps):
+        raise ValueError("table.times must match spec.time.steps (both or neither)")
     root = Path(root)
     explicit = {f.key for f in spec.fields if f.domain is not None}
     spec = resolved_spec(spec, table)
-    write_json(root / spec.id / f"{region}.json", spec, region, table)
+    plen = shard_prefix_len(spec.level, len(table)) if shard == "auto" else shard
+    if compress is None:
+        compress = table.times is not None or _n_values(table) > GZIP_MIN_VALUES
+    ext = ".json.gz" if compress else ".json"
+    single = root / spec.id / f"{region}{ext}"
+    shard_dir = root / spec.id / region
+    # Clear the other layout's / encoding's files so a re-run can't leave stale data behind.
+    for old in ([*shard_dir.glob("*.json"), *shard_dir.glob("*.json.gz")] if shard_dir.is_dir() else []):
+        old.unlink()
+    for e in (".json", ".json.gz"):
+        stale = root / spec.id / f"{region}{e}"
+        if stale.exists() and (plen or e != ext):
+            stale.unlink()
+    shards = None
+    if plen:
+        parts = shard_table(table, plen)
+        for key, part in parts.items():
+            write_json(shard_dir / f"{key}{ext}", spec, region, part)
+        shards = {"prefixLen": plen, "keys": sorted(parts)}
+    else:
+        write_json(single, spec, region, table)
     if parquet:
         write_parquet(root / spec.id / f"{region}.parquet", spec, table)
-    update_catalog(root, spec, region, table, parquet, explicit)
+    update_catalog(root, spec, region, table, parquet, explicit, shards=shards, ext=ext)
     return {"dataset": spec.id, "region": region, "level": spec.level,
-            "cells": len(table), "fields": len(spec.fields), "parquet": parquet}
+            "cells": len(table), "fields": len(spec.fields), "parquet": parquet,
+            "shards": len(shards["keys"]) if shards else 0}
 
 
 def read_json(path) -> CellTable:
-    """Read a columnar JSON file back into a CellTable."""
-    doc = json.loads(Path(path).read_text())
-    return CellTable(level=doc["level"], codes=doc["cells"], columns=doc["columns"])
+    """Read a columnar JSON (or quantised ``.json.gz``) file back into a CellTable."""
+    raw = Path(path).read_bytes()
+    doc = json.loads(gzip.decompress(raw) if raw[:2] == b"\x1f\x8b" else raw)
+    for k, sc in (doc.get("scale") or {}).items():
+        doc["columns"][k] = _dequantise(doc["columns"][k], sc)
+    return CellTable(level=doc["level"], codes=doc["cells"], columns=doc["columns"],
+                     times=doc.get("times"))
+
+
+def read_region(root, region_entry: dict) -> CellTable:
+    """Read a catalog region (sharded or not) back into one CellTable."""
+    root = Path(root)
+    sh = region_entry.get("shards")
+    paths = ([root / region_entry["json"].replace("{prefix}", k) for k in sh["keys"]]
+             if sh else [root / region_entry["json"]])
+    tables = [read_json(p) for p in paths]
+    out = CellTable(level=tables[0].level, codes=[], columns={k: [] for k in tables[0].columns},
+                    times=tables[0].times)
+    for t in tables:
+        out.codes.extend(t.codes)
+        for k in out.columns:
+            out.columns[k].extend(t.columns[k])
+    return out

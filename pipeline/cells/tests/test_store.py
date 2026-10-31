@@ -140,3 +140,158 @@ def test_write_parquet_is_valid_geoparquet(tmp_path):
     spec = json.loads(t.schema.metadata[b"digipin_cells"])
     assert spec["id"] == "demo"
     assert t.column("level").to_pylist() == [7, 7]
+
+
+def _many(n_side=100, level=8):
+    # A dense block of L8 cells (~61 m) -> well over the shard threshold.
+    recs = [{"lat": 22.70 + i * 0.0006, "lng": 75.80 + j * 0.0006, "risk": i, "density": j, "kind": "a"}
+            for i in range(n_side) for j in range(n_side)]
+    return store.bin_records(recs, level, _spec(level=level).fields)
+
+
+def test_shard_prefix_len_auto():
+    assert store.shard_prefix_len(7, 100) is None
+    assert store.shard_prefix_len(7, store.SHARD_THRESHOLD + 1) == 4
+    assert store.shard_prefix_len(8, 10**6) == 5
+
+
+def test_big_regions_are_sharded_and_read_back(tmp_path):
+    t = _many()
+    assert len(t) > store.SHARD_THRESHOLD
+    s = store.write_dataset(tmp_path, _spec(level=8), "r", t, parquet=False)
+    assert s["shards"] > 1
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    (r,) = d["regions"]
+    assert r["json"] == "demo/r/{prefix}.json" and r["shards"]["prefixLen"] == 5
+    for key in r["shards"]["keys"]:
+        part = store.read_json(tmp_path / "demo" / "r" / f"{key}.json")
+        assert part.codes and all(c.startswith(key) for c in part.codes)
+    back = store.read_region(tmp_path, r)
+    assert back.codes == t.codes and back.columns == t.columns
+    assert not (tmp_path / "demo" / "r.json").exists()
+
+
+def test_switching_layout_removes_stale_files(tmp_path):
+    store.write_dataset(tmp_path, _spec(level=8), "r", _many(), parquet=False)
+    small = store.bin_records([{"lat": 22.72, "lng": 75.85, "risk": 1, "density": 1, "kind": "a"}],
+                              8, _spec(level=8).fields)
+    s = store.write_dataset(tmp_path, _spec(level=8), "r", small, parquet=False)
+    assert s["shards"] == 0
+    assert (tmp_path / "demo" / "r.json").exists()
+    assert not list((tmp_path / "demo" / "r").glob("*.json"))
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert "shards" not in d["regions"][0]
+    # Forcing a prefix length works for small tables too.
+    s = store.write_dataset(tmp_path, _spec(level=8), "r", small, parquet=False, shard=3)
+    assert s["shards"] == 1
+# ── time series ─────────────────────────────────────────────────────────────
+
+def _tspec(**kw):
+    from pipeline.cells.schema import TimeSpec
+    base = dict(id="lst", title="LST", level=6, fields=[FieldSpec("lst", "LST", unit="°C", ramp="heat")],
+                time=TimeSpec("month", ["2025-01", "2025-02", "2025-03"]))
+    base.update(kw)
+    return DatasetSpec(**base)
+
+
+def test_series_table_truncates_cleans_and_drops_empty():
+    t = store.series_table(6, ["2025-01", "2025-02", "2025-03"], {
+        "34PLLMP": {"lst": [30, float("nan"), 32.5]},
+        "34PLLM": {"lst": [None, None, None]},          # all-null → dropped
+        "34PLLJ": {"lst": [28, 29, None]},
+    }, ["lst"])
+    assert t.codes == ["34PLLJ", "34PLLM"]
+    assert t.times == ["2025-01", "2025-02", "2025-03"]
+    assert t.columns["lst"] == [[28.0, 29.0, None], [30.0, None, 32.5]]
+    with pytest.raises(ValueError):
+        store.series_table(6, ["2025-01"], {"34PLLM": {"lst": [1, 2]}}, ["lst"])
+
+
+@pytest.mark.parametrize("bad", [
+    dict(unit="week"), dict(steps=[]), dict(steps=["2025-02", "2025-01"]),
+    dict(steps=["2025-01", "2025-01"]), dict(steps=["2025/01"]), dict(default="2024-12"),
+])
+def test_validate_rejects_bad_time(bad):
+    from pipeline.cells.schema import TimeSpec
+    t = dict(unit="month", steps=["2025-01", "2025-02"])
+    t.update(bad)
+    with pytest.raises(ValueError):
+        validate(_tspec(time=TimeSpec(**t)))
+
+
+def test_temporal_dataset_rejects_category_fields():
+    with pytest.raises(ValueError):
+        validate(_tspec(fields=[FieldSpec("k", "K", type="category", agg="mode")]))
+
+
+def test_write_temporal_dataset_json_catalog_and_parquet(tmp_path):
+    steps = ["2025-01", "2025-02", "2025-03"]
+    t = store.series_table(6, steps, {"34PLLM": {"lst": [30.123456, None, 41]},
+                                      "34PLLJ": {"lst": [20, 25, 27]}}, ["lst"])
+    with pytest.raises(ValueError):          # table without times for a temporal spec
+        store.write_dataset(tmp_path, _tspec(), "x", store.CellTable(6, t.codes, t.columns), parquet=False)
+    store.write_dataset(tmp_path, _tspec(), "indore_pilot", t, parquet=False, compress=False)
+    doc = json.loads((tmp_path / "lst" / "indore_pilot.json").read_text())
+    assert doc["times"] == steps
+    assert doc["columns"]["lst"] == [[20, 25, 27], [30.1235, None, 41]]
+    back = store.read_json(tmp_path / "lst" / "indore_pilot.json")
+    assert back.times == steps
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert d["time"] == {"unit": "month", "steps": steps, "default": "2025-03"}
+    assert d["fields"][0]["domain"] == [20, 41]                 # over every step
+
+    pq = pytest.importorskip("pyarrow.parquet")
+    store.write_dataset(tmp_path, _tspec(), "indore_pilot", t, parquet=True)
+    tbl = pq.read_table(tmp_path / "lst" / "indore_pilot.parquet")
+    assert tbl.column("lst").to_pylist()[1] == [30.123456, None, 41.0]
+    assert json.loads(tbl.schema.metadata[b"digipin_cells"])["time"]["steps"] == steps
+
+
+def test_temporal_store_is_gzipped_and_quantised(tmp_path):
+    import gzip
+    steps = ["2025-01", "2025-02", "2025-03"]
+    t = store.series_table(6, steps, {"34PLLM": {"lst": [30.1, None, 41.5]},
+                                      "34PLLJ": {"lst": [20.0, 25.2, 27.0]}}, ["lst"])
+    store.write_dataset(tmp_path, _tspec(), "r", t, parquet=False)
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert d["regions"][0]["json"] == "lst/r.json.gz"
+    raw = json.loads(gzip.decompress((tmp_path / "lst" / "r.json.gz").read_bytes()))
+    assert raw["scale"] == {"lst": 0.1}
+    assert raw["columns"]["lst"] == [[200, 252, 270], [301, None, 415]]
+    back = store.read_json(tmp_path / "lst" / "r.json.gz")
+    assert back.columns["lst"] == [[20.0, 25.2, 27.0], [30.1, None, 41.5]]
+    # Re-writing uncompressed replaces the .gz rather than leaving both.
+    store.write_dataset(tmp_path, _tspec(), "r", t, parquet=False, compress=False)
+    assert not (tmp_path / "lst" / "r.json.gz").exists() and (tmp_path / "lst" / "r.json").exists()
+
+
+def test_scale_detection():
+    assert store._scale_for([[0.412, None, 0.5]]) == 0.001
+    assert store._scale_for([1, 2, 3]) is None
+    assert store._scale_for([0.123456]) is None          # too many decimals → left as floats
+    assert store._scale_for(["a"]) is None
+
+
+def test_big_static_regions_are_gzipped(tmp_path):
+    t = _many(n_side=140)                      # 19,600 cells x 3 fields > GZIP_MIN_VALUES
+    store.write_dataset(tmp_path, _spec(level=8), "r", t, parquet=False, shard=None)
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert d["regions"][0]["json"] == "demo/r.json.gz"
+    back = store.read_json(tmp_path / "demo" / "r.json.gz")
+    assert back.codes == t.codes and back.columns["kind"] == t.columns["kind"]
+    assert back.columns["density"] == pytest.approx(t.columns["density"])
+
+
+def test_parquet_regenerates_from_json(tmp_path):
+    pq = pytest.importorskip("pyarrow.parquet")
+    from pipeline.cells import parquet as cells_parquet
+    steps = ["2025-01", "2025-02", "2025-03"]
+    t = store.series_table(6, steps, {"34PLLM": {"lst": [30.1, None, 41.5]}}, ["lst"])
+    store.write_dataset(tmp_path, _tspec(), "r", t, parquet=True)
+    pth = tmp_path / "lst" / "r.parquet"
+    before = pq.read_table(pth).to_pylist()
+    pth.unlink()
+    assert cells_parquet.build(tmp_path) == [{"dataset": "lst", "region": "r", "cells": 1}]
+    tbl = pq.read_table(pth)
+    assert tbl.to_pylist() == before
+    assert json.loads(tbl.schema.metadata[b"digipin_cells"])["time"]["steps"] == steps

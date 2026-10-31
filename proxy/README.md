@@ -34,6 +34,7 @@ It is **not an open proxy**: only hosts in the `UPSTREAMS` allowlist
 | `bhoonidhi-api.nrsc.gov.in` | CORS | — |
 | `api.open-elevation.com` | reliability | — |
 | `api.worldpop.org` | reliability | — |
+| `api.adsb.lol` | CORS (live aircraft, LiveSky) | — |
 
 ## Deploy (Cloudflare Workers)
 

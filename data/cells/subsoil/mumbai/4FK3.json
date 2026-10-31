@@ -1,0 +1,1 @@
+{"version":1,"dataset":"subsoil","region":"mumbai","level":7,"fields":["clay_60cm_pct","clay_100cm_pct","bulk_density_60cm"],"cells":["4FK3876","4FK3877","4FK3878","4FK3886","4FK3888","4FK388T"],"columns":{"clay_60cm_pct":[34.1,36.8,38.5,38.5,37.3,38.6],"clay_100cm_pct":[34.0,36.0,37.4,37.7,37.3,37.7],"bulk_density_60cm":[1.45,1.47,1.4,1.34,1.31,1.35]}}

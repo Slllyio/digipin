@@ -46,7 +46,6 @@ import os
 import statistics
 import sys
 import tempfile
-import urllib.request
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 sys.path.insert(0, os.path.join(ROOT, "pipeline"))
@@ -55,6 +54,7 @@ from _lib.regions import bbox_for  # noqa: E402
 
 EE_COLLECTION = "GOOGLE/Research/open-buildings-temporal/v1"
 EE_YEAR = 2023
+PRESENCE_MIN = 0.5   # building_presence confidence for a pixel to count as built
 OUT_DIR = os.path.join(ROOT, "data", "heights")
 
 
@@ -105,38 +105,63 @@ def ee_init():
     return ee
 
 
-def grid_from_ee(bbox, level):
-    """Mean built-pixel height per DIGIPIN cell over bbox, via one GeoTIFF download."""
+def grid_from_ee(bbox, level, tile=128):
+    """Mean built-pixel height per DIGIPIN cell over bbox, fetched in NPY tiles.
+
+    Uses ee.data.computePixels rather than getDownloadURL: the download path
+    needs earthengine.thumbnails.create, which a compute-only service account
+    may lack, and computePixels returns the array directly with no URL hop.
+    Tiles keep each request well under the 48 MB / input-pixel limits.
+    """
     import io
     import numpy as np
     ee = ee_init()
     w, s, e, n = aligned_bbox(bbox, level)
     lat_step, lon_step = cell_size(level)
     cols, rows = round((e - w) / lon_step), round((n - s) / lat_step)
-    img = (ee.ImageCollection(EE_COLLECTION)
+    col = (ee.ImageCollection(EE_COLLECTION)
            .filter(ee.Filter.calendarRange(EE_YEAR, EE_YEAR, "year"))
-           .select("building_height")
-           .mosaic())
-    img = img.updateMask(img.gt(0))   # average over built pixels only
-    # crsTransform pins each output pixel to one DIGIPIN cell (north-up grid).
-    url = img.reduceResolution(ee.Reducer.mean(), maxPixels=65535).getDownloadURL({
-        "crs": "EPSG:4326",
-        "crsTransform": [lon_step, 0, w, 0, -lat_step, n],
-        "dimensions": f"{cols}x{rows}",
-        "format": "NPY",
-    })
-    print(f"  downloading {cols}x{rows} grid…")
-    arr = np.load(io.BytesIO(urllib.request.urlopen(url, timeout=600).read()))
-    band = arr["building_height"] if arr.dtype.names else arr
+           .filterBounds(ee.Geometry.Rectangle([w, s, e, n]))
+           .select(["building_height", "building_presence"]))
+    # mosaic() drops the native projection, which reduceResolution needs. The
+    # tiles are stored at 0.5 m but the model's real resolution is ~4 m, so
+    # averaging from 4 m keeps the reprojection small with no loss of detail.
+    mos = col.mosaic().setDefaultProjection(col.first().projection().atScale(4))
+    # Average only over pixels the model calls built: unthresholded heights
+    # include sub-metre noise on bare ground and roads, dragging cells down.
+    img = mos.select("building_height")
+    img = img.updateMask(mos.select("building_presence").gte(PRESENCE_MIN).And(img.gt(0)))
+    img = img.reduceResolution(ee.Reducer.mean(), maxPixels=65535)
+    print(f"  fetching {cols}x{rows} grid in {tile}px tiles…")
     cells = {}
-    for r in range(rows):
-        lat = n - (r + 0.5) * lat_step
-        for c in range(cols):
-            v = band[r, c]
-            if np.ma.is_masked(v) or not np.isfinite(v) or v <= 0:
-                continue
-            code = digipin.encode(lat, w + (c + 0.5) * lon_step).replace("-", "")[:level]
-            cells[code] = round(float(v), 1)
+    for r0 in range(0, rows, tile):
+        for c0 in range(0, cols, tile):
+            h, wd = min(tile, rows - r0), min(tile, cols - c0)
+            # The affine transform pins each output pixel to one DIGIPIN cell (north-up).
+            raw = ee.data.computePixels({
+                "expression": img,
+                "fileFormat": "NPY",
+                "grid": {
+                    "dimensions": {"width": wd, "height": h},
+                    "affineTransform": {
+                        "scaleX": lon_step, "shearX": 0, "translateX": w + c0 * lon_step,
+                        "shearY": 0, "scaleY": -lat_step, "translateY": n - r0 * lat_step,
+                    },
+                    "crsCode": "EPSG:4326",
+                },
+            })
+            arr = np.load(io.BytesIO(raw))
+            band = arr["building_height"] if arr.dtype.names else arr
+            for r in range(h):
+                lat = n - (r0 + r + 0.5) * lat_step
+                for c in range(wd):
+                    v = float(band[r, c])
+                    if not np.isfinite(v) or v < 0.5:
+                        continue
+                    lng = w + (c0 + c + 0.5) * lon_step
+                    code = digipin.encode(lat, lng).replace("-", "")[:level]
+                    cells[code] = round(v, 1)
+            print(f"    tile r{r0} c{c0}: {len(cells)} cells so far")
     return cells, (w, s, e, n)
 
 
@@ -161,6 +186,25 @@ def grid_from_legacy(path, level):
     return cells, (min(lngs), min(lats), max(lngs), max(lats))
 
 
+def write_index(out_dir=OUT_DIR):
+    """Rewrite <out_dir>/index.json: [{region, bbox, file}] for every baked grid.
+
+    The web app reads it to fetch only the grid covering the viewed city.
+    """
+    suffix = "_heights_digipin.json"
+    entries = []
+    for name in sorted(os.listdir(out_dir)):
+        if not name.endswith(suffix):
+            continue
+        with open(os.path.join(out_dir, name)) as fh:
+            doc = json.load(fh)
+        entries.append({"region": name[: -len(suffix)], "bbox": doc["bbox"],
+                        "file": f"data/heights/{name}", "cells": len(doc["cells"])})
+    with open(os.path.join(out_dir, "index.json"), "w") as fh:
+        json.dump(entries, fh, indent=1)
+    return entries
+
+
 def main():
     """Build the grid in the chosen mode and write the JSON lookup."""
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -168,8 +212,12 @@ def main():
     ap.add_argument("--level", type=int, default=8, help="DIGIPIN level of the grid (8 ≈ 60 m)")
     ap.add_argument("--from-legacy", metavar="JSON", help="re-key an old Overture-id → metres file")
     ap.add_argument("--out", help="output path (default data/heights/<region>_heights_digipin.json)")
+    ap.add_argument("--index-only", action="store_true", help="just rewrite data/heights/index.json")
     args = ap.parse_args()
 
+    if args.index_only:
+        print(f"Indexed {len(write_index())} height grids")
+        return
     if args.from_legacy:
         cells, bbox = grid_from_legacy(args.from_legacy, args.level)
         source = "Google Open Buildings 2.5D (2023), re-keyed from Overture 2024 ids"
@@ -184,6 +232,8 @@ def main():
     with open(out, "w") as fh:
         json.dump(doc, fh, separators=(",", ":"))
     print(f"Wrote {len(cells)} level-{args.level} cells -> {os.path.relpath(out)}")
+    if os.path.dirname(os.path.abspath(out)) == os.path.abspath(OUT_DIR):
+        write_index()
 
 
 if __name__ == "__main__":

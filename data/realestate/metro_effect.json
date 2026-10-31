@@ -1,0 +1,85 @@
+{
+ "method": "Mean floor area added 2016–2023 per L7 block (Open Buildings 2.5D Temporal) within 0.8 km of metro stations opened 2017–2022 (Wikidata P1619), against blocks 1.5–3.0 km from them; both at least 2.0 km from older stations and at least 10% built up.",
+ "pooled": {
+  "near_cells": 5364,
+  "ring_cells": 8834,
+  "near_m2": 10846,
+  "ring_m2": 10886,
+  "ratio": 1.0,
+  "ratio_ci95": 0.03
+ },
+ "cities": {
+  "pune": {
+   "stations": 10,
+   "near_cells": 208,
+   "ring_cells": 589,
+   "near_m2": 10721,
+   "ring_m2": 12687,
+   "ratio": 0.85
+  },
+  "mumbai": {
+   "stations": 18,
+   "near_cells": 276,
+   "ring_cells": 124,
+   "near_m2": 8695,
+   "ring_m2": 8137,
+   "ratio": 1.07
+  },
+  "bengaluru": {
+   "stations": 21,
+   "near_cells": 417,
+   "ring_cells": 869,
+   "near_m2": 15336,
+   "ring_m2": 16316,
+   "ratio": 0.94
+  },
+  "hyderabad": {
+   "stations": 57,
+   "near_cells": 1294,
+   "ring_cells": 1986,
+   "near_m2": 13331,
+   "ring_m2": 14084,
+   "ratio": 0.95
+  },
+  "chennai": {
+   "stations": 27,
+   "near_cells": 601,
+   "ring_cells": 627,
+   "near_m2": 14292,
+   "ring_m2": 10845,
+   "ratio": 1.32
+  },
+  "delhi": {
+   "stations": 72,
+   "near_cells": 876,
+   "ring_cells": 1672,
+   "near_m2": 7118,
+   "ring_m2": 6899,
+   "ratio": 1.03
+  },
+  "ahmedabad": {
+   "stations": 31,
+   "near_cells": 809,
+   "ring_cells": 1343,
+   "near_m2": 8937,
+   "ring_m2": 9385,
+   "ratio": 0.95
+  },
+  "lucknow": {
+   "stations": 21,
+   "near_cells": 527,
+   "ring_cells": 1081,
+   "near_m2": 9330,
+   "ring_m2": 9998,
+   "ratio": 0.93
+  },
+  "kolkata": {
+   "stations": 14,
+   "near_cells": 356,
+   "ring_cells": 543,
+   "near_m2": 8234,
+   "ring_m2": 6982,
+   "ratio": 1.18
+  }
+ }
+}

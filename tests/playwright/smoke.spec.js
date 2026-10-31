@@ -13,7 +13,7 @@ const { test, expect } = require('@playwright/test');
 
 // Overlays exercised through the Layers panel (rows drive the hidden buttons).
 const PANEL_OVERLAYS = ['btn-ndvi', 'btn-bivariate', 'btn-viewshed', 'btn-kde', 'btn-access'];
-const VISIBLE_TOOLBAR = ['btn-dt-layers', 'btn-compare', 'btn-bookmarks', 'btn-saved-views'];
+const VISIBLE_TOOLBAR = ['btn-dt-layers', 'btn-3d', 'btn-compare', 'btn-bookmarks', 'btn-saved-views'];
 
 test.describe('App boot smoke', () => {
   let pageErrors;
@@ -39,7 +39,7 @@ test.describe('App boot smoke', () => {
       await expect(page.locator(`#${id}`)).toBeVisible();
     }
     // …while the overlay buttons stay in the DOM (the panel drives them) but hidden.
-    for (const id of [...PANEL_OVERLAYS, 'btn-heatmap', 'btn-3d']) {
+    for (const id of [...PANEL_OVERLAYS, 'btn-heatmap']) {
       await expect(page.locator(`#${id}`)).toHaveCount(1);
       await expect(page.locator(`#${id}`)).toBeHidden();
     }

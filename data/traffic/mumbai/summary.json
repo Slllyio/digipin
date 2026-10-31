@@ -1,0 +1,809 @@
+{
+  "region": "mumbai",
+  "total_segments": 12123,
+  "graph_nodes": 11945,
+  "graph_edges": 11949,
+  "bridge_count": 4409,
+  "los_distribution": {
+    "A": 10297,
+    "B": 570,
+    "D": 137,
+    "F": 806,
+    "C": 212,
+    "E": 101
+  },
+  "top_bottlenecks": [
+    {
+      "osm_id": 1235236204,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.057427,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.04967,
+      "lng": 72.83834
+    },
+    {
+      "osm_id": 1235442610,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.055274,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.04852,
+      "lng": 72.83835
+    },
+    {
+      "osm_id": 48803916,
+      "name": "Mahim Causeway",
+      "highway": "primary",
+      "betweenness": 0.055246,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.048,
+      "lng": 72.83836
+    },
+    {
+      "osm_id": 1140706276,
+      "name": "Mahim Causeway",
+      "highway": "primary",
+      "betweenness": 0.055219,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.04783,
+      "lng": 72.83836
+    },
+    {
+      "osm_id": 1534044180,
+      "name": "Lady Jamshedji Road",
+      "highway": "primary",
+      "betweenness": 0.055191,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.0472,
+      "lng": 72.83838
+    },
+    {
+      "osm_id": 1534044181,
+      "name": "Lady Jamshedji Road",
+      "highway": "primary",
+      "betweenness": 0.055164,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.04629,
+      "lng": 72.8385
+    },
+    {
+      "osm_id": 927086842,
+      "name": "Lady Jamshedji Road",
+      "highway": "primary",
+      "betweenness": 0.055139,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.04458,
+      "lng": 72.83932
+    },
+    {
+      "osm_id": 1090505269,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.05391,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.05206,
+      "lng": 72.83828
+    },
+    {
+      "osm_id": 1238867133,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.052375,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.05017,
+      "lng": 72.83834
+    },
+    {
+      "osm_id": 1497016256,
+      "name": "Lal Bahadur Shastri Marg",
+      "highway": "primary",
+      "betweenness": 0.051873,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.0881,
+      "lng": 72.90582
+    },
+    {
+      "osm_id": 1253603273,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.051695,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.05408,
+      "lng": 72.83793
+    },
+    {
+      "osm_id": 1545066403,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.051232,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.05416,
+      "lng": 72.83791
+    },
+    {
+      "osm_id": 553233665,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.051215,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.05624,
+      "lng": 72.83704
+    },
+    {
+      "osm_id": 1144605414,
+      "name": "Lal Bahadur Shastri Marg",
+      "highway": "primary",
+      "betweenness": 0.051146,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.089,
+      "lng": 72.90731
+    },
+    {
+      "osm_id": 553666275,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.049888,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.05948,
+      "lng": 72.83691
+    },
+    {
+      "osm_id": 1123839480,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.049318,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.12419,
+      "lng": 72.84784
+    },
+    {
+      "osm_id": 1444323687,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.049313,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.12416,
+      "lng": 72.84762
+    },
+    {
+      "osm_id": 1122281531,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.049307,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.12421,
+      "lng": 72.84723
+    },
+    {
+      "osm_id": 1333717589,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.049302,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.12424,
+      "lng": 72.84703
+    },
+    {
+      "osm_id": 1252263936,
+      "name": "Swami Vivekanand Road",
+      "highway": "primary",
+      "betweenness": 0.049248,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 19.08677,
+      "lng": 72.83815
+    }
+  ],
+  "critical_links": [],
+  "demand_model": {
+    "zones": 614,
+    "origins": 556,
+    "peak_pcu_total_trips": 529512,
+    "roads_los_e_f": 4298,
+    "roads_los_d": 513,
+    "roads_total": 12112,
+    "roads_los_e_f_by_period": {
+      "am": 4227,
+      "pm": 4168,
+      "mid": 820
+    },
+    "hourly": {
+      "share_pct": [
+        0.6,
+        0.4,
+        0.3,
+        0.3,
+        0.5,
+        1.1,
+        2.4,
+        4.4,
+        7.0,
+        9.0,
+        7.6,
+        5.6,
+        5.0,
+        4.8,
+        4.6,
+        4.8,
+        5.4,
+        7.0,
+        8.8,
+        7.8,
+        5.6,
+        3.6,
+        2.2,
+        1.2
+      ],
+      "mix": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0.8,
+          0,
+          0.2
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0.8,
+          0.2
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "periods": [
+        "am",
+        "pm",
+        "mid"
+      ],
+      "period_share": {
+        "am": 0.09,
+        "pm": 0.08800000000000001,
+        "mid": 0.048
+      },
+      "bpr": [
+        0.15,
+        4
+      ],
+      "max_slowdown": 4.0,
+      "los_bands": [
+        0.35,
+        0.55,
+        0.75,
+        0.9,
+        1.0
+      ]
+    },
+    "assumptions": {
+      "trips_per_capita": 0.9,
+      "pcu_per_trip": 0.37,
+      "peak_share": 0.09,
+      "beta_per_min": 0.1,
+      "mid_beta_per_min": 0.15
+    }
+  },
+  "road_flood": {
+    "very_high": 61.8,
+    "high": 566.9,
+    "river_flood": 631.8,
+    "total": 2386.0,
+    "pct_very_high": 2.6,
+    "pct_high_or_worse": 26.4
+  },
+  "noise_air": {
+    "residents_total": 17668069,
+    "residents_near_modelled_roads": 16096668,
+    "residents_lden_ge_53": 15427597,
+    "residents_lden_ge_65": 8805670,
+    "nox_t_day": 21.93,
+    "co2_t_day": 5361.4,
+    "nox_vs_s5p_no2_spearman_l5": 0.28,
+    "l5_cells_compared": 55,
+    "assumptions": {
+      "veh_per_pcu": 1.4,
+      "heavy_pct": 5.0,
+      "share_18h": 0.968,
+      "ef_g_per_vkm": {
+        "nox": 0.45,
+        "pm25": 0.025,
+        "co2": 110.0
+      },
+      "reach_m": 300.0,
+      "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
+    }
+  },
+  "emergency_access": {
+    "hospitals": 1718,
+    "pct_within_10_night": 99.4,
+    "pct_within_10_am": 98.6,
+    "pct_within_10_pm": 98.8,
+    "pct_over_20_peak": 0.5,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 92,
+    "rail_stations": 100,
+    "pct_within_10_walk_metro": 30.1,
+    "pct_within_10_walk_any": 51.1,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 28,
+    "chargers_by_source": {
+      "osm": 5,
+      "overture": 23
+    },
+    "parking": 65,
+    "fuel": 254,
+    "chargers_per_lakh": 0.16,
+    "pct_vkm_within_2km": 56.1,
+    "pct_pop_within_2km": 57.1
+  },
+  "cycling": {
+    "lowstress_km": 6252,
+    "cycleway_km": 20.3,
+    "highstress_km": 1950,
+    "islands": 9080,
+    "islands_over_5_km2": 9,
+    "largest_island_km2": 48.9,
+    "pct_residents_small_island": 58.2,
+    "pct_residents_no_lowstress_street": 0.4,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 1740,
+    "pct_main_km_on_long_gaps": 15.0,
+    "median_gap_m": 344,
+    "crosswalks_mapped": 116,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 2783,
+      "logistics": 746,
+      "wholesale": 202
+    },
+    "truck_trips_day": 21296,
+    "gateway_nodes": 1607,
+    "road_km_500_trucks_day": 3.7,
+    "busiest_truck_roads": [
+      {
+        "name": "P D' Mello Road",
+        "trucks_day": 5700
+      },
+      {
+        "name": "Lal Bahadur Shastri Marg",
+        "trucks_day": 2088
+      },
+      {
+        "name": "Yusuf Meher Ali Road - Masjid Bunder Road",
+        "trucks_day": 1730
+      },
+      {
+        "name": "Service Road",
+        "trucks_day": 1662
+      },
+      {
+        "name": "Jijamata Road",
+        "trucks_day": 1368
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 701,
+    "pop_mean_jobs_car_pct": 41.9,
+    "pop_mean_jobs_transit_pct": 22.6,
+    "stations": 192,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 4978,
+    "stops_with_heat_data": 4978,
+    "pct_hot_bare": 16.7,
+    "pct_riders_at_hot_bare": 17.9,
+    "median_stop_lst_c": 40.4,
+    "top_stops": [
+      {
+        "digipin": "4FK52J5",
+        "name": "",
+        "lon": 72.85762,
+        "lat": 19.04362,
+        "residents_5min": 110375,
+        "lst_c": 45.3,
+        "canopy_pct": 1.3,
+        "priority": 1122083
+      },
+      {
+        "digipin": "4FK6FLM",
+        "name": "Shivaji Nagar Bus Terminus",
+        "lon": 72.92564,
+        "lat": 19.06041,
+        "residents_5min": 87178,
+        "lst_c": 47.3,
+        "canopy_pct": 1.9,
+        "priority": 1051916
+      },
+      {
+        "digipin": "4FK6FLM",
+        "name": "Bainganwadi",
+        "lon": 72.92437,
+        "lat": 19.05903,
+        "residents_5min": 87178,
+        "lst_c": 47.3,
+        "canopy_pct": 1.9,
+        "priority": 1051916
+      },
+      {
+        "digipin": "4FK6FLM",
+        "name": "",
+        "lon": 72.92505,
+        "lat": 19.05871,
+        "residents_5min": 87178,
+        "lst_c": 47.3,
+        "canopy_pct": 1.9,
+        "priority": 1051916
+      },
+      {
+        "digipin": "4FK6FLM",
+        "name": "",
+        "lon": 72.9254,
+        "lat": 19.06062,
+        "residents_5min": 87178,
+        "lst_c": 47.3,
+        "canopy_pct": 1.9,
+        "priority": 1051916
+      },
+      {
+        "digipin": "4FK52JM",
+        "name": "",
+        "lon": 72.85575,
+        "lat": 19.04125,
+        "residents_5min": 118807,
+        "lst_c": 44.1,
+        "canopy_pct": 2.9,
+        "priority": 1049791
+      },
+      {
+        "digipin": "4FK6JF9",
+        "name": "",
+        "lon": 72.92784,
+        "lat": 19.0573,
+        "residents_5min": 89257,
+        "lst_c": 46.8,
+        "canopy_pct": 0.6,
+        "priority": 1046913
+      },
+      {
+        "digipin": "4FK6JF9",
+        "name": "",
+        "lon": 72.92797,
+        "lat": 19.05689,
+        "residents_5min": 89257,
+        "lst_c": 46.8,
+        "canopy_pct": 0.6,
+        "priority": 1046913
+      },
+      {
+        "digipin": "4FK6JF3",
+        "name": "",
+        "lon": 72.92434,
+        "lat": 19.05456,
+        "residents_5min": 115091,
+        "lst_c": 44.3,
+        "canopy_pct": 10.3,
+        "priority": 960101
+      },
+      {
+        "digipin": "4FK6JF3",
+        "name": "",
+        "lon": 72.92408,
+        "lat": 19.05495,
+        "residents_5min": 115091,
+        "lst_c": 44.3,
+        "canopy_pct": 10.3,
+        "priority": 960101
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "osm": 1649,
+      "gtfs": 3192,
+      "overture": 137
+    }
+  },
+  "parking": {
+    "cells": 6221,
+    "demand_ecs": 834317,
+    "lots_mapped": 65,
+    "official_lot_spaces": 62051,
+    "pct_demand_in_overflow": 48.9,
+    "overflow_ecs": 194005,
+    "hotspots": [
+      {
+        "digipin": "4FK55L9",
+        "demand_ecs": 1083,
+        "supply_ecs": 59,
+        "pressure": 18.23
+      },
+      {
+        "digipin": "4FK2PP5",
+        "demand_ecs": 945,
+        "supply_ecs": 68,
+        "pressure": 13.91
+      },
+      {
+        "digipin": "4FK5258",
+        "demand_ecs": 905,
+        "supply_ecs": 154,
+        "pressure": 5.87
+      },
+      {
+        "digipin": "4FK2PP2",
+        "demand_ecs": 1044,
+        "supply_ecs": 301,
+        "lots": 1,
+        "pressure": 3.47
+      },
+      {
+        "digipin": "4FK5425",
+        "demand_ecs": 772,
+        "supply_ecs": 30,
+        "pressure": 25.37
+      },
+      {
+        "digipin": "4FK7C4P",
+        "demand_ecs": 967,
+        "supply_ecs": 229,
+        "pressure": 4.22
+      },
+      {
+        "digipin": "4FK545J",
+        "demand_ecs": 729,
+        "supply_ecs": 0,
+        "pressure": 729.09
+      },
+      {
+        "digipin": "4FKPCM7",
+        "demand_ecs": 982,
+        "supply_ecs": 274,
+        "pressure": 3.59
+      },
+      {
+        "digipin": "4FKPC2L",
+        "demand_ecs": 875,
+        "supply_ecs": 224,
+        "pressure": 3.9
+      },
+      {
+        "digipin": "4FK8MMM",
+        "demand_ecs": 862,
+        "supply_ecs": 212,
+        "pressure": 4.07
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 553,
+    "pop_mean_trip_km": 10.27,
+    "co2_kg_resident_day": 0.333,
+    "co2_kt_year": 2142.8,
+    "inner_fifth_trip_km": 9.06,
+    "outer_fifth_trip_km": 12.34,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
+  }
+}

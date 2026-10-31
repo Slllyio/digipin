@@ -27,16 +27,27 @@ DIGIPIN is a strict 4×4 quadtree over India, so:
 
 | Level | Cell edge | Indore pilot bbox (cells) | Typical use |
 |---:|---:|---:|---|
-| 4 | ~15.6 km | ~9 | district |
+| 4 | ~15.7 km | ~9 | district |
 | 5 | ~3.9 km | ~144 | city zones |
-| 6 | **~975 m** | 2,209 | city-wide scores (`scores`) |
-| 7 | **~244 m** | 33,489 | road / grid datasets (`traffic`, `mobility`) |
+| 6 | **~978 m** | 2,209 | city-wide scores (`scores`) |
+| 7 | **~245 m** | 33,489 | road / grid datasets (`traffic`, `mobility`) |
 | 8 | ~61 m | ~532k | point data, block level |
 | 10 | ~3.8 m | — | a full DIGIPIN address |
 
-> Older docs (`PRECOMPUTE_PHASE1.md`, `pipeline/_lib/grid.py`) give "level 6 ≈
-> 244 m". The grid maths (36° ÷ 4^level) and the enumerated cells say L6 is
-> about 975 m and L7 about 244 m. This table uses the measured values.
+Exact sizes for all ten levels, the hierarchy API and how the map picks a
+level per zoom: [DIGIPIN_LEVELS.md](DIGIPIN_LEVELS.md). Older docs said "level
+6 ≈ 244 m"; 244 m is level 7.
+
+### Rolling up the hierarchy
+
+`CellStore.rollup(spec, table, level)` / `CellStore.loadAt(id, level)` turn
+any dataset into a coarser one by code prefix, combining child cells with the
+field's `agg` (`mean` → mean of children, `sum`/`count` → sum, `min`/`max`/
+`mode`/`any` carry over). Rolled tables carry `counts` (native cells per
+parent) and `nativeLevel`. CellLayers uses this for level of detail: a dataset
+draws one level finer than the map grid, capped at its native level, so a
+zoomed-out city shows ~1 km or ~4 km parents and a zoomed-in one the native
+cells.
 
 ## On-disk layout (`data/cells/`)
 
@@ -100,6 +111,26 @@ null is dropped.
 
 Floats are rounded to 4 decimals. `columns[k][i]` belongs to `cells[i]`.
 
+### Sharding (big regions)
+
+A region with more than 8,192 cells is split by code prefix, so the browser
+fetches only the part it needs. The region entry then carries a `shards`
+block, and `json` becomes a template:
+
+```jsonc
+{ "name": "indore_pilot", "cells": 30611,
+  "json": "growth/indore_pilot/{prefix}.json",            // one columnar file per key
+  "shards": { "prefixLen": 4, "keys": ["34M5", "34M6", …] },
+  "parquet": "growth/indore_pilot.parquet" }             // always a single file
+```
+
+The prefix length is `level - 3`, so each shard holds at most 4,096 cells
+(L7 → 4-character keys, L8 → 5). `write_dataset(…, shard="auto" | None | n)`
+picks or forces the layout. Re-running it removes the files of the other
+layout. `store.read_region(root, entry)` reads either layout back. An
+unsharded region keeps the plain `"json": "<id>/<region>.json"`, so v1
+readers still work.
+
 ### `<dataset>/<region>.parquet` (GeoParquet 1.1)
 
 | column | type | notes |
@@ -122,13 +153,46 @@ lists each dataset as a `DatasetSpec` paired with a reader:
 
 ```sh
 pip install -r pipeline/cells/requirements.txt   # pyarrow, for GeoParquet
-python -m pipeline.cells.build --region indore_pilot             # scores, traffic, mobility
+python -m pipeline.cells.build --region indore_pilot             # scores, traffic, mobility, growth
 python -m pipeline.cells.build --region indore_pilot traffic     # just one
 python -m pipeline.cells.build --no-parquet                      # stdlib only
 ```
 
 The *Precompute scores* workflow runs the `scores` step after each city build,
 so a new city appears in the store automatically.
+
+**Open datasets for all metros.** Population, land cover, vegetation, terrain,
+water/flood, night lights, heat, air quality, rainfall, building stock, soil,
+travel time (Earth Engine) and OSM amenities/roads are baked by
+`pipeline/cells/ee_layers.py` and `osm_layers.py`; see
+[OPEN_DATA_CELLS.md](OPEN_DATA_CELLS.md).
+
+**Raster (GeoTIFF) datasets.** Use `adapters.raster_records` for any EPSG:4326
+GeoTIFF. It picks the sampling method from the resolution. When pixels are
+finer than cells, it emits one record per pixel, and the field's `agg`
+combines them: `mean` for a zonal mean, `sum` for counts such as population.
+When pixels are coarser than cells, every cell samples the pixel under its
+centre. A new raster dataset is one function plus a `BUILTINS` entry:
+
+```python
+def build_ndvi(region, level=7):
+    spec = DatasetSpec(id="ndvi", title="Vegetation (NDVI)", level=level,
+                       group="Open Data (satellite)", fields=[
+        FieldSpec("ndvi_2024", "NDVI 2024", agg="mean", domain=[-1, 1], ramp="greens"),
+        FieldSpec("ndvi_change", "NDVI change 2016→24", agg="mean", ramp="diverging"),
+    ])
+    return raster_dataset(spec, DATA / "ndvi" / f"{region}.tif",
+                          bands={"ndvi_2016": 1, "ndvi_2024": 9},         # raw bands (1-based)
+                          derive={"ndvi_change": lambda r: r["ndvi_2024"] - r["ndvi_2016"]},
+                          keep=lambda r: r["ndvi_2024"] is not None)       # stay sparse
+```
+
+`derive` keys may convert units or compute changes between years. Band keys
+that are not fields are dropped. Data that lives in Earth Engine rather than
+in a local GeoTIFF is written straight to the store by
+`pipeline/cells/earthengine.py`, which uses the same `write_dataset` call.
+`growth` (Open Buildings Temporal 2016→2023 + CA-ML P(urban 2035), L7) is
+the built-in example.
 
 **2. Any CSV / GeoJSON (no code).**
 
@@ -155,12 +219,82 @@ Binning parity is locked by `pipeline/cells/tests/bin_parity.json`. Both pytest
 and Vitest assert against this file, so the browser and the pipeline cannot
 drift apart.
 
+## Time series
+
+A dataset with a `time` block holds a **series per cell**: one value per step
+for every field. The Layers panel lists them under **Time series**, and while
+one is on, a slider with play/pause sits at the bottom of the map.
+
+```jsonc
+// catalog.json entry (extra key)
+"time": { "unit": "month", "steps": ["2024-10", …, "2026-09"], "default": "2026-09" }
+
+// <dataset>/<region>.json: `times` + one array per cell
+{ "level": 6, "fields": ["lst_day_c", "lst_night_c"], "times": ["2024-10", …],
+  "cells": ["34PLLM", …], "columns": { "lst_day_c": [[33.7, 30.0, …, null, …], …] } }
+```
+
+- `unit` is `year`, `month` or `day`; steps are ISO labels, unique and
+  ascending. Temporal datasets take number fields only.
+- `null` marks a step with no data for that cell (cloud gaps in the monsoon).
+- The legend domain spans **every step**, so a colour means the same value in
+  every month. `scripts/build_cell_timeseries.py` sets it to the 2nd–98th
+  percentile so a single bad pixel does not wash out the ramp.
+- GeoParquet stores each field as `list<double>` aligned with `time.steps`
+  (in the `digipin_cells` metadata): `SELECT digipin, lst_day_c[7] FROM lst_monthly`
+  in DuckDB is April 2025 (1-based).
+
+**Rendering.** `CellStore.toGeoJSON` writes one property per step
+(`lst_day_c@0 … @23`). `CellLayers.setTime(id, t)` only swaps the colour and
+height expressions to `…@t` with `setPaintProperty`, with no `setData`, so 2D
+fills and 3D extrusions animate smoothly even for the 33k-cell NDVI layer.
+`js/time-slider.js` builds one timeline from the union of the active temporal
+datasets' steps. A dataset missing the current step holds its latest earlier
+step. The keyboard works on the focused bar: ←/→ step, Space plays, Home/End jump.
+
+**Inspector.** Clicking a temporal cell shows the values at the current step
+and an SVG chart of the cell's whole history for the selected field, with the
+current step marked. The chart follows the slider while it is open. **Copy**
+adds the series as CSV.
+
+**Built datasets** (all 13 city pilots; monthly ones cover Oct 2024 to Sep
+2026; Earth Engine project `van-suraksha-alert`):
+
+| id | level | fields | source |
+|---|---:|---|---|
+| `lst_monthly` | 6 | `lst_day_c`, `lst_night_c` (°C) | MODIS MOD11A2 + MYD11A2 8-day LST, 1 km |
+| `ndvi_monthly` | 7 | `ndvi` | MODIS MOD13Q1 + MYD13Q1 16-day NDVI, 250 m |
+| `no2_monthly` | 6 | `no2_umol_m2` (µmol/m²) | Sentinel-5P TROPOMI OFFL L3 tropospheric NO₂ |
+| `rain_monthly` | 5 | `rain_mm` (monthly total) | CHIRPS v2.0 daily, ~5.5 km |
+| `nightlights_monthly` | 7 | `radiance` (nW/cm²/sr) | VIIRS DNB monthly VCMSLCFG, ~460 m |
+| `pm25_monthly` | 5 | `pm25_ugm3` (µg/m³) | CAMS NRT forecast model, ~40 km (modelled, not monitors) |
+| `builtup_yearly` | 7 | `built_pct` (% of cell built) | JRC GHSL GHS-BUILT-S R2023A, 1975–2020 every 5 years |
+| `landcover_yearly` | 7 | `built_pct`, `trees_pct`, `water_pct`, `crops_pct` (%) | Dynamic World V1 yearly mean class probability, 2016–2025 |
+| `co_monthly` | 6 | `co_mmol_m2` (mmol/m²) | Sentinel-5P TROPOMI OFFL L3 CO |
+| `aerosol_monthly` | 6 | `aerosol_index` | Sentinel-5P TROPOMI OFFL L3 UV absorbing aerosol index |
+
+Domains are pooled over every city, so a colour means the same value in
+Delhi and in Chennai.
+
+```sh
+python3 scripts/build_cell_timeseries.py --region all                          # every dataset, every city
+python3 scripts/build_cell_timeseries.py --start 2024-10 --months 24 --region delhi,pune ndvi
+```
+
+Python: `store.series_table(level, steps, {code: {key: [v…]}}, keys)` builds
+the table, and `DatasetSpec(time=TimeSpec("month", steps))` declares it.
+
 ## Frontend API
 
 ```js
 await CellStore.init();                         // loads catalog.json (silent no-op on 404)
 CellStore.datasets();                           // registry entries (catalog + runtime)
-await CellStore.rowAt('traffic', lat, lng);     // { digipin, congestion_risk, … } | null
+await CellStore.rowAt('traffic', lat, lng);     // { digipin, level, congestion_risk, … } | null — fetches ≤ 1 shard
+await CellStore.rowAt('traffic', lat, lng, 6);  // rolled up to the L6 parent (+ cells: n)
+await CellStore.loadCells('growth', ['34PL']);  // only the shards overlapping these code prefixes
+await CellStore.load('growth');                 // the whole table (every region + shard)
+await CellStore.loadAt('traffic', 5);           // whole table rolled up to L5
+await CellProfile.profile(lat, lng, { rank: true });  // every dataset's row for one cell
 await CellLayers.show('traffic', { field: 'worst_los', extrude: true });
 CellLayers.setField('traffic', 'congestion_risk');
 CellLayers.hide('traffic');
@@ -173,6 +307,14 @@ await CellStore.sql(`
 The **Layers** panel builds one group per `group` value. Each dataset gets a
 row, with no per-layer code, and the legend has a field picker and a
 **3D extruded cells** switch.
+
+**Cell profile.** Clicking a cell opens the panel, which shows an
+**Everything in this cell** card (`js/cell-profile.js`). It lists every
+registry dataset that covers the cell, including dropped files, with each value
+and its rank among the dataset's cells. The rank is green or red when
+`higherIs` says which end is good, and each dataset has a **Map** button. The
+card paints from local data before the live fetch finishes. A new dataset
+appears there with no code.
 
 Config (`window.DIGIPIN_CONFIG`): `cellStore: false` turns the store off,
 `cellsBase: 'https://…/cells/'` serves it from R2 or a CDN, and `ingestLevel: 8`
@@ -191,14 +333,73 @@ fixes the drop-ingest level.
   code. The road-line overlays (`TrafficOverlay`, `MobilityOverlay`) and the
   cell-panel samplers are unchanged.
 
+## Coverage by city
+
+Which datasets exist for which of the app's 13 cities. The Layers panel only lists
+a dataset for the selected city when the catalog has a region with that name, or
+a region whose bbox holds the city centre (`CellStore.coversCity`). Layers with
+no data there are named in a short "No <city> data yet" line under their group,
+and switching city hides any active layer the new city doesn't have.
+
+| Dataset | Source | How it is built for a city |
+|---|---|---|
+| `scores` | Bulk OSM extract (Geofabrik) + Copernicus DEM | `precompute-scores.yml` (dispatch with a region list) |
+| `traffic`, `mobility` | OSM via Overpass | `precompute-cells.yml` (all cities, or a region list) |
+| `growth` | Earth Engine: Open Buildings Temporal + CA-ML prediction | `pipeline/growth/*` COGs, then `pipeline.cells.build growth` (needs GEE auth) |
+| `*_monthly` time series | Earth Engine (MODIS, Sentinel-5P, CHIRPS, VIIRS, …) | `scripts/build_cell_timeseries.py --region <city>` (needs GEE auth) |
+
+Cell counts per region (`python -m pipeline.cells.coverage --write` regenerates this
+table; both precompute workflows run it after a build):
+
+<!-- coverage:start -->
+| City | `accessibility` L6 | `aerosol_monthly` L6 | `air_monitors` L7 | `air_quality` L6 | `air_trend` L6 | `ambient_pop` L7 | `anganwadis` L7 | `bda_layouts` L7 | `big_projects` L7 | `birds` L6 | `blackouts` L6 | `borewells` L7 | `brick_kilns` L7 | `building_dynamics` L7 | `building_stock` L7 | `built_class` L7 | `built_up` L7 | `builtup_yearly` L7 | `bus_service` L7 | `bus_stop_heat` L7 | `bus_stops_official` L7 | `cadastre` L7 | `canteens` L7 | `climate_future` L5 | `climate_zones` L7 | `co_monthly` L6 | `colleges` L7 | `community_halls` L7 | `commute_carbon` L6 | `constituencies` L7 | `construction_monthly` L7 | `crossings` L7 | `cycling` L7 | `cyclones` L7 | `demographics` L7 | `downwind` L7 | `drain_buffers` L7 | `drains` L7 | `eco_limits` L7 | `elections_2024` L7 | `embeddings` L7 | `emergency_access` L7 | `encroachment` L7 | `ev_charging` L7 | `farmland` L7 | `fire_stations_official` L7 | `fires` L6 | `flight_paths` L7 | `flood_future` L6 | `flood_reports` L7 | `flood_zones` L7 | `freight` L7 | `funeral_sites` L7 | `groundwater_local` L7 | `growth` L7 | `haze_mix` L5 | `heat_change` L7 | `heritage` L7 | `humid_future` L5 | `humid_heat` L5 | `job_access` L6 | `lake_buffers` L7 | `lakes` L7 | `land_cover` L7 | `land_value` L7 | `landcover_yearly` L7 | `landmarks` L7 | `landslides` L7 | `landuse` L7 | `landuse_2011` L7 | `landuse_2017` L7 | `level_crossings` L7 | `libraries_official` L7 | `lightning` L6 | `lst_monthly` L6 | `mangroves` L7 | `metro_future` L7 | `metro_service` L7 | `mobility` L7 | `ndvi_monthly` L7 | `neighbourhoods` L7 | `new_roads` L7 | `news_floods` L7 | `nfhs` L7 | `night_heat` L7 | `nightlights` L7 | `nightlights_monthly` L7 | `no2_monthly` L6 | `osm_amenities` L7 | `osm_roads` L7 | `osm_walk` L7 | `parking` L7 | `parks` L7 | `parks_official` L7 | `pincodes` L7 | `places` L7 | `pm25_days` L7 | `pm25_monthly` L5 | `pm_heat` L7 | `police_official` L7 | `police_stations` L7 | `population` L7 | `potholes` L7 | `power_lines` L7 | `power_plants` L7 | `public_care` L7 | `public_land` L7 | `rail_access` L7 | `railways` L7 | `rain_gauges` L7 | `rain_monthly` L5 | `rainfall` L6 | `re_supply` L7 | `registration` L7 | `road_crashes` L7 | `road_plan` L7 | `roofs` L7 | `schools_official` L7 | `schools_udise` L7 | `scores` L6 | `service_areas` L7 | `service_centres` L7 | `sewers` L7 | `sites` L7 | `slums_mapped` L7 | `soil` L7 | `solar_atlas` L7 | `storm_drains` L7 | `stps` L7 | `street_infra` L7 | `street_lights` L7 | `subsidence` L7 | `subsoil` L7 | `surface_heat` L7 | `tb_care` L7 | `terrain` L7 | `toilets_official` L7 | `topsoil` L7 | `traffic` L7 | `traffic_load` L7 | `traffic_noise` L7 | `tree_census` L7 | `tree_season` L7 | `urban_form` L7 | `vegetation` L7 | `villages` L7 | `wards` L7 | `waste_bins` L7 | `waste_recovery` L7 | `water` L7 | `water_bodies` L7 | `water_history` L7 | `water_lines` L7 | `water_risk` L5 | `waterlogging` L7 | `watersheds` L7 | `wealth` L6 | `wind` L7 | `winter_nights` L7 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| indore_pilot | 2,209 | 2,209 | — | 2,209 | 2,209 | 33,489 | — | — | — | — | 1,087 | — | — | 33,489 | 33,489 | 17,283 | 33,489 | 33,489 | — | 86 | — | — | — | 156 | 33,489 | 2,209 | — | — | 1,383 | 33,489 | 33,489 | 3,624 | 17,793 | 33,489 | 33,448 | 33,489 | — | 318 | — | 33,489 | 33,489 | 18,104 | 206 | 18,198 | 28,105 | — | 2,209 | 33,423 | 2,209 | — | — | 970 | — | — | 30,611 | 156 | 33,460 | 4 | 156 | 156 | 1,976 | — | 507 | 33,489 | 7,780 | 33,489 | 10 | — | 3,465 | — | — | 41 | — | 2,209 | 2,209 | — | 610 | — | 1,761 | 33,489 | 33,489 | — | 196 | 33,489 | 33,480 | 33,489 | 33,489 | 2,209 | 1,575 | 16,996 | 17,202 | 3,292 | 705 | — | — | 3,235 | 33,489 | 156 | 33,481 | — | — | 33,489 | — | 3,624 | 33,489 | — | — | 18,098 | 1,930 | — | 156 | 2,209 | 30,658 | — | — | — | 13,677 | — | — | 2,209 | — | — | — | 132 | — | 33,448 | 33,489 | — | — | 1,340 | — | 33,440 | 33,448 | 33,489 | — | 33,489 | — | 33,448 | 1,990 | 2,162 | 10,806 | — | 20,505 | 12,709 | 33,489 | — | 4,900 | — | — | 33,489 | — | 1,389 | — | 156 | 33,489 | — | 2,180 | 33,489 | 33,480 |
+| bhopal | 442 | 442 | — | 442 | 442 | 6,565 | — | — | — | 225 | 394 | — | — | 6,565 | 6,565 | 4,800 | 6,565 | 6,565 | — | 30 | — | — | — | 35 | 6,565 | 442 | — | — | 377 | 6,565 | 6,565 | 1,156 | 5,488 | 6,565 | 6,218 | 6,565 | — | 66 | — | 6,565 | 6,565 | 4,977 | 257 | 68 | 3,883 | — | 442 | 6,565 | 442 | — | — | 507 | — | — | 6,498 | 35 | 6,325 | 1,445 | 35 | 35 | 414 | — | 661 | 6,565 | 3,446 | 6,565 | 13 | — | 2,940 | — | — | 18 | — | 442 | 442 | — | 220 | — | 811 | 6,565 | 6,565 | — | 193 | 6,565 | 6,289 | 6,565 | 6,565 | 442 | 760 | 5,259 | 5,240 | 2,263 | 254 | — | 6,565 | 1,976 | 6,565 | 35 | 6,287 | — | — | 6,565 | — | 732 | 6,565 | — | — | 4,970 | 1,009 | — | 35 | 442 | 6,498 | — | — | — | 4,402 | — | — | 442 | — | — | — | 27 | — | 6,201 | 6,565 | — | — | 603 | — | 6,210 | 6,201 | 6,565 | — | 6,565 | — | 6,201 | 969 | 996 | 3,287 | — | 3,739 | 5,251 | 6,565 | — | 5,129 | — | — | 6,565 | — | 996 | — | 35 | 6,565 | — | 442 | 6,565 | 6,286 |
+| pune | 700 | 700 | — | 700 | 700 | 10,767 | — | — | — | 522 | 697 | — | — | 10,767 | 10,767 | 9,478 | 10,767 | 10,767 | 3,945 | 1,622 | 2,694 | 5,507 | — | 56 | 10,767 | 700 | — | — | 658 | 10,767 | 10,767 | 2,680 | 10,155 | 10,767 | 10,733 | 10,767 | — | 438 | — | 10,767 | 10,767 | 9,645 | 778 | 9,664 | 4,482 | 14 | 700 | 10,767 | 700 | — | — | 1,772 | 65 | — | 10,767 | 56 | 10,738 | 2,655 | 56 | 56 | 697 | — | 258 | 10,767 | 7,521 | 10,767 | 32 | — | 5,745 | — | — | 20 | 53 | 700 | 700 | — | 24 | — | 2,472 | 10,767 | 10,767 | — | 450 | 10,767 | 10,745 | 10,767 | 10,767 | 700 | 2,847 | 9,695 | 9,345 | 5,484 | 1,277 | 189 | 10,767 | 5,646 | 10,767 | 56 | 10,748 | — | — | 10,767 | — | 920 | 10,767 | 45 | — | 9,639 | 1,149 | — | 56 | 700 | 10,767 | — | — | — | 8,921 | — | 10,061 | 700 | — | — | 7,626 | 82 | — | 10,736 | 10,767 | 7,741 | 16 | 3,706 | — | 10,737 | 10,736 | 10,767 | — | 10,767 | 311 | 10,736 | 3,346 | 2,596 | 6,525 | 4,319 | 7,165 | 10,611 | 10,767 | 10,766 | 7,558 | — | — | 10,767 | — | 741 | — | 56 | 10,767 | 10,767 | 700 | 10,767 | — |
+| mumbai | 821 | 1,125 | — | 1,125 | 1,125 | 12,510 | — | — | — | 668 | 984 | — | — | 16,878 | 16,878 | 7,872 | 16,878 | 16,878 | 3,537 | 2,642 | 2,713 | — | — | 60 | 11,499 | 1,125 | — | — | 553 | 14,576 | 16,878 | 3,546 | 8,740 | 16,475 | 11,369 | 16,475 | — | 2,029 | — | 9,465 | 16,878 | 8,090 | 2,119 | 8,136 | 1,103 | 35 | 1,125 | 16,475 | 1,125 | — | — | 2,755 | 142 | — | 11,372 | 84 | 11,753 | 7,893 | 60 | 60 | 701 | — | 6,555 | 16,878 | 6,525 | 16,878 | 68 | 17 | 9,532 | — | — | 42 | — | 1,099 | 704 | 2,645 | 371 | — | 3,286 | 13,438 | 12,832 | — | 646 | 14,844 | 11,732 | 16,878 | 16,878 | 1,125 | 3,958 | 8,358 | 7,944 | 6,221 | 2,266 | 7,294 | 12,776 | 5,826 | 11,107 | 84 | 11,776 | 7,277 | 7,276 | 16,475 | — | 1,305 | 16,475 | — | — | 8,103 | 2,950 | — | 71 | 988 | 11,372 | — | — | — | 7,124 | 1,113 | 8,199 | 1,125 | — | — | — | 248 | 2,501 | 11,499 | 16,878 | — | — | 4,014 | — | 8,700 | 11,499 | 16,878 | — | 16,878 | 2,117 | 11,499 | 4,980 | 3,496 | 6,083 | — | 10,830 | 15,469 | 16,878 | — | 9,775 | — | — | 16,878 | — | 7,764 | — | 76 | 16,878 | 10,889 | 956 | 16,878 | — |
+| bengaluru | 1,368 | 1,368 | 31 | 1,368 | 1,368 | 21,442 | 1,429 | 3,184 | 525 | 1,141 | 1,362 | 2,968 | — | 21,442 | 21,442 | 19,212 | 21,442 | 21,442 | 5,284 | 2,883 | — | 10,237 | 153 | 110 | 21,442 | 1,368 | 930 | — | 1,210 | 21,442 | 21,442 | 5,964 | 20,467 | 21,442 | 21,318 | 21,442 | 8,490 | 6,173 | 67 | 21,272 | 21,442 | 18,755 | 978 | 18,866 | 6,934 | 20 | 1,368 | 21,442 | 1,368 | 1,575 | — | 3,904 | 65 | 11,199 | 21,442 | 110 | 21,429 | 1,439 | 110 | 110 | 1,356 | 2,395 | 899 | 21,442 | 15,028 | 21,442 | 63 | 2 | 17,385 | 12,664 | 12,668 | 45 | 102 | 1,368 | 1,368 | — | 2,127 | 101 | 5,397 | 21,442 | 21,442 | 14,029 | 1,049 | 21,442 | 21,394 | 21,442 | 21,442 | 1,368 | 8,285 | 20,050 | 19,456 | 10,310 | 5,007 | — | 21,442 | 11,064 | 21,442 | 110 | 21,392 | 20,772 | 20,772 | 21,442 | 2,931 | 2,823 | 21,442 | 353 | 1,445 | 18,746 | 3,020 | 136 | 110 | 1,368 | 21,442 | 21,442 | 14,916 | 8,854 | 18,255 | — | 19,635 | 1,368 | 15,998 | 1,267 | 12,457 | 70 | 1,023 | 21,318 | 21,442 | — | 30 | 6,715 | 4,598 | 21,218 | 21,318 | 21,442 | 28 | 21,442 | — | 21,318 | 10,809 | 5,926 | 15,038 | 5,332 | 15,247 | 20,420 | 21,442 | 20,831 | 12,368 | — | 51 | 21,442 | 316 | 1,634 | 12,615 | 110 | 21,442 | 21,441 | 1,368 | 21,442 | — |
+| hyderabad | 1,080 | 1,080 | 10 | 1,080 | 1,080 | 15,870 | 1,281 | — | — | 715 | 1,072 | — | — | 15,870 | 15,870 | 14,350 | 15,870 | 15,870 | 3,147 | 1,566 | 3,147 | 2,293 | 128 | 90 | 15,870 | 1,080 | — | 1,100 | 1,022 | 15,870 | 15,870 | 3,914 | 15,092 | 15,870 | 15,541 | 15,870 | — | 519 | — | 15,870 | 15,870 | 14,372 | 555 | 14,412 | 4,066 | 21 | 1,080 | 15,870 | 1,080 | 118 | — | 2,688 | — | — | 15,870 | 90 | 15,691 | 2,652 | 90 | 90 | 1,058 | 3,560 | 993 | 15,870 | 12,181 | 15,870 | 67 | 3 | 7,947 | — | — | 27 | — | 1,080 | 1,080 | — | 84 | 57 | 3,584 | 15,870 | 15,870 | — | 1,250 | 15,870 | 15,687 | 15,870 | 15,870 | 1,080 | 4,649 | 14,658 | 14,168 | 8,492 | 2,026 | 1,736 | 15,870 | 8,864 | 15,870 | 90 | 15,673 | 83 | 3,957 | 15,870 | — | 1,685 | 15,870 | 375 | — | 14,366 | 1,477 | — | 90 | 1,080 | 15,870 | — | — | — | 13,476 | 3,444 | 7,291 | 1,080 | — | — | 2,996 | 78 | 2,572 | 15,483 | 15,870 | — | — | 4,816 | — | 15,073 | 15,483 | 15,870 | — | 15,870 | 469 | 15,483 | 4,759 | 4,065 | 10,218 | — | 9,217 | 15,433 | 15,870 | — | 10,060 | 1,306 | — | 15,870 | 320 | 1,657 | — | 90 | 15,870 | 15,870 | 1,080 | 15,870 | — |
+| chennai | 599 | 726 | — | 726 | 726 | 9,375 | 745 | — | — | 566 | 649 | — | — | 11,136 | 11,136 | 8,395 | 11,136 | 11,136 | 3,027 | 1,618 | 696 | — | 380 | 36 | 9,019 | 726 | — | — | 577 | 9,018 | 11,136 | 3,064 | 8,540 | 10,493 | 8,814 | 10,493 | — | 1,361 | 725 | 9,018 | 11,136 | 8,413 | 3,387 | 8,433 | 1,405 | — | 726 | 10,493 | 726 | 7,514 | 6,593 | 2,492 | 187 | 6,382 | 9,003 | 54 | 8,892 | 1,667 | 36 | 36 | 591 | — | 3,240 | 11,136 | 7,641 | 11,136 | 85 | 1 | 5,412 | — | — | 37 | — | 688 | 575 | — | 595 | — | 2,634 | 9,853 | 9,465 | — | 1,443 | 9,047 | 8,941 | 11,136 | 11,136 | 726 | 3,223 | 8,361 | 8,045 | 6,745 | 1,138 | — | 9,017 | 6,236 | 8,690 | 54 | 8,937 | — | 6,628 | 10,493 | — | 797 | 10,493 | 142 | — | 8,413 | 2,192 | — | 46 | 670 | 9,003 | 8,973 | — | — | 8,036 | — | 7,407 | 726 | 8,890 | 44 | 6,794 | 65 | 1,186 | 8,815 | 11,136 | 6,755 | 8 | 3,226 | — | 8,493 | 8,815 | 11,136 | 35 | 11,136 | 513 | 8,815 | 4,167 | 3,017 | 6,677 | — | 6,036 | 10,312 | 11,136 | — | 6,509 | 2,933 | 176 | 11,136 | — | 4,313 | — | 47 | 11,136 | 9,031 | 639 | 11,136 | — |
+| delhi | 3,304 | 3,304 | — | 3,304 | 3,304 | 51,027 | — | — | — | 1,519 | 2,923 | — | 50,090 | 51,027 | 51,027 | 36,335 | 51,027 | 51,027 | — | 595 | — | — | — | 225 | 51,027 | 3,304 | — | — | 2,690 | 51,027 | 51,027 | 9,908 | 42,407 | 51,027 | 50,973 | 51,027 | — | 6,546 | — | 51,027 | 51,027 | 36,926 | 9,060 | 37,137 | 27,764 | — | 3,304 | 47,288 | 3,304 | — | — | 5,978 | — | — | 51,027 | 225 | 51,026 | 15,412 | 225 | 225 | 3,139 | — | 1,060 | 51,027 | 28,075 | 51,027 | 121 | 4 | 25,354 | — | — | 75 | — | 3,304 | 3,304 | — | 418 | — | 7,350 | 51,027 | 51,027 | — | 1,378 | 51,027 | 51,020 | 51,027 | 51,027 | 3,304 | 8,454 | 37,201 | 37,093 | 21,066 | 6,638 | — | 51,027 | 18,572 | 51,027 | 225 | 51,020 | — | — | 51,027 | — | 7,244 | 51,027 | — | — | 36,909 | 6,102 | — | 225 | 3,304 | 51,027 | — | — | — | 31,497 | — | 24,851 | 3,304 | — | — | — | 1,491 | — | 50,965 | 51,027 | — | — | 8,140 | — | 50,978 | 50,965 | 51,027 | — | 51,027 | — | 50,965 | 11,475 | 7,010 | 25,120 | — | 31,847 | 41,771 | 51,027 | 26,066 | 34,035 | — | — | 51,027 | 810 | 4,275 | — | 225 | 51,027 | 51,027 | 3,300 | 51,027 | 51,025 |
+| guna | 100 | 100 | — | 100 | 100 | 1,444 | — | — | — | 8 | 63 | — | — | 1,444 | 1,444 | 846 | 1,444 | 1,444 | — | 1 | — | — | — | 9 | 1,444 | 100 | — | — | 71 | 1,444 | 1,444 | 195 | 922 | 1,444 | 1,439 | 1,444 | — | — | — | 1,444 | 1,444 | 899 | 10 | 10 | 1,171 | — | 100 | — | 100 | — | — | 23 | — | — | 1,346 | 9 | 1,443 | — | 9 | 9 | 89 | — | 21 | 1,444 | 411 | 1,444 | — | — | 221 | — | — | 2 | — | 100 | 100 | — | — | — | 108 | 1,444 | 1,444 | — | 12 | 1,444 | 1,444 | 1,444 | 1,444 | 100 | 16 | 833 | 850 | 261 | — | — | 1,444 | 145 | 1,444 | 9 | 1,444 | — | — | 1,444 | — | 244 | 1,444 | — | — | 899 | 120 | — | 9 | 100 | 1,349 | — | — | — | 697 | — | — | 100 | — | — | — | 7 | — | 1,439 | 1,444 | — | — | 2 | — | 1,430 | 1,439 | 1,444 | — | 1,444 | — | 1,439 | 77 | 81 | 426 | — | 567 | 764 | 1,444 | — | — | — | — | 1,444 | — | 89 | — | 9 | 1,444 | — | 100 | 1,444 | 1,444 |
+| jaipur | 624 | 624 | — | 624 | 624 | 9,292 | — | — | — | 298 | 604 | — | — | 9,292 | 9,292 | 7,967 | 9,292 | 9,292 | — | 73 | — | — | — | 42 | 9,292 | 624 | — | — | 565 | 9,292 | 9,292 | 1,517 | 8,257 | 9,292 | 9,284 | 9,292 | — | 315 | — | 9,292 | 9,292 | 8,081 | 19 | 111 | 3,637 | — | 624 | 9,292 | 624 | — | — | 1,300 | — | — | 8,962 | 42 | 9,291 | 2,878 | 42 | 42 | 603 | — | 37 | 9,292 | 6,449 | 9,292 | 26 | 1 | 2,179 | — | — | 21 | — | 624 | 624 | — | — | — | 1,740 | 9,292 | 9,292 | — | 189 | 9,292 | 9,281 | 9,292 | 9,292 | 624 | 1,634 | 8,166 | 7,985 | 4,357 | 671 | — | 9,292 | 4,124 | 9,292 | 42 | 9,282 | — | — | 9,292 | — | 962 | 9,292 | — | — | 8,080 | 884 | — | 42 | 624 | 8,963 | — | — | — | 7,548 | — | — | 624 | — | — | — | 59 | — | 9,276 | 9,292 | — | — | 1,320 | — | 9,292 | 9,276 | 9,292 | — | 9,292 | — | 9,276 | 2,342 | 2,117 | 5,712 | — | 6,226 | 8,988 | 9,292 | — | 6,614 | — | — | 9,292 | — | 83 | — | 42 | 9,292 | — | 623 | 9,292 | 9,282 |
+| ahmedabad | 504 | 504 | — | 504 | 504 | 7,176 | — | — | — | 348 | 500 | — | — | 7,176 | 7,176 | 6,665 | 7,176 | 7,176 | 2,746 | 1,673 | — | — | — | 42 | 7,176 | 504 | — | — | 464 | 7,176 | 7,176 | 2,654 | 7,059 | 7,176 | 7,173 | 7,176 | — | 197 | — | 7,176 | 7,176 | 6,640 | 1,969 | 6,679 | 2,494 | — | 504 | 7,176 | 504 | — | — | 2,337 | — | — | 7,176 | 42 | 7,176 | 4,632 | 42 | 42 | 497 | — | 165 | 7,176 | 5,865 | 7,176 | 45 | 1 | 4,083 | — | — | 30 | — | 504 | 504 | — | — | — | 2,353 | 7,176 | 7,176 | — | 193 | 7,176 | 7,174 | 7,176 | 7,176 | 504 | 1,342 | 6,546 | 6,517 | 5,036 | 503 | — | 7,176 | 4,746 | 7,176 | 42 | 7,176 | — | — | 7,176 | — | 795 | 7,176 | — | — | 6,636 | 1,004 | — | 42 | 504 | 7,176 | — | — | — | 6,367 | — | — | 504 | — | — | — | 82 | — | 7,171 | 7,176 | — | — | 2,557 | — | 7,176 | 7,171 | 7,176 | — | 7,176 | — | 7,171 | 2,651 | 3,073 | 5,911 | — | 5,712 | 7,164 | 7,176 | 6,733 | 6,439 | — | — | 7,176 | — | 496 | — | 42 | 7,176 | — | 504 | 7,176 | 7,176 |
+| lucknow | 529 | 529 | — | 529 | 529 | 8,464 | — | — | — | 236 | 520 | — | 8,464 | 8,464 | 8,464 | 7,102 | 8,464 | 8,464 | — | 13 | — | — | — | 49 | 8,464 | 529 | — | — | 502 | 8,464 | 8,464 | 1,536 | 7,764 | 8,464 | 8,464 | 8,464 | — | 651 | — | 8,464 | 8,464 | 7,245 | 1,370 | 7,289 | 3,280 | — | 529 | 8,464 | 529 | — | — | 891 | — | — | 8,457 | 49 | 8,464 | 5,041 | 49 | 49 | 519 | — | 68 | 8,464 | 5,807 | 8,464 | 16 | — | 5,290 | — | — | 62 | — | 529 | 529 | — | — | — | 1,491 | 8,464 | 8,464 | — | 194 | 8,464 | 7,795 | 8,464 | 8,464 | 529 | 1,577 | 7,471 | 7,459 | 4,179 | 1,506 | — | 8,464 | 3,863 | 8,464 | 49 | 8,464 | — | — | 8,464 | — | 774 | 8,464 | — | — | 7,240 | 1,145 | — | 49 | 529 | 8,457 | — | — | — | 7,099 | — | — | 529 | — | — | — | 754 | — | 8,463 | 8,464 | — | — | 689 | — | 8,464 | 8,463 | 8,464 | — | 8,464 | — | 8,463 | 1,591 | 1,825 | 5,417 | — | 7,136 | 8,098 | 8,464 | — | 5,125 | — | — | 8,464 | — | 618 | — | 49 | 8,464 | — | 529 | 8,464 | 8,464 |
+| kolkata | 480 | 480 | — | 480 | 480 | 7,268 | — | — | — | 379 | 480 | — | 7,268 | 7,268 | 7,268 | 6,965 | 7,268 | 7,268 | — | 427 | — | — | — | 42 | 7,268 | 480 | — | — | 478 | 7,268 | 7,268 | 2,620 | 6,920 | 7,268 | 6,945 | 7,268 | — | 831 | — | 7,268 | 7,268 | 7,004 | 3,166 | 216 | 723 | — | 480 | 7,268 | 480 | — | — | 1,692 | — | — | 7,243 | 42 | 7,158 | 3,324 | 42 | 42 | 478 | — | 1,054 | 7,268 | 6,068 | 7,268 | 55 | 1 | 3,850 | — | — | 72 | — | 480 | 480 | — | 481 | — | 1,709 | 7,268 | 7,268 | — | 485 | 7,268 | 7,154 | 7,268 | 7,268 | 480 | 2,061 | 6,775 | 6,679 | 6,024 | 1,468 | — | 7,268 | 4,957 | 7,268 | 42 | 7,133 | — | — | 7,268 | — | 404 | 7,268 | — | — | 7,003 | 1,789 | — | 42 | 480 | 7,243 | — | — | — | 6,571 | — | 3,729 | 480 | — | — | — | 34 | — | 6,848 | 7,268 | — | — | 1,671 | — | 7,268 | 6,848 | 7,268 | — | 7,268 | — | 6,848 | 2,652 | 1,971 | 5,129 | — | 6,456 | 7,268 | 7,268 | 3,186 | 3,236 | — | — | 7,268 | 1,141 | 1,786 | — | 42 | 7,268 | 7,268 | 480 | 7,268 | 7,166 |
+
+1476 of 2067 city × dataset slots filled.
+<!-- coverage:end -->
+
 ## Not done yet
 
-- Cell-panel widgets still sample the old grids. Moving them to
-  `CellStore.rowAt` would let one lookup show every dataset for the clicked
-  cell.
-- Large datasets (L8 city-wide is about 500k cells) need per-prefix sharding of
-  the JSON, as `data/scores/` already does, or PMTiles. The catalog's
-  `regions[]` can describe shards without a schema change.
+- The older traffic, mobility and heat widgets still sample their own grids.
+  The profile card covers the same data through the store, so these widgets
+  can be retired one at a time.
+- Ranks in the profile are computed against all of a dataset's cells, across
+  every region, and the first click loads that dataset's whole table once.
+  Ranking per region would use `loadCells` with the region's shard keys.
 - `CellStore.sql()` loads DuckDB's parquet extension from
   `extensions.duckdb.org` on first use. The deploy must allow that host. The
   app's CSP already does.
+
+## Building-level joins (`js/building-data.js`)
+
+With **Buildings** on, the *Building data* panel colours and/or extrudes every
+Overture footprint by any registry field. Each building's centroid encodes to
+a 10-char DIGIPIN; its first `level` characters are the dataset cell it sits
+in, so the join is a `Map` lookup per building (no spatial index). Per-building
+fields (`bldg:height_m`, `bldg:area_m2`, `bldg:floors`) come from the footprint
+and baked heights themselves.
+
+- Selection keys are `<dataset>:<field>`; share links carry them as `bc=` (colour)
+  and `bh=` (height), and DISHA can set them with
+  `[ACTION] colorBuildings color:scores:flood_risk height:bldg:height_m`.
+- A data driver switches buildings to the MapLibre twin renderer (works on
+  terrain and in both themes). Hover shows the building's DIGIPIN; click lists
+  every dataset row covering it.
+- "Fit colours to buildings in view" stretches a number ramp to the visible
+  range. Cell-level values are shared by every building in the cell, so an
+  L6 score paints ~1 km blocks; finer datasets give finer building colouring.
+- *Export buildings in view* downloads GeoJSON with identity fields plus
+  `<dataset>_<field>` for every catalog dataset.

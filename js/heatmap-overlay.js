@@ -143,6 +143,8 @@ const HeatmapOverlay = (() => {
         const lngStep = (bounds.getEast() - bounds.getWest()) / gridSize;
 
         _abortController = new AbortController();
+        // clear() nulls the shared controller mid-flight; keep this run's own.
+        const ctl = _abortController;
         const points = [];
         for (let i = 0; i < gridSize; i++) {
             for (let j = 0; j < gridSize; j++) {
@@ -158,7 +160,7 @@ const HeatmapOverlay = (() => {
 
         // Fetch in batches of 6
         for (let batch = 0; batch < points.length; batch += 6) {
-            if (_abortController.signal.aborted) break;
+            if (ctl.signal.aborted) break;
             const chunk = points.slice(batch, batch + 6);
             const results = await Promise.allSettled(
                 chunk.map(pt => DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400))
@@ -168,7 +170,7 @@ const HeatmapOverlay = (() => {
             let addedNew = false;
 
             results.forEach((r, idx) => {
-                if (r.status !== 'fulfilled' || _abortController.signal.aborted) return;
+                if (r.status !== 'fulfilled' || ctl.signal.aborted) return;
                 const pt = chunk[idx];
                 const val = r.value.scores?.[scoreKey]?.value;
                 if (val == null) return;
@@ -196,7 +198,7 @@ const HeatmapOverlay = (() => {
                 addedNew = true;
             });
 
-            if (addedNew && !_abortController.signal.aborted && _map) {
+            if (addedNew && !ctl.signal.aborted && _map) {
                 _map.getSource(SOURCE_ID).setData({ type: 'FeatureCollection', features: _features });
             }
 
@@ -205,7 +207,7 @@ const HeatmapOverlay = (() => {
             }
         }
 
-        if (!_abortController.signal.aborted) {
+        if (!ctl.signal.aborted) {
             App.showToast('3D Heatmap Ready', `${scoreKey} overlay applied. Pitch the map to see height!`, 'success');
         }
     }

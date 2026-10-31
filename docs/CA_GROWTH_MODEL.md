@@ -82,6 +82,27 @@ python -m pipeline.growth.urban_ca_ml --horizon 2035
 Commit the small resulting `ca_urban_prediction_<region>.tif` (rename/symlink to
 `data/growth/ca_urban_prediction.tif`, the path `realtime-growth.js` fetches).
 
+## Every other city (Earth Engine, no COGs)
+
+`scripts/build_cell_growth.py` runs the same model for every city in
+`pipeline/_lib/regions.py` straight from Earth Engine and writes the result as a
+region of the `growth` cell dataset (`data/cells/growth/<city>…`), so the layer
+shows under **Layers → Cell Data → Urban growth** wherever the map is.
+
+- Grid: DIGIPIN level 8 (~61 m, 16 pixels per level-7 cell) instead of Indore's
+  100 m COG grid. Built-up 2016/2023 rebuilt this way for Indore match the
+  COG-based cells at r ≈ 0.96.
+- Drivers: slope (Copernicus GLO-30), distance to water (JRC GSW occurrence ≥
+  50), GHSL population 2020, VIIRS 2023 night-lights, and distance to existing
+  built-up (recomputed from 2016 for the fits, from 2023 for the projection).
+  OSM roads are not a driver (there is no OSM in Earth Engine).
+- Hindcast FoM/Kappa and per-city cell stats: `data/growth/ca_validation_<city>.json`.
+
+```sh
+python3 scripts/build_cell_growth.py              # all cities but Indore
+python3 scripts/build_cell_growth.py pune delhi   # some
+```
+
 ## Browser consumption
 
 - `js/realtime-growth.js` reads `COG_CA` → `ca_growth_prob` (0..1) on
