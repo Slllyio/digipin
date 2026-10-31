@@ -4524,6 +4524,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "radarflood": {
+     "label": "Residents in blocks mostly flagged as flooded",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -9418,6 +9424,12 @@
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 12,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "radarflood": {
+     "label": "Residents in blocks mostly flagged as flooded",
+     "value": 6.6,
+     "unit": "%",
      "higherIs": "worse"
     },
     "schoolready": {

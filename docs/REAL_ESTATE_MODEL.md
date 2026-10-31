@@ -2015,3 +2015,10 @@ island; the block-level heat lenses cover that.
 each lived-in block centre (`boundless=True`). Blocks on class 0 or no data are dropped. Fields: `ls_class` (centre),
 `ls_near_max` (window maximum), `ls_moderate` (class 3+). The lens weights by residents and counts mapped-slum residents
 on class 3+ ground where `slums_mapped` exists.
+
+## Under water in a named flood (`radarflood` lens, `sar_floods` dataset)
+
+`pipeline/realestate/sarfloods.py` looks up each event's ZIP on HDX (`EVENTS`: package, resource name, year, label),
+reads its GeoTIFF in memory (uint8, 1 = likely flooded, 1 arc-second) and takes the flagged share of a 9 x 9 pixel
+window around each lived-in block centre; blocks whose window runs off the map are skipped. Adding an event is one
+`EVENTS` line, but the dataset holds one event per city.

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-31T14:08:50Z",
+  "generated": "2026-10-31T14:16:42Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -42990,6 +42990,99 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "sar_floods",
+      "title": "Flooded in a named event (Sentinel-1 radar, EOS-RS)",
+      "description": "Share of each block's ground the Earth Observatory of Singapore's Sentinel-1 flood proxy map flags as likely flooded: Cyclone Amphan, 22 May 2020. About 30 m pixels; less reliable over dense buildings and vegetation.",
+      "source": "pipeline/realestate/sarfloods.py (EOS-RS flood proxy map via HDX: eos-rs-india-bangladesh-cyclone-amphan-may-2020)",
+      "license": "CC BY 4.0 (Earth Observatory of Singapore Remote Sensing Lab; contains modified Copernicus Sentinel data)",
+      "group": "Hazards",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "sf_flooded_pct",
+          "label": "Ground flagged as flooded by radar in the event (share of block)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "sf_year",
+          "label": "Year of the mapped flood",
+          "type": "number",
+          "agg": "max",
+          "unit": "year",
+          "domain": [
+            2020,
+            2023
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "sf_flooded_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "sar_floods/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "sar_floods/kolkata.json",
+          "parquet": null
         }
       ]
     },
