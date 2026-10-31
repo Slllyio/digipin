@@ -2058,3 +2058,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Spreading out or packing in? (`packingin` lens, `land_efficiency` dataset)
 
 `pipeline/realestate/landefficiency.py` reads the SDG theme of the GHS Urban Centre Database 2025 (GHS_UCDB_GLOBE_R2024A V1.2 gpkg, CC BY 4.0). It takes the land consumption rate, the population growth rate and their ratio for 2000-2020, plus the ratios for 1990-2000, 2010-2020 and the 2020-2030 projection. Values clipped as ">5" or "<-5" become 5 and -5. The 2000-2020 ratio is ranked among urban centres with 1 million or more people in 2025, once worldwide and once within India. Other UCDB themes are not used yet; the seismic exposure columns rest on the GEM hazard map (CC BY-NC-SA) and must stay out.
+
+## How much hotter than the countryside? (`heatisland` lens, `heat_island` dataset)
+
+`pipeline/realestate/heatisland.py` reads the monthly UHII images from the Earth Engine community catalog: AMOD2 (all-sky MODIS Terra surface) and SAT (air), by day and by night. It masks zeros (no city) and takes the median in a 3 km disc around the GHSL urban-centre centroid. Hyderabad's centroid sits on Hussain Sagar, so a point on land is used there. It averages the images by year and stores 2016-2020 means and the 2001-2020 least-squares change per decade, plus March-May daytime surface values. Values are stored in hundredths of a degree and converted to °C. One value per city.

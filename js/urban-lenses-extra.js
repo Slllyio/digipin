@@ -423,6 +423,36 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function heatisland(fr) {
+        const c = fr.cols, n = fr.grid.n, sn = c['heat_island.hi_surf_night'];
+        if (!sn || !sn.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(sn[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`heat_island.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const sd = v('hi_surf_day'), nn = v('hi_surf_night'), ad = v('hi_air_day'), an = v('hi_air_night'), tn = v('hi_surf_night_trend'), td = v('hi_surf_day_trend'), ta = v('hi_air_night_trend'), sm = v('hi_summer_surf_day');
+        const deg = x => (_fin(x) ? `${x > 0 ? '+' : ''}${_round(x, 1)} °C` : 'n/a'), dec = x => (_fin(x) ? `${x > 0 ? '+' : ''}${_round(x, 2)} °C a decade` : 'n/a');
+        const stats = [
+            { label: 'Ground surface, night (city minus countryside, 2016-2020)', value: deg(nn) },
+            { label: 'Ground surface, day', value: deg(sd) },
+            { label: 'Ground surface, March-May days', value: deg(sm) },
+            { label: 'Air, night', value: deg(an) },
+            { label: 'Air, day', value: deg(ad) },
+            { label: 'Night surface heat island, change 2001-2020', value: dec(tn) },
+            { label: 'Day surface heat island, change 2001-2020', value: dec(td) },
+            { label: 'Night air heat island, change 2001-2020', value: dec(ta) },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = nn;
+        const day = !_fin(sm) ? '' : sm <= -0.5 ? ` On March-May days it flips: the city's ground is ${_round(-sm, 1)} °C cooler than the dry, bare fields around it, which heat up faster than shaded streets and lawns.` : sm >= 0.5 ? ` On March-May days its ground is ${_round(sm, 1)} °C hotter than the green or watered countryside around it.` : ' On March-May days city and countryside ground are about equally hot.';
+        const trend = _fin(tn) ? ` The night gap ${Math.abs(tn) < 0.1 ? 'barely changed' : tn > 0 ? `widened by ${_round(tn, 2)} °C a decade` : `narrowed by ${_round(-tn, 2)} °C a decade`} from 2001 to 2020.` : '';
+        return {
+            columns: { heat_island_night_c: out }, idx, weightKey: 'heat_island_night_c',
+            metric: { label: 'Night surface heat island (city minus countryside)', value: nn, unit: '°C', higherIs: 'worse' },
+            headline: `At night the city's ground stays ${_round(nn, 1)} °C warmer than comparable countryside around it${_fin(an) ? `, and the air ${_round(an, 1)} °C warmer` : ''} (2016-2020), because brick, concrete and asphalt give back the day's heat after dark.${day}${trend} One value for the whole city; the hot-night and surface heat lenses map which blocks hold the most heat.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -508,8 +538,14 @@ const UrbanLensesExtra = (() => {
             needs: ['land_efficiency.le_ratio_00_20', 'land_efficiency.le_land_pct_yr', 'land_efficiency.le_pop_pct_yr', 'land_efficiency.le_ratio_90_00', 'land_efficiency.le_ratio_10_20', 'land_efficiency.le_ratio_20_30', 'land_efficiency.le_world_pctile', 'land_efficiency.le_india_pctile', 'population.population'],
             method: `UN Sustainable Development Goal indicator 11.3.1 divides the land consumption rate (yearly growth of built-up land) by the population growth rate. Above 1, built-up land grew faster than the number of people and the city spread out and thinned; below 1, it packed more people onto each hectare. The European Commission Joint Research Centre computes it for each of the world's 11,422 urban centres from GHSL's built-up and population grids (GHS Urban Centre Database 2025, R2024A V1.2, CC BY 4.0), clipped at plus and minus 5. An urban centre is GHSL's dense built-up area, not the municipal area. The city's 2000-2020 ratio is ranked against the 524 urban centres of a million or more worldwide and the 77 in India. Growth into the ring outside the urban centre is not counted, and a low ratio can mean crowding as much as good planning; the sprawl and growth lenses show where inside the city the new building went.`,
             refs: 'European Commission JRC, GHS Urban Centre Database 2025 (GHS-UCDB R2024A V1.2, doi:10.2905/1a338be6-7eaf-480c-9664-3a8ade88cbcd, CC BY 4.0); M. Melchiorri et al., ISPRS Int. J. Geo-Inf. 8 (2019) 96; UN SDG indicator 11.3.1 metadata' },
+        { id: 'heatisland', title: 'How much hotter than the countryside?', icon: '🌆',
+            question: 'How much warmer is my city than the countryside around it, by day and by night?',
+            field: { key: 'heat_island_night_c', label: 'Night surface heat island, city minus countryside, 2016-2020', unit: '°C', higherIs: 'worse', ramp: 'reds', domain: [1, 4.5] },
+            needs: ['heat_island.hi_surf_day', 'heat_island.hi_surf_night', 'heat_island.hi_air_day', 'heat_island.hi_air_night', 'heat_island.hi_surf_night_trend', 'heat_island.hi_surf_day_trend', 'heat_island.hi_air_night_trend', 'heat_island.hi_summer_surf_day', 'population.population'],
+            method: `Yang, Xu, Chakraborty and others (Remote Sensing of Environment, 2024; data CC BY 4.0 via the Earth Engine community catalog) estimate the monthly urban heat island intensity of over 10,000 cities from 2001 to 2020: the city's temperature minus that of a ring of comparable countryside of the same area, with water, high ground and other confounders removed (their dynamic equal-area method). Two of their series are used: ground surface temperature from MODIS Terra under all skies (cloud gaps filled; about 10:30 in the morning and 10:30 at night) and 1 km near-surface air temperature. Each city's value is read near its GHSL urban-centre centre, averaged by year, given as the 2016-2020 mean and as a least-squares change per decade over 2001-2020. Indian cities in dry regions often show a daytime cool island before the monsoon, because bare fields around them heat faster than the city. Air temperature heat islands are smaller than surface ones. One figure for the whole city.`,
+            refs: 'Q. Yang, Y. Xu, T. C. Chakraborty et al., A global urban heat island intensity dataset: generation, comparison, and analysis, Remote Sensing of Environment 312 (2024); data figshare doi:10.6084/m9.figshare.24821538 (CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland });
     return { ENTRIES };
 })();
