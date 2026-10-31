@@ -155,7 +155,7 @@ const UrbanLensesExtra = (() => {
     // Flooded in a named event. Sentinel-1 radar flood proxy maps from the Earth Observatory of Singapore for the Yamuna
     // flood of July 2023 (Delhi) and Cyclone Amphan (Kolkata, May 2020).
     function radarflood(fr) {
-        const c = fr.cols, n = fr.grid.n, fl = c['sar_floods.sf_flooded_pct'], yr = c['sar_floods.sf_year'], pop = c['population.population'];
+        const c = fr.cols, n = fr.grid.n, fl = c['sar_floods.sf_flooded_pct'], yr = c['sar_floods.sf_year'], dm = c['sar_floods.sf_damage_pct'], pop = c['population.population'];
         if (!fl || !fl.some(x => _fin(x) && x > 0)) return null;
         const idx = _residents(fr).filter(i => _fin(fl[i]));
         if (idx.length < 5) return null;
@@ -169,12 +169,19 @@ const UrbanLensesExtra = (() => {
             { label: 'Residents in blocks with at least a tenth flagged', value: `${_people(some)} (${pct(some)}%)` },
             { label: 'Share of ground flagged (residents-weighted)', value: `${_round(wmean(fl, pop, idx), 1)}%` },
         ];
+        const di = dm ? idx.filter(i => _fin(dm[i])) : [];
+        let dmg = '';
+        if (di.length >= 5) {
+            const hit = sum(i => _fin(dm[i]) && dm[i] >= 10);
+            stats.push({ label: 'Residents where the radar damage map flags at least a tenth of the ground', value: `${_people(hit)} (${pct(hit)}%)` });
+            dmg = ` A second radar map of change before and after the storm flags at least a tenth of the ground around ${_people(hit)} residents (${pct(hit)}%) as likely damaged, felled trees included.`;
+        }
         const out = new Float64Array(n).fill(NaN);
         for (const i of idx) out[i] = fl[i];
         return {
             columns: { radar_flooded_pct: out }, idx, weightKey: 'radar_flooded_pct',
             metric: { label: 'Residents in blocks mostly flagged as flooded', value: pct(most), unit: '%', higherIs: 'worse' },
-            headline: `Radar images taken during ${event} flag ${_people(most)} residents here (${pct(most)}%) in blocks mostly under water and ${_people(some)} where at least a tenth of the ground was. Radar misses water in narrow streets between tall buildings, so built-up areas are under-counted.`,
+            headline: `Radar images taken during ${event} flag ${_people(most)} residents here (${pct(most)}%) in blocks mostly under water and ${_people(some)} where at least a tenth of the ground was. Radar misses water in narrow streets between tall buildings, so built-up areas are under-counted.${dmg}`,
             stats,
         };
     }
@@ -213,9 +220,9 @@ const UrbanLensesExtra = (() => {
         { id: 'radarflood', title: 'Under water in a named flood', icon: '🛰️',
             question: 'Was my area under water in the last big flood?',
             field: { key: 'radar_flooded_pct', label: 'Ground flagged as flooded by radar in the event (share of block)', unit: '%', higherIs: 'worse', ramp: 'blues', domain: [0, 100] },
-            needs: ['sar_floods.sf_flooded_pct', 'sar_floods.sf_year', 'population.population'],
-            method: `Flood proxy maps by the Earth Observatory of Singapore Remote Sensing Lab (EOS-RS; ARIA-SG with NASA-JPL for 2020), via the Humanitarian Data Exchange under CC BY 4.0: Copernicus Sentinel-1 radar images taken during the flood are compared with images from before, and pixels of about 30 m that turned to likely water are flagged. Delhi: 12 July 2023, during the Yamuna flood (the river reached a record 208.66 m on 13 July, so the peak is a day later than the image). Kolkata: 22 May 2020, after Cyclone Amphan. Each block takes the share of flagged pixels in about 250 m around its centre. Radar sees open water and flooded fields well but misses water in narrow streets between buildings, and EOS-RS call the maps less reliable over urban and vegetated areas, so read blank built-up blocks as not seen rather than dry.`,
-            refs: 'Earth Observatory of Singapore Remote Sensing Lab flood proxy maps: New Delhi floods 12 Jul 2023 v0.9; Cyclone Amphan 22 May 2020 v0.8 (ARIA-SG), via data.humdata.org (CC BY 4.0); contains modified Copernicus Sentinel data' },
+            needs: ['sar_floods.sf_flooded_pct', 'sar_floods.sf_year', 'sar_floods.sf_damage_pct', 'population.population'],
+            method: `Flood proxy maps by the Earth Observatory of Singapore Remote Sensing Lab (EOS-RS; ARIA-SG with NASA-JPL for 2020), via the Humanitarian Data Exchange under CC BY 4.0: Copernicus Sentinel-1 radar images taken during the flood are compared with images from before, and pixels of about 30 m that turned to likely water are flagged. Delhi: 12 July 2023, during the Yamuna flood (the river reached a record 208.66 m on 13 July, so the peak is a day later than the image). Kolkata: 22 May 2020, after Cyclone Amphan. Each block takes the share of flagged pixels in about 250 m around its centre. Radar sees open water and flooded fields well but misses water in narrow streets between buildings, and EOS-RS call the maps less reliable over urban and vegetated areas, so read blank built-up blocks as not seen rather than dry. For Amphan, the ARIA-SG damage proxy map (Sentinel-1 track P048, v0.4) is added: it flags pixels whose radar coherence changed sharply between images before and after the storm, which picks out roof and wall damage, debris and fallen trees; scattered single pixels can be false alarms, and it is least reliable over vegetation.`,
+            refs: 'Earth Observatory of Singapore Remote Sensing Lab flood proxy maps: New Delhi floods 12 Jul 2023 v0.9; Cyclone Amphan 22 May 2020 v0.8 and damage proxy map P048 v0.4 (ARIA-SG), via data.humdata.org (CC BY 4.0); contains modified Copernicus Sentinel data' },
     ];
 
     UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood });

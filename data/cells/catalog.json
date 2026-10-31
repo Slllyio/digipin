@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-31T14:16:42Z",
+  "generated": "2026-10-31T14:23:23Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -43014,6 +43014,19 @@
             100
           ],
           "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "sf_damage_pct",
+          "label": "Ground flagged by the radar damage proxy map (share of block)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds",
           "higherIs": "worse"
         },
         {

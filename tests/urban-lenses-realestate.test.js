@@ -1197,6 +1197,11 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.headline).toMatch(/^Radar images taken during the Yamuna flood of July 2023 flag .* residents here \(66\.7%\) in blocks mostly under water/);
         expect(r.metric.value).toBe(66.7);
         expect(L._lenses.radarflood(L.frameFrom(codes, base), {})).toBeNull();
+        const g = L.frameFrom(codes, { ...base, 'sar_floods.sf_flooded_pct': by(5, 0), 'sar_floods.sf_damage_pct': by(20, 0), 'sar_floods.sf_year': by(2020, 2020) }, { city: 'kolkata' });
+        const d = L._lenses.radarflood(g, {});
+        expect(d.headline).toMatch(/Cyclone Amphan in May 2020/);
+        expect(d.headline).toMatch(/as likely damaged, felled trees included\./);
+        expect(d.stats.at(-1).value).toMatch(/\(66\.7%\)/);
     });
 
     it('slidezone: NASA landslide susceptibility', () => {

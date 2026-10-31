@@ -2022,3 +2022,7 @@ on class 3+ ground where `slums_mapped` exists.
 reads its GeoTIFF in memory (uint8, 1 = likely flooded, 1 arc-second) and takes the flagged share of a 9 x 9 pixel
 window around each lived-in block centre; blocks whose window runs off the map are skipped. Adding an event is one
 `EVENTS` line, but the dataset holds one event per city.
+
+### Amphan damage proxy map (`sar_floods.sf_damage_pct`)
+
+For Kolkata the same HDX package carries ARIA-SG's damage proxy map for Cyclone Amphan (Sentinel-1 track P048, v0.4): pixels whose radar coherence changed sharply between images before and after the storm are coloured on a 153-255 scale, others are 0. Each block takes the share of non-zero pixels in about 250 m. 783 of 7,268 lived blocks (about 18.7 lakh residents) have at least a tenth flagged, mostly south-west Kolkata. The lens adds it as a stat and a headline sentence. It flags change of any kind, felled trees and debris as well as damaged roofs, and scattered single pixels can be false alarms.
