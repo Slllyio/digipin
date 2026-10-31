@@ -394,6 +394,35 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function packingin(fr) {
+        const c = fr.cols, n = fr.grid.n, r0 = c['land_efficiency.le_ratio_00_20'];
+        if (!r0 || !r0.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(r0[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`land_efficiency.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const r = v('le_ratio_00_20'), land = v('le_land_pct_yr'), ppl = v('le_pop_pct_yr'), r90 = v('le_ratio_90_00'), r10 = v('le_ratio_10_20'), r30 = v('le_ratio_20_30');
+        const wp = v('le_world_pctile'), ip = v('le_india_pctile');
+        const ratio = x => (!_fin(x) ? 'n/a' : x >= 5 ? '5 or more' : x <= -5 ? 'below -5' : `${x}`);
+        const stats = [
+            { label: 'Built-up land growth over population growth, 2000-2020 (SDG 11.3.1)', value: ratio(r) },
+            { label: 'Built-up land grew a year, 2000-2020', value: _fin(land) ? `${land}%` : 'n/a' },
+            { label: 'Population grew a year, 2000-2020', value: _fin(ppl) ? `${ppl}%` : 'n/a' },
+            { label: 'The ratio by decade: 1990-2000 → 2010-2020', value: `${ratio(r90)} → ${ratio(r10)}` },
+            { label: 'World urban centres of a million or more that spread out less', value: _fin(wp) ? `${wp}%` : 'n/a' },
+            { label: 'Indian urban centres of a million or more that spread out less', value: _fin(ip) ? `${ip}%` : 'n/a' },
+        ];
+        if (_fin(r30) && r30 > 0) stats.push({ label: 'GHSL projection for 2020-2030', value: ratio(r30) });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = r;
+        const way = r > 1.1 ? `built-up land grew ${r} times as fast as the population (${land}% a year against ${ppl}%), so the city spread out and thinned` : r < 0.9 ? `the population grew faster than built-up land (${ppl}% a year against ${land}%), so the city packed more people onto its land` : `built-up land and population grew at about the same pace (${land}% and ${ppl}% a year)`;
+        return {
+            columns: { land_over_pop_growth: out }, idx, weightKey: 'land_over_pop_growth',
+            metric: { label: 'Built-up land growth over population growth, 2000-2020', value: r, unit: '×', higherIs: 'worse' },
+            headline: `From 2000 to 2020 ${way}.${_fin(wp) ? ` That ratio, the UN's land use efficiency indicator (SDG 11.3.1), is higher than in ${wp}% of the world's urban centres of a million or more${_fin(ip) ? ` and ${ip}% of India's` : ''}.` : ''}${_fin(r90) && _fin(r10) ? ` It ran at ${ratio(r90)} in the 1990s and ${ratio(r10)} in the 2010s.` : ''} Measured on GHSL's urban centre, the dense built-up area, from its built-up and population grids.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -473,8 +502,14 @@ const UrbanLensesExtra = (() => {
             needs: ['city_emissions.ce_pm25_t', 'city_emissions.ce_pm25_2000_pct', 'city_emissions.ce_pm25_kg_pp', 'city_emissions.ce_pm25_vs_india', 'city_emissions.ce_nox_t', 'city_emissions.ce_nox_2000_pct', 'city_emissions.ce_homes_pct', 'city_emissions.ce_homes_2000_pct', 'city_emissions.ce_industry_pct', 'population.population'],
             method: `The European Commission Joint Research Centre adds up its EDGAR emission grids over each of the world's 11,422 urban centres in the GHSL Urban Centre Database, by sector, for 1975 to 2024 (EDGAR emissions by city, 2025 release, CC BY 4.0). Only the air pollutant columns are used: PM2.5 and nitrogen oxides. The fossil CO2 and greenhouse gas columns rest on IEA energy data licensed for non-commercial use only, so they are left out. An urban centre is the GHSL's dense built-up area, not the municipal area: Delhi's runs into Noida, Ghaziabad, Gurugram and Faridabad, Kolkata's spans both banks of the Hooghly. Per resident uses GHSL's 2025 population, and the comparison is with the median of India's 1,925 urban centres (1.56 kg). The change since 2000 is the total and grows with the population. EDGAR is a modelled inventory of what chimneys, stoves and tailpipes emit; road and construction dust and particles formed in the air are not in it. One figure for the whole city; the soot-nearby lens maps the same source block by block.`,
             refs: 'European Commission JRC, EDGAR GHG and air pollutant emissions by urban centre, 2025 release (EDGAR_GHG_AP_by_UCDB_2026.xlsx, edgar.jrc.ec.europa.eu/edgar_cities, CC BY 4.0); GHSL Urban Centre Database 2025' },
+        { id: 'packingin', title: 'Spreading out or packing in?', icon: '🧭',
+            question: 'Is my city eating up land faster than it is adding people?',
+            field: { key: 'land_over_pop_growth', label: 'Built-up land growth over population growth, 2000-2020 (SDG 11.3.1)', unit: '×', higherIs: 'worse', ramp: 'reds', domain: [0.5, 2] },
+            needs: ['land_efficiency.le_ratio_00_20', 'land_efficiency.le_land_pct_yr', 'land_efficiency.le_pop_pct_yr', 'land_efficiency.le_ratio_90_00', 'land_efficiency.le_ratio_10_20', 'land_efficiency.le_ratio_20_30', 'land_efficiency.le_world_pctile', 'land_efficiency.le_india_pctile', 'population.population'],
+            method: `UN Sustainable Development Goal indicator 11.3.1 divides the land consumption rate (yearly growth of built-up land) by the population growth rate. Above 1, built-up land grew faster than the number of people and the city spread out and thinned; below 1, it packed more people onto each hectare. The European Commission Joint Research Centre computes it for each of the world's 11,422 urban centres from GHSL's built-up and population grids (GHS Urban Centre Database 2025, R2024A V1.2, CC BY 4.0), clipped at plus and minus 5. An urban centre is GHSL's dense built-up area, not the municipal area. The city's 2000-2020 ratio is ranked against the 524 urban centres of a million or more worldwide and the 77 in India. Growth into the ring outside the urban centre is not counted, and a low ratio can mean crowding as much as good planning; the sprawl and growth lenses show where inside the city the new building went.`,
+            refs: 'European Commission JRC, GHS Urban Centre Database 2025 (GHS-UCDB R2024A V1.2, doi:10.2905/1a338be6-7eaf-480c-9664-3a8ade88cbcd, CC BY 4.0); M. Melchiorri et al., ISPRS Int. J. Geo-Inf. 8 (2019) 96; UN SDG indicator 11.3.1 metadata' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin });
     return { ENTRIES };
 })();

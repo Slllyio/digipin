@@ -2054,3 +2054,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Is the city emitting more soot? (`sootrend` lens, `city_emissions` dataset)
 
 `pipeline/realestate/cityemissions.py` reads the JRC's EDGAR emissions by urban centre (`EDGAR_GHG_AP_by_UCDB_2026.xlsx`). It keeps only the PM2.5 and NOx columns (CC BY 4.0); the fossil CO2 and GHG columns use IEA data under a non-commercial licence. Each city gets its urban centre's 2024 total, the change since 2000, PM2.5 per resident (2025 GHSL population) against the median Indian urban centre, and the sector shares, copied to every lived block. The urban centre is GHSL's built-up area, which is larger than the municipal area for Delhi and Kolkata.
+
+## Spreading out or packing in? (`packingin` lens, `land_efficiency` dataset)
+
+`pipeline/realestate/landefficiency.py` reads the SDG theme of the GHS Urban Centre Database 2025 (GHS_UCDB_GLOBE_R2024A V1.2 gpkg, CC BY 4.0). It takes the land consumption rate, the population growth rate and their ratio for 2000-2020, plus the ratios for 1990-2000, 2010-2020 and the 2020-2030 projection. Values clipped as ">5" or "<-5" become 5 and -5. The 2000-2020 ratio is ranked among urban centres with 1 million or more people in 2025, once worldwide and once within India. Other UCDB themes are not used yet; the seismic exposure columns rest on the GEM hazard map (CC BY-NC-SA) and must stay out.
