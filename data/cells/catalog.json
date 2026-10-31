@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-31T13:20:29Z",
+  "generated": "2026-10-31T13:35:49Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -19534,6 +19534,100 @@
             "north": 18.6455078125
           },
           "json": "job_access/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "junction_counts",
+      "title": "Counted traffic at junctions (BBMP traffic plan surveys, 2024)",
+      "description": "Measured peak hour and daily traffic at 28 junctions and 9 cordon roads, from the survey tables of BBMP's Comprehensive Bengaluru City Traffic Management Infrastructure Plan (December 2024, via data.opencity.in); sites placed at their OpenStreetMap location. Blocks within 2 km of a counted junction.",
+      "source": "pipeline/realestate/junctioncounts.py (BBMP traffic infrastructure plan survey tables 10, 44, 77, 93, 153, 158)",
+      "license": "Public domain (BBMP via data.opencity.in); sites \u00a9 OpenStreetMap contributors (ODbL)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "jc_peak_veh",
+          "label": "Vehicles through the nearest counted junction in its busier peak hour (2024)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "vehicles/h",
+          "domain": [
+            6000,
+            17000
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "jc_peak_pcu",
+          "label": "Peak hour PCUs at the nearest counted junction (study PCU factors)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "PCU/h",
+          "domain": [
+            4911.0,
+            15053.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "jc_km",
+          "label": "Distance to the nearest counted junction",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            2
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "jc_daily_veh",
+          "label": "Vehicles a day at the nearest 24-hour count site",
+          "type": "number",
+          "agg": "mean",
+          "unit": "vehicles/day",
+          "domain": [
+            65075.0,
+            246077.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "jc_2km",
+          "label": "Counted junctions within 2 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "junctions",
+          "domain": [
+            1.0,
+            12.0
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "jc_peak_veh",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 2148,
+          "bbox": {
+            "west": 77.489990234375,
+            "south": 12.888671875,
+            "east": 77.648193359375,
+            "north": 13.062255859375
+          },
+          "json": "junction_counts/bengaluru.json",
           "parquet": null
         }
       ]

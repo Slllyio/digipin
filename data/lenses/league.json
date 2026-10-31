@@ -1002,6 +1002,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "junctions": {
+     "label": "Residents near a junction with 12,000+ peak hour vehicles",
+     "value": 42,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 42,

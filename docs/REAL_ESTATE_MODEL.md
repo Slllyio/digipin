@@ -1977,3 +1977,15 @@ finite pixels within 120 m, and `block_rows()` keeps blocks with at least 10 map
 the authors' QGIS project: liquefaction not likely up to 2.2, possible to 2.75, likely above; seismic hazard very low
 to 1.4, low to 2.4, moderate to 3, high above. The lens lives in js/urban-lenses-extra.js, wired into app.html, sw.js
 (cache bumped), tests/setup.js and scripts/build_lens_league.js like the other lens modules.
+
+## Counted junction traffic, Bengaluru (`junctions` lens, `junction_counts` dataset)
+
+`pipeline/realestate/junctioncounts.py` holds the hand-transcribed survey tables of BBMP's traffic infrastructure plan
+(December 2024) as `JUNCTIONS` (name, lat, lng, morning and evening peak hour vehicles and PCUs, daily vehicles where
+counted, plan table) and `CORDONS` (24-hour two-way counts). Junctions counted in two corridor studies (Hudson Circle,
+Corporation Circle, Town Hall) are kept once, with the Unity Building row for Corporation Circle. `block_rows()` gives
+each lived-in block within 2 km its nearest junction's busier peak hour and the nearest 24-hour count. PCU factors
+differ between the corridor studies and the tunnel study (table 158 PCUs run near 0.9 of vehicles, the corridors near
+0.7), so the lens maps vehicles. The modelled `traffic_load` peak PCU near each junction does not rank the counted
+junctions (Spearman about 0.1 within 300 m, slightly negative at 800 m): the model loads road links, while a turning
+count sums every arm, so the two answer different questions.
