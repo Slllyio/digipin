@@ -66,6 +66,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 3.63,
+     "unit": "kg",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1084,6 +1090,12 @@
      "label": "Residents where industry emits most of the PM2.5 within 2 km",
      "value": 62.8,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 3.48,
+     "unit": "kg",
      "higherIs": "worse"
     },
     "vitals": {
@@ -2436,6 +2448,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 1.81,
+     "unit": "kg",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3442,6 +3460,12 @@
      "label": "Residents where industry emits most of the PM2.5 within 2 km",
      "value": 11,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 2.37,
+     "unit": "kg",
      "higherIs": "worse"
     },
     "vitals": {
@@ -4680,6 +4704,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 3.29,
+     "unit": "kg",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5766,6 +5796,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 1.13,
+     "unit": "kg",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6592,6 +6628,12 @@
      "label": "Residents where industry emits most of the PM2.5 within 2 km",
      "value": 38.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 3.25,
+     "unit": "kg",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -7770,6 +7812,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 2.28,
+     "unit": "kg",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8748,6 +8796,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 1.81,
+     "unit": "kg",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -9724,6 +9778,12 @@
      "label": "Residents where industry emits most of the PM2.5 within 2 km",
      "value": 34.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 2.56,
+     "unit": "kg",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -10818,6 +10878,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 2.04,
+     "unit": "kg",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -11812,6 +11878,12 @@
      "label": "Residents where industry emits most of the PM2.5 within 2 km",
      "value": 38.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 2.8,
+     "unit": "kg",
      "higherIs": "worse"
     },
     "streetdogs": {
@@ -12952,6 +13024,12 @@
      "label": "Residents where industry emits most of the PM2.5 within 2 km",
      "value": 30.3,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "sootrend": {
+     "label": "PM2.5 emitted per resident, 2024",
+     "value": 2.72,
+     "unit": "kg",
      "higherIs": "worse"
     },
     "schoolready": {

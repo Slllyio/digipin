@@ -365,6 +365,35 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function sootrend(fr) {
+        const c = fr.cols, n = fr.grid.n, pm = c['city_emissions.ce_pm25_t'];
+        if (!pm || !pm.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(pm[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`city_emissions.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const t = v('ce_pm25_t'), ch = v('ce_pm25_2000_pct'), kg = v('ce_pm25_kg_pp'), vs = v('ce_pm25_vs_india'), nx = v('ce_nox_t'), nch = v('ce_nox_2000_pct');
+        const h = v('ce_homes_pct'), h0 = v('ce_homes_2000_pct'), ind = v('ce_industry_pct');
+        const sg = x => `${x > 0 ? '+' : ''}${x}%`, tn = x => `${Math.round(x).toLocaleString('en-IN')} t`;
+        const stats = [
+            { label: 'PM2.5 emitted in the urban centre, 2024', value: tn(t) },
+            { label: 'Change since 2000', value: _fin(ch) ? sg(ch) : 'n/a' },
+            { label: 'PM2.5 emitted per resident, 2024', value: _fin(kg) ? `${kg} kg` : 'n/a' },
+            { label: 'Against the median of India\'s 1,925 urban centres', value: _fin(vs) ? `${vs}×` : 'n/a' },
+            { label: 'Household fuel share of PM2.5, 2000 → 2024', value: _fin(h) && _fin(h0) ? `${h0}% → ${h}%` : 'n/a' },
+            { label: 'Industry share of PM2.5, 2024', value: _fin(ind) ? `${ind}%` : 'n/a' },
+            { label: 'NOx emitted, 2024 (change since 2000)', value: _fin(nx) ? `${tn(nx)}${_fin(nch) ? ` (${sg(nch)})` : ''}` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = kg;
+        const rel = !_fin(vs) ? '' : vs >= 1.15 ? `, ${vs} times the median Indian urban centre` : vs <= 0.87 ? `, less than the median Indian urban centre (${vs}×)` : ', close to the median Indian urban centre';
+        return {
+            columns: { soot_kg_pp: out }, idx, weightKey: 'soot_kg_pp',
+            metric: { label: 'PM2.5 emitted per resident, 2024', value: kg, unit: 'kg', higherIs: 'worse' },
+            headline: `The ${fr.city ? `${fr.city[0].toUpperCase()}${fr.city.slice(1).replace('_pilot', '')} ` : ''}urban centre emitted about ${tn(t)} of fine particles (PM2.5) in 2024${_fin(ch) ? `, ${ch >= 0 ? `${ch}% more` : `${-ch}% less`} than in 2000` : ''}: ${_fin(kg) ? `${kg} kg per resident` : ''}${rel}.${_fin(h) && _fin(h0) ? ` Household cooking and heating fuel fell from ${h0}% to ${h}% of it, while industry took ${ind}%.` : ''}${_fin(nch) ? ` Nitrogen oxides, mostly from fuel burnt in engines and plants, ${nch >= 0 ? `rose ${nch}%` : `fell ${-nch}%`}.` : ''} EDGAR's modelled inventory of direct emissions; road and construction dust are not in it.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -438,8 +467,14 @@ const UrbanLensesExtra = (() => {
             needs: ['emission_sources.es_pm25_t', 'emission_sources.es_industry_pct', 'emission_sources.es_homes_pct', 'emission_sources.es_power_pct', 'emission_sources.es_nox_traffic_pct', 'population.population'],
             method: `The European Commission Joint Research Centre's EDGAR 2025 release (CC BY 4.0) maps the tonnes of fine particles (PM2.5) and nitrogen oxides emitted in 2024 on a 1 km grid, by sector: industry, residential (cooking and heating fuel in homes), road transport exhaust, power plants, agriculture, shipping and aviation, and waste for NOx. Each block adds up the 1 km cells whose centre lies within 2 km and takes each sector's share. EDGAR is a modelled inventory: national fuel and activity totals are spread over the map using lists of plants and factories, population, roads and land use, so a cell is an estimate rather than a measurement, and its industry hot spots (Peenya and Bommasandra in Bengaluru, Sahibabad and Mundka in Delhi) are where it places factories. It counts only what chimneys, stoves and tailpipes emit: road and construction dust and the particles that form in the air from gases, which source apportionment studies find large in Indian cities, are not in it. So it shows who emits nearby, not what people breathe; the air lenses show the measured and satellite air.`,
             refs: 'M. Crippa et al., EDGAR 2025 global emission grids at 0.01 degree for 2024, European Commission Joint Research Centre (edgar.jrc.ec.europa.eu/dataset_ghg2025, CC BY 4.0)' },
+        { id: 'sootrend', title: 'Is the city emitting more soot?', icon: '📈',
+            question: 'Is my city putting out more smoke and soot than it did in 2000?',
+            field: { key: 'soot_kg_pp', label: 'PM2.5 emitted per resident of the urban centre, 2024', unit: 'kg', higherIs: 'worse', ramp: 'reds', domain: [1, 4] },
+            needs: ['city_emissions.ce_pm25_t', 'city_emissions.ce_pm25_2000_pct', 'city_emissions.ce_pm25_kg_pp', 'city_emissions.ce_pm25_vs_india', 'city_emissions.ce_nox_t', 'city_emissions.ce_nox_2000_pct', 'city_emissions.ce_homes_pct', 'city_emissions.ce_homes_2000_pct', 'city_emissions.ce_industry_pct', 'population.population'],
+            method: `The European Commission Joint Research Centre adds up its EDGAR emission grids over each of the world's 11,422 urban centres in the GHSL Urban Centre Database, by sector, for 1975 to 2024 (EDGAR emissions by city, 2025 release, CC BY 4.0). Only the air pollutant columns are used: PM2.5 and nitrogen oxides. The fossil CO2 and greenhouse gas columns rest on IEA energy data licensed for non-commercial use only, so they are left out. An urban centre is the GHSL's dense built-up area, not the municipal area: Delhi's runs into Noida, Ghaziabad, Gurugram and Faridabad, Kolkata's spans both banks of the Hooghly. Per resident uses GHSL's 2025 population, and the comparison is with the median of India's 1,925 urban centres (1.56 kg). The change since 2000 is the total and grows with the population. EDGAR is a modelled inventory of what chimneys, stoves and tailpipes emit; road and construction dust and particles formed in the air are not in it. One figure for the whole city; the soot-nearby lens maps the same source block by block.`,
+            refs: 'European Commission JRC, EDGAR GHG and air pollutant emissions by urban centre, 2025 release (EDGAR_GHG_AP_by_UCDB_2026.xlsx, edgar.jrc.ec.europa.eu/edgar_cities, CC BY 4.0); GHSL Urban Centre Database 2025' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend });
     return { ENTRIES };
 })();

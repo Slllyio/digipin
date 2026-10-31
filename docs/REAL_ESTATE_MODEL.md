@@ -2050,3 +2050,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Who emits the soot nearby (`emitters` lens, `emission_sources` dataset)
 
 `pipeline/realestate/emissionsources.py` reads the EDGAR 2025 1 km (0.01 degree) PM2.5 and NOx grids for 2024 (European Commission JRC, CC BY 4.0). For each lived block it sums the 1 km cells whose centre lies within 2 km and records each sector's share: industry, household fuel, power plants and road exhaust for PM2.5, and road exhaust for NOx. It also stores the block's rank among the city's blocks. EDGAR spreads national totals with proxies, and it leaves out road and construction dust and secondary particles, so the lens describes direct emitters near a block, not the air people breathe there.
+
+## Is the city emitting more soot? (`sootrend` lens, `city_emissions` dataset)
+
+`pipeline/realestate/cityemissions.py` reads the JRC's EDGAR emissions by urban centre (`EDGAR_GHG_AP_by_UCDB_2026.xlsx`). It keeps only the PM2.5 and NOx columns (CC BY 4.0); the fossil CO2 and GHG columns use IEA data under a non-commercial licence. Each city gets its urban centre's 2024 total, the change since 2000, PM2.5 per resident (2025 GHSL population) against the median Indian urban centre, and the sector shares, copied to every lived block. The urban centre is GHSL's built-up area, which is larger than the municipal area for Delhi and Kolkata.
