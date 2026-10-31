@@ -580,6 +580,33 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function warmdays(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['warm_days.wd_2010s'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`warm_days.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const d70 = v('wd_1970s'), d90 = v('wd_1990s'), d10 = v('wd_2010s'), wp = v('wd_world_pctile'), ip = v('wd_india_pctile');
+        const pc = x => (_fin(x) ? `${_round(x, 1)}%` : 'n/a'), days = x => _round(3.65 * x, 0);
+        const stats = [
+            { label: 'Days hotter than the old normal for the date, 1970s', value: pc(d70) },
+            { label: 'Same, 1990s', value: pc(d90) },
+            { label: 'Same, 2010s', value: pc(d10) },
+            { label: 'World cities of 1 million+ with fewer, 2010s', value: _fin(wp) ? `${_round(wp, 0)}%` : 'n/a' },
+            { label: 'Indian cities of 1 million+ with fewer, 2010s', value: _fin(ip) ? `${_round(ip, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = d10;
+        const ratio = d10 / 10;
+        const change = ratio >= 1.3 ? `about ${_round(days(d10), 0)} days a year, ${_round(ratio, 1)} times the old normal of one day in ten` : ratio <= 0.85 ? `about ${_round(days(d10), 0)} days a year, fewer than the old normal of one day in ten (haze and wetter seasons can hold daytime highs down)` : `about ${_round(days(d10), 0)} days a year, close to the old normal of one day in ten`;
+        return {
+            columns: { warm_days_pct: out }, idx, weightKey: 'warm_days_pct',
+            metric: { label: 'Days hotter than the 1961-1990 normal for the date, 2010s', value: d10, unit: '%', higherIs: 'worse' },
+            headline: `In the 2010s, ${pc(d10)} of days were hotter than the 1961-1990 normal for that date: ${change}${_fin(d70) ? ` (${pc(d70)} in the 1970s)` : ''}. That is more often than in ${_round(wp, 0)}% of the world's cities of a million or more${_fin(ip) ? ` and ${_round(ip, 0)}% of India's` : ''}. It counts days unusual for the city and the season, not absolute heat; the hot-days lens counts days above fixed temperatures. One value for the whole city.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -695,8 +722,14 @@ const UrbanLensesExtra = (() => {
             needs: ['flood_exposure.fx_river100_pct', 'flood_exposure.fx_river100_1975_pct', 'flood_exposure.fx_river100_2000_pct', 'flood_exposure.fx_river100_people', 'flood_exposure.fx_river10_pct', 'flood_exposure.fx_coast100_pct', 'flood_exposure.fx_lecz5_pct', 'flood_exposure.fx_lecz10_pct', 'flood_exposure.fx_world_pctile', 'flood_exposure.fx_india_pctile', 'population.population'],
             method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) overlays GHSL population grids for 1975 to 2020 on hazard maps for every urban centre: JRC GloFAS modelled river inundation for 10 and 100-year return periods (Baugh et al. 2024), JRC extreme sea level flood maps for a 100-year surge (Vousdoukas et al. 2018), and CIESIN's Low Elevation Coastal Zone v3 (land under 5 m and 10 m). The city's share of residents in the 100-year river flood zone is ranked among the world's 524 urban centres of a million or more and India's 77 (ties count half). Flood maps are about 90 m models of a rare flood without defences: they miss embankments, drains and the rain waterlogging that floods most Indian streets. Population after 2020 is projected, so 2020 is the latest year. One figure for the whole city.`,
             refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, exposure theme (CC BY 4.0); C. Baugh et al., Modelled flood inundation for different return period scenarios at the global scale, JRC (2024); M. I. Vousdoukas et al., Nature Communications 9 (2018); CIESIN, LECZ v3 (2021)' },
+        { id: 'warmdays', title: 'Unusually hot days, then and now', icon: '📈',
+            question: 'How much more often is it unusually hot in my city than it used to be?',
+            field: { key: 'warm_days_pct', label: 'Days hotter than the 1961-1990 normal for the date, 2010s', unit: '%', higherIs: 'worse', ramp: 'heat', domain: [5, 30] },
+            needs: ['warm_days.wd_1970s', 'warm_days.wd_1990s', 'warm_days.wd_2010s', 'warm_days.wd_world_pctile', 'warm_days.wd_india_pctile', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) carries the climate extreme index TX90p from the Copernicus Climate Change Service (Sandstad et al. 2022): the share of days whose maximum temperature beats the 90th percentile for that calendar day (5-day window) in 1961-1990. It was about 10% in the base years by construction, so 20% means unusually hot days are twice as common. Decade averages come from reanalysis over the coarse (about 50 km) grid cells touching the urban centre. The 2010s value is ranked among the world's 524 urban centres of a million or more and India's 77. The database's CMIP6 projections for the 2030s are raw model output that does not line up with the reanalysis, so they are left out. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, climate theme (CC BY 4.0); M. Sandstad, C. Schwingshackl and C. Iles, Climate extreme indices and heat stress indicators derived from CMIP6 global climate projections, Copernicus C3S CDS (doi:10.24381/cds.776e08bd)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays });
     return { ENTRIES };
 })();

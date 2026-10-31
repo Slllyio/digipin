@@ -2078,3 +2078,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Has the city grown into its floodplain? (`floodgrown` lens, `flood_exposure` dataset)
 
 `pipeline/realestate/floodexposure.py` reads the exposure theme of the GHS Urban Centre Database 2025: share of residents in the GloFAS 10 and 100-year river flood zones (EX_010_SHP, EX_100_SHP; 1975, 2000 and 2020), people in the 100-year zone (EX_100_POP), the 100-year coastal flood zone (EX_CF1_SHP) and the low elevation coastal zone under 5 m and 10 m (EX_L05_SHP, EX_LEC_SHP; coastal centres only). The 100-year share is ranked among urban centres of 1 million+ worldwide and in India, ties counting half (so cities with no exposure share the bottom rank). Skipped: EX_SHA_* (GEM seismic hazard, CC BY-NC-SA), EX_E01-E10 earthquake classes, and the cyclone wind columns, which read zero even for Chennai and Kolkata. One value per city.
+
+## Unusually hot days, then and now (`warmdays` lens, `warm_days` dataset)
+
+`pipeline/realestate/warmdays.py` reads CL_WDS_CUR_1970/1990/2010 from the climate theme of the GHS Urban Centre Database 2025: TX90p, the share of days above the 1961-1990 90th percentile of daily maximum temperature for the calendar day, decade averages from reanalysis. The 2010s value is ranked among urban centres of 1 million+ worldwide and in India. The CL_WDS_126/245/370/585 projections are raw CMIP6 output and several Indian cities come out lower in the 2030s than in the 2010s reanalysis, so they are not used. One value per city.
