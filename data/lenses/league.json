@@ -42,6 +42,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 24829,
+     "unit": "SCI",
+     "higherIs": null
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1037,6 +1043,12 @@
      "value": 23,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 20856,
+     "unit": "SCI",
+     "higherIs": null
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2364,6 +2376,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 21615,
+     "unit": "SCI",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3347,6 +3365,12 @@
      "value": 15.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 24947,
+     "unit": "SCI",
+     "higherIs": null
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -4560,6 +4584,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 13492,
+     "unit": "SCI",
+     "higherIs": null
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5628,6 +5658,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 218380,
+     "unit": "SCI",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6431,6 +6467,12 @@
      "value": 22.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 23066,
+     "unit": "SCI",
+     "higherIs": null
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -7584,6 +7626,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 23910,
+     "unit": "SCI",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8538,6 +8586,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 29961,
+     "unit": "SCI",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -9491,6 +9545,12 @@
      "value": 15.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 11809,
+     "unit": "SCI",
+     "higherIs": null
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -10560,6 +10620,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 5331,
+     "unit": "SCI",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -11531,6 +11597,12 @@
      "value": 18.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 20960,
+     "unit": "SCI",
+     "higherIs": null
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -12647,6 +12719,12 @@
      "value": 18.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "friends": {
+     "label": "Social connectedness with the most-connected district outside the home state",
+     "value": 8677,
+     "unit": "SCI",
+     "higherIs": null
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
