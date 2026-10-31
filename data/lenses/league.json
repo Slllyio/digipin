@@ -48,6 +48,12 @@
      "unit": "SCI",
      "higherIs": null
     },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3464,
+     "unit": "₹",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1049,6 +1055,12 @@
      "value": 20856,
      "unit": "SCI",
      "higherIs": null
+    },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3411,
+     "unit": "₹",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2382,6 +2394,12 @@
      "unit": "SCI",
      "higherIs": null
     },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3408,
+     "unit": "₹",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3371,6 +3389,12 @@
      "value": 24947,
      "unit": "SCI",
      "higherIs": null
+    },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3435,
+     "unit": "₹",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -4589,6 +4613,12 @@
      "value": 13492,
      "unit": "SCI",
      "higherIs": null
+    },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3393,
+     "unit": "₹",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -6474,6 +6504,12 @@
      "unit": "SCI",
      "higherIs": null
     },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3517,
+     "unit": "₹",
+     "higherIs": "worse"
+    },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
      "value": 65,
@@ -7632,6 +7668,12 @@
      "unit": "SCI",
      "higherIs": null
     },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3549,
+     "unit": "₹",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8592,6 +8634,12 @@
      "unit": "SCI",
      "higherIs": null
     },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3343,
+     "unit": "₹",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -9551,6 +9599,12 @@
      "value": 11809,
      "unit": "SCI",
      "higherIs": null
+    },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3500,
+     "unit": "₹",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -10626,6 +10680,12 @@
      "unit": "SCI",
      "higherIs": null
     },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3709,
+     "unit": "₹",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -11603,6 +11663,12 @@
      "value": 20960,
      "unit": "SCI",
      "higherIs": null
+    },
+    "foodbasket": {
+     "label": "A month's kitchen basket at retail prices",
+     "value": 3871,
+     "unit": "₹",
+     "higherIs": "worse"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",

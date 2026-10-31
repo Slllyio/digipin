@@ -241,6 +241,38 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function foodbasket(fr) {
+        const c = fr.cols, n = fr.grid.n, b = c['food_prices.fp_basket_rs'], vs = c['food_prices.fp_vs_median_pct'], ten = c['food_prices.fp_10y_pct'];
+        const sw = c['food_prices.fp_onion_swing'], yr = c['food_prices.fp_last_year'], pci = c['district_income.di_pci'];
+        if (!b || !b.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(b[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = col => (col && _fin(col[i0]) ? col[i0] : NaN), rs = x => `₹${Math.round(x).toLocaleString('en-IN')}`;
+        const cost = v(b), d = v(vs), t = v(ten), o = v(sw), y = v(yr);
+        const stats = [
+            { label: `A month's kitchen basket at retail prices (12 months to ${_fin(y) ? y : 'the latest'})`, value: rs(cost) },
+            { label: 'Against the median of the eleven price-centre cities', value: _fin(d) ? `${d > 0 ? '+' : ''}${d}%` : 'n/a' },
+            { label: 'Change over ten years (same months)', value: _fin(t) ? `+${t}%` : 'n/a' },
+            { label: 'Dearest over cheapest monthly onion price, last five years', value: _fin(o) ? `${o}×` : 'n/a' },
+        ];
+        const pc = pci ? wmean(pci, c['population.population'], idx.filter(i => _fin(pci[i]))) : NaN;
+        let share = '';
+        if (_fin(pc) && pc > 0) {
+            const sh = _round(100 * cost * 12 / (pc * 4.5), 1);
+            stats.push({ label: 'Basket over a year as a share of district income for a household of 4.5', value: `${sh}%` });
+            share = ` At the district's average income per head (a mean that high earners pull up) that is about ${sh}% of a household's income, far more for a low-wage family.`;
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = cost;
+        const rel = !_fin(d) || Math.abs(d) < 3 ? 'about the same as the other price-centre cities' : d > 0 ? `${d}% dearer than the median price-centre city` : `${-d}% cheaper than the median price-centre city`;
+        return {
+            columns: { food_basket_rs: out }, idx, weightKey: 'food_basket_rs',
+            metric: { label: "A month's kitchen basket at retail prices", value: Math.round(cost), unit: '₹', higherIs: 'worse' },
+            headline: `A month's basket of staples for a family (rice, atta, dal, oil, sugar, milk, vegetables, tea and salt) cost ${rs(cost)} here in the year to ${_fin(y) ? y : 'the latest data'}, ${rel}${_fin(t) ? `, and ${t}% more than ten years earlier` : ''}.${share} Onion prices swung ${_fin(o) ? `${o}-fold` : 'widely'} between their cheapest and dearest months over five years. One price series for the whole city.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -290,8 +322,14 @@ const UrbanLensesExtra = (() => {
             needs: ['social_ties.st_top_out_sci', 'social_ties.st_gulf_sci', 'social_ties.st_abroad_ratio', 'population.population'],
             method: `Meta's Social Connectedness Index (Bailey, Cao, Kuchler, Stroebel and others; 2025 release via the Humanitarian Data Exchange, public domain) measures the relative probability that a Facebook user in one place is friends with a user in another, from an anonymised snapshot of all active users. The city is its GADM district (Mumbai averages Mumbai City and Mumbai Suburban; Delhi is one unit). DigiPin lists the five districts outside the city's home state with the highest index, the five countries with the highest index, and the countries where the city's index is at least twice the median Indian district's (only where the city's index is 5,000 or more, so tiny states do not crowd the list). Strong ties to a far district usually trace migration; the index reflects Facebook users, who skew younger, urban and male in India, and says nothing about any one person. The map is a single value for the city.`,
             refs: 'M. Bailey, R. Cao, T. Kuchler, J. Stroebel and A. Wong, Social Connectedness: Measurement, Determinants, and Effects, Journal of Economic Perspectives 32(3), 2018; Meta Data for Good, Social Connectedness Index (2025 release), via data.humdata.org (public domain); district names from GADM 4.1' },
+        { id: 'foodbasket', title: 'Kitchen basket cost', icon: '🧺',
+            question: 'What does a month of staples cost in this city, and how fast has it risen?',
+            field: { key: 'food_basket_rs', label: "A month's kitchen basket at retail prices", unit: '₹', higherIs: 'worse', ramp: 'reds' },
+            needs: ['food_prices.fp_basket_rs', 'food_prices.fp_vs_median_pct', 'food_prices.fp_10y_pct', 'food_prices.fp_onion_swing', 'food_prices.fp_last_year', 'district_income.di_pci', 'population.population'],
+            method: `Monthly retail prices from the Department of Consumer Affairs' price monitoring cell, republished by the World Food Programme on the Humanitarian Data Exchange (CC BY-IGO), 1994 to July 2023; eleven DigiPin cities are price centres (Pune and Guna are not). A fixed month's basket for a family of four or five (10 kg rice, 10 kg wheat flour, 3 kg lentils, 2 kg mustard oil, 2 kg sugar, 30 litres milk, 5 kg potatoes, 4 kg onions, 3 kg tomatoes, 250 g tea, 1 kg salt) is priced in each month that has every item, and the last 12 such months are averaged. The ten-year change compares the same calendar months a decade earlier over the items priced then, weighted by today's basket. The basket is illustrative, the same in every city: real diets differ (rice-heavy in the south and east, mustard oil mostly in the north and east), and the prices are what the monitoring centres record, not every shop. Where district income figures exist the basket is set against a household of 4.5 at the district's income per head.`,
+            refs: 'World Food Programme, India food prices (via data.humdata.org, CC BY-IGO), data from the Department of Consumer Affairs, Government of India, price monitoring cell' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket });
     return { ENTRIES };
 })();
