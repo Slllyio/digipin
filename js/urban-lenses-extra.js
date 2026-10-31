@@ -483,6 +483,39 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    // UCDB ids of the climate analogues found by pipeline/realestate/climatetwin.py (its TWIN_NAMES line)
+    const TWIN_NAMES = { 391: 'Bamako, Mali', 395: 'Bobo-Dioulasso, Burkina Faso', 548: 'Niamey, Niger', 1301: 'Lubango, Angola', 2902: 'Mombasa, Kenya', 3823: 'Rajkot, India', 5906: 'Khulna, Bangladesh', 6912: 'Multan, Pakistan', 7021: 'Vadodara, India', 7563: 'Vasai-Virar, India', 7794: 'Lahore, Pakistan', 8012: 'Nashik, India', 8125: 'Kano, Nigeria', 8234: 'Kota, India', 8305: 'Meerut, India', 8564: 'Maiduguri, Nigeria', 8565: 'Indore, India', 8660: 'Agra, India', 8954: 'Solapur, India', 10224: 'Vijayawada, India', 10444: 'Marhaura, India', 11302: 'Tamluk, India' };
+
+    function climatetwin(fr) {
+        const c = fr.cols, n = fr.grid.n, t = c['climate_twin.ct_temp_2030'];
+        if (!t || !t.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(t[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`climate_twin.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const t10 = v('ct_temp_2010'), t30 = v('ct_temp_2030'), t45 = v('ct_temp_2030_45'), r10 = v('ct_rain_2010'), r30 = v('ct_rain_2030');
+        const tw = TWIN_NAMES[v('ct_twin_id')], td = v('ct_twin_dist'), ab = TWIN_NAMES[v('ct_abroad_id')], ad = v('ct_abroad_dist');
+        const deg = x => (_fin(x) ? `${_round(x, 1)} °C` : 'n/a'), mm = x => (_fin(x) ? `${_round(x, 0)} mm` : 'n/a');
+        const stats = [
+            { label: 'Annual mean temperature, 2010s', value: deg(t10) },
+            { label: 'Projected for the 2030s (RCP 8.5)', value: deg(t30) },
+            { label: 'Projected for the 2030s (RCP 4.5)', value: deg(t45) },
+            { label: 'Annual rainfall, 2010s', value: mm(r10) },
+            { label: 'Projected for the 2030s (RCP 8.5)', value: mm(r30) },
+            { label: "Closest analogue (its 2010s climate)", value: tw || 'n/a' },
+            { label: 'Closest analogue outside India', value: ab ? `${ab}${_fin(ad) && ad > 1 ? ' (loose match)' : ''}` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = t30;
+        const rain = _fin(r10) && _fin(r30) && r10 > 0 ? (Math.abs(r30 / r10 - 1) < 0.05 ? ' with about the same rain' : ` with ${_round(Math.abs(100 * (r30 / r10 - 1)), 0)}% ${r30 > r10 ? 'more' : 'less'} rain`) : '';
+        const twin = tw ? ` By the 2030s its climate should most resemble today's ${tw}${ab && ab !== tw ? (_fin(ad) && ad > 1 ? `; nothing abroad is a close match, the nearest being ${ab}` : `, and abroad ${ab}`) : ''}.` : '';
+        return {
+            columns: { climate_twin_temp: out }, idx, weightKey: 'climate_twin_temp',
+            metric: { label: 'Annual mean temperature projected for the 2030s (RCP 8.5)', value: t30, unit: '°C', higherIs: 'worse' },
+            headline: `The city averaged ${deg(t10)} a year in the 2010s; climate models put the 2030s at ${deg(t30)} under high emissions${rain}.${twin} Analogues compare yearly temperature, rainfall and their seasons over coarse grid cells, so they describe the regional climate, not street heat. One value for the whole city.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -580,8 +613,14 @@ const UrbanLensesExtra = (() => {
             needs: ['green_rank.gr_ndvi_2025', 'green_rank.gr_ndvi_2000', 'green_rank.gr_ndvi_change_pct', 'green_rank.gr_world_pctile', 'green_rank.gr_india_pctile', 'green_rank.gr_canopy_m', 'green_rank.gr_canopy_world_pctile', 'population.population'],
             method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) gives every one of the world's 11,422 urban centres the mean Landsat NDVI (an index of green leaf: roofs and bare ground near 0.1, lawns and crops 0.3-0.6, dense trees above 0.6) over its built-up area and a 300 m buffer, every five years as three-year averages, and the mean canopy top height there in 2020 from Lang and others' 10 m global canopy height model. The city is ranked against the 524 urban centres of a million or more worldwide and the 77 in India. An urban centre is GHSL's dense built-up area, not the municipal boundary. Rainfall and season of the images set much of the value, so a dry city will rank low however many parks it has; compare with Indian peers. One figure for the whole city.`,
             refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, greenness theme (doi:10.2905/1a338be6-7eaf-480c-9664-3a8ade88cbcd, CC BY 4.0); N. Lang et al., A high-resolution canopy height model of the Earth, Nature Ecology & Evolution 7 (2023)' },
+        { id: 'climatetwin', title: "Which city's climate will mine have?", icon: '🧭',
+            question: "Which city's climate today will my city have by the 2030s?",
+            field: { key: 'climate_twin_temp', label: 'Annual mean temperature projected for the 2030s (RCP 8.5)', unit: '°C', higherIs: 'worse', ramp: 'heat', domain: [24, 30] },
+            needs: ['climate_twin.ct_temp_2010', 'climate_twin.ct_temp_2030', 'climate_twin.ct_temp_2030_45', 'climate_twin.ct_rain_2010', 'climate_twin.ct_rain_2030', 'climate_twin.ct_twin_id', 'climate_twin.ct_twin_dist', 'climate_twin.ct_abroad_id', 'climate_twin.ct_abroad_dist', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) gives every urban centre decade averages of four bioclimatic indicators from the Copernicus Climate Change Service (Wouters 2021): annual mean temperature, temperature seasonality, annual rainfall and rainfall seasonality, from reanalysis up to the 2010s and from a CMIP5 model ensemble under RCP 4.5 and RCP 8.5 for the 2020s and 2030s, averaged over the coarse (about 50 km) grid cells touching the centre. A climate analogue (Fitzpatrick and Dunn 2019; Bastin et al. 2019) is the city whose 2010s climate is closest to this city's projected 2030s climate under RCP 8.5: Euclidean distance over the four indicators, each scaled by its spread across the world's 524 urban centres of a million or more, which are the candidates. A distance above 1 is a loose match. Coarse cells blur coast and hills (Pune's cells take in Western Ghats rain), and models and reanalysis differ, so read the analogue as a picture of the regional climate shift, not a forecast. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, climate theme (CC BY 4.0); H. Wouters, Global bioclimatic indicators from 1979 to 2018 derived from reanalysis, Copernicus C3S CDS (doi:10.24381/cds.bce175f0); M. C. Fitzpatrick and R. R. Dunn, Contemporary climatic analogs for 540 North American urban areas in the late 21st century, Nature Communications 10 (2019)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin });
     return { ENTRIES };
 })();

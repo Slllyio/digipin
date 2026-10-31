@@ -90,6 +90,12 @@
      "unit": "NDVI",
      "higherIs": "better"
     },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 28.8,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1133,6 +1139,12 @@
      "value": 0.293,
      "unit": "NDVI",
      "higherIs": "better"
+    },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 25.5,
+     "unit": "°C",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2508,6 +2520,12 @@
      "unit": "NDVI",
      "higherIs": "better"
     },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 27,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3539,6 +3557,12 @@
      "value": 0.386,
      "unit": "NDVI",
      "higherIs": "better"
+    },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 29.1,
+     "unit": "°C",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -4800,6 +4824,12 @@
      "unit": "NDVI",
      "higherIs": "better"
     },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 26.3,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5910,6 +5940,12 @@
      "unit": "NDVI",
      "higherIs": "better"
     },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 26.9,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6761,6 +6797,12 @@
      "value": 0.285,
      "unit": "NDVI",
      "higherIs": "better"
+    },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 27.2,
+     "unit": "°C",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -7962,6 +8004,12 @@
      "unit": "NDVI",
      "higherIs": "better"
     },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 27.3,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8964,6 +9012,12 @@
      "unit": "NDVI",
      "higherIs": "better"
     },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 26.8,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -9965,6 +10019,12 @@
      "value": 0.46,
      "unit": "NDVI",
      "higherIs": "better"
+    },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 27.3,
+     "unit": "°C",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11082,6 +11142,12 @@
      "unit": "NDVI",
      "higherIs": "better"
     },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 26.4,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12101,6 +12167,12 @@
      "value": 0.281,
      "unit": "NDVI",
      "higherIs": "better"
+    },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 27.8,
+     "unit": "°C",
+     "higherIs": "worse"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -13265,6 +13337,12 @@
      "value": 0.273,
      "unit": "NDVI",
      "higherIs": "better"
+    },
+    "climatetwin": {
+     "label": "Annual mean temperature projected for the 2030s (RCP 8.5)",
+     "value": 25,
+     "unit": "°C",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
