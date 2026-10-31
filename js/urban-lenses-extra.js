@@ -186,6 +186,33 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function unpaved(fr) {
+        const c = fr.cols, n = fr.grid.n, up = c['road_surface.rs_unpaved_pct'], kn = c['road_surface.rs_known_pct'], pop = c['population.population'];
+        if (!up || !up.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(up[i]));
+        if (idx.length < 5) return null;
+        const all = _residents(fr).reduce((s, i) => s + pop[i], 0) || 1;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const some = sum(i => up[i] >= 20), most = sum(i => up[i] >= 50);
+        const cover = kn ? _round(wmean(kn, pop, _residents(fr).filter(i => _fin(kn[i]))), 0) : NaN;
+        const stats = [
+            { label: 'Residents where a fifth or more of the known roads are unpaved', value: `${_people(some)} (${pct(some)}%)` },
+            { label: 'Residents where most known roads are unpaved', value: `${_people(most)} (${pct(most)}%)` },
+            { label: 'Unpaved share of known road length (residents-weighted)', value: `${_round(wmean(up, pop, idx), 1)}%` },
+            { label: 'Residents covered (300 m or more of road with a known surface)', value: `${_people(P)} (${_round(100 * P / all, 1)}%)` },
+        ];
+        if (_fin(cover)) stats.push({ label: 'Road length nearby with a known surface (residents-weighted)', value: `${cover}%` });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = up[i];
+        return {
+            columns: { unpaved_pct: out }, idx, weightKey: 'unpaved_pct',
+            metric: { label: 'Residents where a fifth or more of the known roads are unpaved', value: pct(some), unit: '%', higherIs: 'worse' },
+            headline: `Of the residents whose nearby roads have a known surface, ${_people(some)} (${pct(some)}%) live where a fifth or more of that road length is unpaved, and ${_people(most)} where most of it is. Only part of the network is known (a street photo or an OpenStreetMap tag), so read this as a sample of the streets, not a full survey.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -223,8 +250,14 @@ const UrbanLensesExtra = (() => {
             needs: ['sar_floods.sf_flooded_pct', 'sar_floods.sf_year', 'sar_floods.sf_damage_pct', 'population.population'],
             method: `Flood proxy maps by the Earth Observatory of Singapore Remote Sensing Lab (EOS-RS; ARIA-SG with NASA-JPL for 2020), via the Humanitarian Data Exchange under CC BY 4.0: Copernicus Sentinel-1 radar images taken during the flood are compared with images from before, and pixels of about 30 m that turned to likely water are flagged. Delhi: 12 July 2023, during the Yamuna flood (the river reached a record 208.66 m on 13 July, so the peak is a day later than the image). Kolkata: 22 May 2020, after Cyclone Amphan. Each block takes the share of flagged pixels in about 250 m around its centre. Radar sees open water and flooded fields well but misses water in narrow streets between buildings, and EOS-RS call the maps less reliable over urban and vegetated areas, so read blank built-up blocks as not seen rather than dry. For Amphan, the ARIA-SG damage proxy map (Sentinel-1 track P048, v0.4) is added: it flags pixels whose radar coherence changed sharply between images before and after the storm, which picks out roof and wall damage, debris and fallen trees; scattered single pixels can be false alarms, and it is least reliable over vegetation.`,
             refs: 'Earth Observatory of Singapore Remote Sensing Lab flood proxy maps: New Delhi floods 12 Jul 2023 v0.9; Cyclone Amphan 22 May 2020 v0.8 and damage proxy map P048 v0.4 (ARIA-SG), via data.humdata.org (CC BY 4.0); contains modified Copernicus Sentinel data' },
+        { id: 'unpaved', title: 'Unpaved streets', icon: '🛤️',
+            question: 'Are the streets around me still dirt roads?',
+            field: { key: 'unpaved_pct', label: 'Unpaved share of nearby roads with a known surface', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
+            needs: ['road_surface.rs_unpaved_pct', 'road_surface.rs_known_pct', 'road_surface.rs_unpaved_km', 'population.population'],
+            method: `HeiGIT's road surface dataset for India (Heidelberg Institute for Geoinformation Technology, via the Humanitarian Data Exchange, ODbL) labels each OpenStreetMap road paved or unpaved: from its OSM surface tag where one exists, otherwise from a deep-learning model run over Mapillary street-level photos taken along it (Randhawa et al. 2024). Footways, paths, steps and cycleways are left out. Each block takes the drivable roads whose middle lies within 500 m and gets an unpaved share when at least 300 m of them have a known surface. Only 7-27% of road length in most cities is known (59% in Lucknow), and known roads lean towards main roads that are tagged or photographed, so the share is a sample, likely to under-count unpaved lanes; outer, thinly built blocks carry most of the unpaved roads (rank correlation with residents about -0.35 to -0.42 in Bengaluru, Delhi and Hyderabad).`,
+            refs: 'HeiGIT, Mapillary-based road surface data for India (via data.humdata.org, ODbL); A. Randhawa et al., Paved or unpaved? A deep learning derived road surface global dataset from Mapillary street-view imagery, arXiv 2410.19874; © OpenStreetMap contributors' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved });
     return { ENTRIES };
 })();

@@ -36,6 +36,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 27.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1023,6 +1029,12 @@
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 23,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2346,6 +2358,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 36.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3321,6 +3339,12 @@
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 15.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -4530,6 +4554,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 9.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5592,6 +5622,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 41.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6387,6 +6423,12 @@
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 22.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7536,6 +7578,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 5.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8484,6 +8532,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 41.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -9429,6 +9483,12 @@
     "radarflood": {
      "label": "Residents in blocks mostly flagged as flooded",
      "value": 6.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 15.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10494,6 +10554,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 9.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -11457,6 +11523,12 @@
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 18.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12567,6 +12639,12 @@
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 6.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "unpaved": {
+     "label": "Residents where a fifth or more of the known roads are unpaved",
+     "value": 18.5,
      "unit": "%",
      "higherIs": "worse"
     },

@@ -217,6 +217,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('which party holds the assembly seats in Pune')).toEqual({ type: 'lens', lens: 'mlaseats', city: 'pune' });
         expect(M('how many people die on the roads in Pune')).toEqual({ type: 'lens', lens: 'roaddeaths', city: 'pune' });
         expect(M('road deaths in Delhi')).toEqual({ type: 'lens', lens: 'roaddeaths', city: 'delhi' });
+        expect(M('where are the unpaved roads in Delhi')).toEqual({ type: 'lens', lens: 'unpaved', city: 'delhi' });
         expect(M('where was the 2023 Yamuna flood in Delhi')).toEqual({ type: 'lens', lens: 'radarflood', city: 'delhi' });
         expect(M('show the radar damage map in Delhi')).toEqual({ type: 'lens', lens: 'radarflood', city: 'delhi' });
         expect(M('landslide prone areas in Pune')).toEqual({ type: 'lens', lens: 'slidezone', city: 'pune' });
