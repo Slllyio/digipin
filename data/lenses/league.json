@@ -126,6 +126,12 @@
      "unit": "of 8",
      "higherIs": "worse"
     },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 85.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1204,6 +1210,12 @@
      "label": "Most Earth system boundaries crossed at one spot (of 8)",
      "value": 4,
      "unit": "of 8",
+     "higherIs": "worse"
+    },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 34,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitals": {
@@ -2616,6 +2628,12 @@
      "unit": "of 8",
      "higherIs": "worse"
     },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 90.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3682,6 +3700,12 @@
      "label": "Most Earth system boundaries crossed at one spot (of 8)",
      "value": 5,
      "unit": "of 8",
+     "higherIs": "worse"
+    },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 66.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitals": {
@@ -4978,6 +5002,12 @@
      "label": "Most Earth system boundaries crossed at one spot (of 8)",
      "value": 5,
      "unit": "of 8",
+     "higherIs": "worse"
+    },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 77.3,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitals": {
@@ -7014,6 +7044,12 @@
      "unit": "of 8",
      "higherIs": "worse"
     },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 73.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
      "value": 65,
@@ -8250,6 +8286,12 @@
      "unit": "of 8",
      "higherIs": "worse"
     },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 82.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9288,6 +9330,12 @@
      "unit": "of 8",
      "higherIs": "worse"
     },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 79.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10324,6 +10372,12 @@
      "label": "Most Earth system boundaries crossed at one spot (of 8)",
      "value": 5,
      "unit": "of 8",
+     "higherIs": "worse"
+    },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 53,
+     "unit": "%",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -11478,6 +11532,12 @@
      "unit": "of 8",
      "higherIs": "worse"
     },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 80.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12532,6 +12592,12 @@
      "label": "Most Earth system boundaries crossed at one spot (of 8)",
      "value": 3,
      "unit": "of 8",
+     "higherIs": "worse"
+    },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 33.4,
+     "unit": "%",
      "higherIs": "worse"
     },
     "streetdogs": {
@@ -13732,6 +13798,12 @@
      "label": "Most Earth system boundaries crossed at one spot (of 8)",
      "value": 4,
      "unit": "of 8",
+     "higherIs": "worse"
+    },
+    "playreach": {
+     "label": "Share of children aged 0-14 over 500 m from a mapped playground or sports ground",
+     "value": 54.8,
+     "unit": "%",
      "higherIs": "worse"
     },
     "schoolready": {

@@ -2090,3 +2090,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Earth system boundaries crossed (`earthbounds` lens, `earth_bounds` dataset)
 
 `pipeline/realestate/earthbounds.py` reads NS_ESB_* from the natural systems theme of the GHS Urban Centre Database 2025: per-boundary transgression counts summed under the urban centre (stored as 1 when above 0) for biosphere integrity, groundwater, nitrogen, phosphorus, PM2.5, sea level rise, surface water and wet-bulb temperature, plus NS_ESB_MAX and NS_ESB_MIN (most and fewest boundaries crossed in one cell). NS_ESB_MAX is ranked among urban centres of 1 million+ worldwide. Skipped in the same theme: NS_MPA/NS_TPA (protected areas from WDPA, whose licence is non-commercial). One value per city.
+
+## Somewhere to play nearby (`playreach` lens, `play_space` dataset)
+
+`pipeline/realestate/playspace.py` reads Overture base-theme land_use polygons with subtype recreation and class playground, pitch, recreation_ground, track or stadium in the city bbox plus 1 km (DuckDB over the public S3 bucket; run with the proxy's AWS keys unset), takes centroids and their areas, and for each lived-in L7 block stores straight-line distance to the nearest playground and to the nearest of any class, plus count and area within 500 m. The lens weights blocks by WorldPop under-5 plus school-age (5-14) children, falling back to residents. Guna is left out (no play space mapped).

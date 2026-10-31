@@ -668,6 +668,39 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function playreach(fr) {
+        const c = fr.cols, n = fr.grid.n, gd = c['play_space.pl_ground_m'], pg = c['play_space.pl_playground_m'], k5 = c['demographics.under5'], k14 = c['demographics.school_age'], pop = c['population.population'];
+        if (!gd || !gd.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(gd[i]));
+        if (idx.length < 5) return null;
+        const kids = i => (k5 && _fin(k5[i]) ? k5[i] : 0) + (k14 && _fin(k14[i]) ? k14[i] : 0);
+        const useKids = idx.some(i => kids(i) > 0), w = i => (useKids ? kids(i) : (pop && _fin(pop[i]) ? pop[i] : 0));
+        let all = 0, far = 0, farPg = 0, none = 0;
+        for (const i of idx) {
+            const x = w(i);
+            all += x;
+            if (gd[i] > 500) far += x;
+            if (!pg || !_fin(pg[i]) || pg[i] > 1000) farPg += x;
+            if (gd[i] > 1000) none += x;
+        }
+        if (!all) return null;
+        const who = useKids ? 'children aged 0-14' : 'residents', pc = x => `${_round(100 * x / all, 0)}%`;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = gd[i];
+        const stats = [
+            { label: `${useKids ? 'Children' : 'Residents'} over 500 m from any mapped playground or sports ground`, value: `${_people(far)} (${pc(far)})` },
+            { label: '…over 1 km', value: `${_people(none)} (${pc(none)})` },
+            { label: `${useKids ? 'Children' : 'Residents'} over 1 km from a mapped playground`, value: `${_people(farPg)} (${pc(farPg)})` },
+            { label: 'Median distance to the nearest playground or sports ground', value: `${_round(wquantile(gd, Array.from({ length: n }, (_, i) => w(i)), idx, 0.5), -1)} m` },
+        ];
+        return {
+            columns: { play_reach_m: out }, idx, weightKey: 'play_reach_m',
+            metric: { label: `Share of ${who} over 500 m from a mapped playground or sports ground`, value: _round(100 * far / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(far)} ${who} (${pc(far)}) live more than 500 m in a straight line from any playground or sports ground on the map, and ${pc(farPg)} are over 1 km from a playground. Red blocks are the furthest. These are mapped spaces from OpenStreetMap: colonies and the centre are mapped best, many grounds belong to schools or clubs, and a gully or rooftop where children play will not show.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -801,8 +834,14 @@ const UrbanLensesExtra = (() => {
             needs: ['earth_bounds.eb_max', 'earth_bounds.eb_min', 'earth_bounds.eb_world_pctile', 'earth_bounds.eb_bio', 'earth_bounds.eb_gwa', 'earth_bounds.eb_nit', 'earth_bounds.eb_pho', 'earth_bounds.eb_p25', 'earth_bounds.eb_slr', 'earth_bounds.eb_swa', 'earth_bounds.eb_wet', 'population.population'],
             method: `The Earth Commission (Rockström and others, Nature 2023) set "safe and just" limits for eight of the planet's life-support systems and mapped where on land each is crossed at about 50 km: biosphere integrity (too little intact natural land), nitrogen and phosphorus surplus from fertiliser, surface water flows, groundwater decline, aerosols (annual PM2.5 above 15 µg/m³), climate (wet-bulb heat that harms people) and sea level rise exposure. The European Commission JRC's GHSL Urban Centre Database 2025 (CC BY 4.0) flags each boundary crossed anywhere under the city's urban centre and counts the most and fewest crossed at one spot; the most is ranked among the world's 524 urban centres of a million or more. The transgression map is Abrams (2022), figshare, CC BY 4.0. It describes the region the city sits in and draws on, so neighbourhoods do not differ. One figure for the whole city.`,
             refs: 'J. Rockström et al., Safe and just Earth system boundaries, Nature 619 (2023); J. Abrams, Transgression map, figshare doi:10.6084/m9.figshare.20079200 (CC BY 4.0); European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, natural systems theme (CC BY 4.0)' },
+        { id: 'playreach', title: 'Somewhere to play nearby', icon: '🛝',
+            question: 'Do children near me have a playground or sports ground within a short walk?',
+            field: { key: 'play_reach_m', label: 'Distance to the nearest mapped playground or sports ground', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 1500] },
+            needs: ['play_space.pl_ground_m', 'play_space.pl_playground_m', 'play_space.pl_within_500', 'demographics.under5', 'demographics.school_age', 'population.population'],
+            method: `Playgrounds and sports grounds are Overture Maps base-theme land-use polygons (from OpenStreetMap, ODbL) of the recreation subtype: playground, pitch, recreation ground, track and stadium, each reduced to its centroid. Each lived-in block takes the straight-line distance to the nearest of them and to the nearest playground. Children aged 0-14 per block come from WorldPop 2020 age structure (CC BY 4.0); where it is missing, all residents are counted. 500 m is about a 7-minute walk for a child, a common planning reach for neighbourhood play space. OpenStreetMap coverage of play space is uneven: some cities have only a handful of playgrounds mapped (Bhopal 5, Lucknow 6), so long distances there partly mean thin mapping. Guna has none mapped and is left out.`,
+            refs: 'Overture Maps Foundation, base theme land_use (ODbL 1.0, OpenStreetMap contributors); WorldPop 2020 age and sex structures (CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach });
     return { ENTRIES };
 })();
