@@ -2038,3 +2038,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Kitchen basket cost (`foodbasket` lens, `food_prices` dataset)
 
 `pipeline/realestate/foodprices.py` reads WFP's India food price file from HDX (Department of Consumer Affairs retail prices). It prices a fixed month's basket (`BASKET`, 11 staples) in each month where every item has a price and averages the last 12 such months. It compares that with the median of the 11 price-centre cities and works out the ten-year change over the items priced in both windows, weighted by today's basket. It also gives the five-year swing in onion prices. One value per city.
+
+## Usable footpaths, Pune (`footpaths` lens, `pune_prabhag_2016` dataset)
+
+`pipeline/realestate/puneprabhag2016.py` joins PMC's 2016 prabhag tables (roads and footpaths, storm-water drain coverage, slum households) to DataMeet's 2012 electoral ward map (`wardnum` 1-76) using DuckDB spatial, and gives each lived block its prabhag's row. The lens maps the share of roads with usable footpaths. It counts residents where that share is under a fifth or under 5%, and residents short of both footpaths and drains, and it shares out the prabhags' slum households. The figures are the corporation's own and ten years old.

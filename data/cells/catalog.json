@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-31T15:46:57Z",
+  "generated": "2026-10-31T16:27:30Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -40895,6 +40895,111 @@
             "north": 13.123779296875
           },
           "json": "public_land/bengaluru.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "pune_prabhag_2016",
+      "title": "Footpaths, drains and slums by prabhag (PMC 2016)",
+      "description": "PMC's 2016 prabhag tables (via data.opencity.in) for the 76 prabhags of 2012-2017: usable footpaths, roads with storm-water drains and slum households, placed on DataMeet's trace of the 2012 electoral wards.",
+      "source": "pipeline/realestate/puneprabhag2016.py (PMC prabhag tables via OpenCity; DataMeet pune-electoral-wards_2012)",
+      "license": "Public domain (PMC via data.opencity.in); ward map CC BY 4.0 (DataMeet Municipal Spatial Data)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "pp_footpath_pct",
+          "label": "Roads with usable footpaths in the 2012 prabhag, 2016",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "pp_footpath_ratio",
+          "label": "Road km with a footpath on at least one side per road km, 2016",
+          "type": "number",
+          "agg": "mean",
+          "unit": "ratio",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "pp_swd_pct",
+          "label": "Roads with a storm-water drain in the 2012 prabhag, 2016",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "pp_slum_hh",
+          "label": "Slum households in the 2012 prabhag, 2016",
+          "type": "number",
+          "agg": "max",
+          "unit": "households",
+          "domain": [
+            0,
+            13781
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "pp_road_km",
+          "label": "Road length in the 2012 prabhag, 2016",
+          "type": "number",
+          "agg": "max",
+          "unit": "km",
+          "domain": [
+            4.5,
+            126
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "pp_prabhag",
+          "label": "2012 PMC prabhag number",
+          "type": "number",
+          "agg": "mode",
+          "domain": [
+            1.0,
+            76.0
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "pp_footpath_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "pune",
+          "cells": 4431,
+          "bbox": {
+            "west": 73.750244140625,
+            "south": 18.43017578125,
+            "east": 73.96337890625,
+            "north": 18.621337890625
+          },
+          "json": "pune_prabhag_2016/pune.json",
           "parquet": null
         }
       ]

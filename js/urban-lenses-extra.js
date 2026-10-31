@@ -273,6 +273,39 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function footpaths(fr) {
+        const c = fr.cols, n = fr.grid.n, fp = c['pune_prabhag_2016.pp_footpath_pct'], sw = c['pune_prabhag_2016.pp_swd_pct'];
+        const slum = c['pune_prabhag_2016.pp_slum_hh'], pr = c['pune_prabhag_2016.pp_prabhag'], pop = c['population.population'];
+        if (!fp || !fp.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(fp[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const low = sum(i => fp[i] < 20), none = sum(i => fp[i] < 5);
+        const both = sw ? sum(i => fp[i] < 20 && _fin(sw[i]) && sw[i] < 30) : 0;
+        const stats = [
+            { label: 'Residents in prabhags where under a fifth of roads have usable footpaths', value: `${_people(low)} (${pct(low)}%)` },
+            { label: 'Residents in prabhags with almost no usable footpaths (under 5%)', value: `${_people(none)} (${pct(none)}%)` },
+            { label: 'Usable footpath share of roads (residents-weighted)', value: `${_round(wmean(fp, pop, idx), 1)}%` },
+        ];
+        if (sw) stats.push({ label: 'Roads with a storm-water drain (residents-weighted)', value: `${_round(wmean(sw, pop, idx.filter(i => _fin(sw[i]))), 1)}%` },
+            { label: 'Residents with under a fifth footpaths and under 30% drained roads', value: `${_people(both)} (${pct(both)}%)` });
+        if (slum && pr) {
+            const seen = new Map();
+            for (const i of idx) if (_fin(pr[i]) && _fin(slum[i])) seen.set(pr[i], [slum[i], fp[i]]);
+            const rows = [...seen.values()], hh = rows.reduce((s, r) => s + r[0], 0), lowHh = rows.filter(r => r[1] < 20).reduce((s, r) => s + r[0], 0);
+            if (hh > 0) stats.push({ label: 'Slum households in prabhags where under a fifth of roads have usable footpaths', value: `${Math.round(lowHh).toLocaleString('en-IN')} of ${Math.round(hh).toLocaleString('en-IN')} (${_round(100 * lowHh / hh, 0)}%)` });
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = fp[i];
+        return {
+            columns: { usable_footpath_pct: out }, idx, weightKey: 'usable_footpath_pct',
+            metric: { label: 'Residents in prabhags where under a fifth of roads have usable footpaths', value: pct(low), unit: '%', higherIs: 'worse' },
+            headline: `In PMC's 2016 survey of its 76 prabhags, ${_people(low)} residents here (${pct(low)}%) live where under a fifth of the roads have a usable footpath, and ${_people(none)} where almost none do. The figures are PMC's own, ten years old, for the prabhags of 2012-2017.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -328,8 +361,14 @@ const UrbanLensesExtra = (() => {
             needs: ['food_prices.fp_basket_rs', 'food_prices.fp_vs_median_pct', 'food_prices.fp_10y_pct', 'food_prices.fp_onion_swing', 'food_prices.fp_last_year', 'district_income.di_pci', 'population.population'],
             method: `Monthly retail prices from the Department of Consumer Affairs' price monitoring cell, republished by the World Food Programme on the Humanitarian Data Exchange (CC BY-IGO), 1994 to July 2023; eleven DigiPin cities are price centres (Pune and Guna are not). A fixed month's basket for a family of four or five (10 kg rice, 10 kg wheat flour, 3 kg lentils, 2 kg mustard oil, 2 kg sugar, 30 litres milk, 5 kg potatoes, 4 kg onions, 3 kg tomatoes, 250 g tea, 1 kg salt) is priced in each month that has every item, and the last 12 such months are averaged. The ten-year change compares the same calendar months a decade earlier over the items priced then, weighted by today's basket. The basket is illustrative, the same in every city: real diets differ (rice-heavy in the south and east, mustard oil mostly in the north and east), and the prices are what the monitoring centres record, not every shop. Where district income figures exist the basket is set against a household of 4.5 at the district's income per head.`,
             refs: 'World Food Programme, India food prices (via data.humdata.org, CC BY-IGO), data from the Department of Consumer Affairs, Government of India, price monitoring cell' },
+        { id: 'footpaths', title: 'Usable footpaths (Pune)', icon: '🚶',
+            question: 'Can I walk on a footpath here, or do I walk on the road?',
+            field: { key: 'usable_footpath_pct', label: 'Roads with usable footpaths in the prabhag (PMC 2016)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [0, 100] },
+            needs: ['pune_prabhag_2016.pp_footpath_pct', 'pune_prabhag_2016.pp_swd_pct', 'pune_prabhag_2016.pp_slum_hh', 'pune_prabhag_2016.pp_prabhag', 'population.population'],
+            method: `Pune Municipal Corporation's 2016 prabhag tables (via data.opencity.in, public domain) give, for each of the 76 prabhags used from 2012 to 2017, the length of roads, the length with a footpath on one or both sides, the share of roads with usable footpaths, the share of roads with a storm-water drain and the number of slum households. The prabhags are placed with DataMeet's trace of the 2012 electoral wards (Municipal Spatial Data, CC BY 4.0), and each block takes its prabhag's row. These are the corporation's own reported figures, not a field audit, and are ten years old; footpaths built or lost since are not counted. PMC's table of homes with drainage connections on the same prabhags is left out because it reads 100% almost everywhere.`,
+            refs: 'Pune Municipal Corporation prabhag-wise roads and footpaths, storm-water drain coverage and slum tables, 2016 (data.opencity.in, public domain); DataMeet, Municipal Spatial Data, Pune electoral wards 2012 (CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths });
     return { ENTRIES };
 })();

@@ -12792,6 +12792,12 @@
      "unit": "SCI",
      "higherIs": null
     },
+    "footpaths": {
+     "label": "Residents in prabhags where under a fifth of roads have usable footpaths",
+     "value": 49.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
      "value": 84,
