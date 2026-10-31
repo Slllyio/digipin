@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-31T13:44:29Z",
+  "generated": "2026-10-31T13:57:27Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -5895,6 +5895,316 @@
           },
           "json": "census_homes/mumbai.json.gz",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "city_climate",
+      "title": "The city's temperatures since 1951 (IMD daily series)",
+      "description": "Daily maximum and minimum temperature for the city's grid cell from 1951 to 2020 (India Meteorological Department, via data.opencity.in), the 1991-2020 normal compared with 1951-1980. One value per city.",
+      "source": "pipeline/realestate/climaterecord.py (IMD daily temperature 1951-2020 via OpenCity)",
+      "license": "Public domain (India Meteorological Department via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "cc_tmax_change",
+          "label": "Change in mean daily maximum, 1991-2020 vs 1951-1980",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u00b0C",
+          "domain": [
+            -0.21,
+            0.76
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cc_tmin_change",
+          "label": "Change in mean daily minimum, 1991-2020 vs 1951-1980",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u00b0C",
+          "domain": [
+            0.05,
+            0.78
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cc_hot_then",
+          "label": "Unusually hot days a year, 1951-1980 (hottest 5% of that period)",
+          "type": "number",
+          "agg": "max",
+          "unit": "days",
+          "domain": [
+            18,
+            18.2
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cc_hot_now",
+          "label": "Unusually hot days a year, 1991-2020 (by the 1951-1980 yardstick)",
+          "type": "number",
+          "agg": "max",
+          "unit": "days",
+          "domain": [
+            12.4,
+            40.2
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cc_warm_nights_now",
+          "label": "Unusually warm nights a year, 1991-2020 (by the 1951-1980 yardstick)",
+          "type": "number",
+          "agg": "max",
+          "unit": "nights",
+          "domain": [
+            15.7,
+            41.8
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cc_40_then",
+          "label": "Days a year at 40 \u00b0C or more, 1951-1980",
+          "type": "number",
+          "agg": "max",
+          "unit": "days",
+          "domain": [
+            0,
+            42.1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cc_40_now",
+          "label": "Days a year at 40 \u00b0C or more, 1991-2020",
+          "type": "number",
+          "agg": "max",
+          "unit": "days",
+          "domain": [
+            0,
+            37.9
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cc_last_year",
+          "label": "Last year used",
+          "type": "number",
+          "agg": "max",
+          "unit": "year",
+          "domain": [
+            2020,
+            2023
+          ],
+          "ramp": "reds"
+        }
+      ],
+      "default": {
+        "field": "cc_tmax_change",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "city_climate/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "city_climate/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 10493,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "city_climate/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "city_climate/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "city_climate/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "city_climate/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 16475,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "city_climate/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK4",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKM",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "city_climate/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
         }
       ]
     },

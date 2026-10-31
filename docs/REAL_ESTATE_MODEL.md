@@ -1998,3 +1998,12 @@ that differ from the jurisdiction map) and joins each to the `police_stations` b
 station's bookings by the residents of all its blocks in the `population` dataset; the offence shares are of the
 station's own total. Helmet, signal, wrong-way (wrong side plus no entry) and obstruction shares are kept; other
 offences sit in the total.
+
+## Hotter than in 1951? (`since1951` lens, `city_climate` dataset)
+
+`pipeline/realestate/climaterecord.py` reads the eight city CSVs (Date, Rain, Temp Max, Temp Min; a few dates are
+Excel serials), keeps 1951-2020 temperatures only, and compares the 1991-2020 normal with 1951-1980: mean daily high
+and low, days a year above the 1951-1980 95th percentile of highs, nights above the 95th percentile of lows, and days
+at 40 °C or more. Years with under 300 readings are skipped. One value per city is copied to every lived-in block, as
+for `city_vitals`. The series is a grid cell about 100 km across, so it is regional climate, not the city's own heat
+island; the block-level heat lenses cover that.

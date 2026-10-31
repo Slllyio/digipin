@@ -95,6 +95,35 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    // The city's temperatures since 1951. IMD's daily series for the city's grid cell, the 1991-2020 normal against
+    // 1951-1980: one value per city, so the lens tells the city's story rather than mapping blocks.
+    function since1951(fr) {
+        const c = fr.cols, n = fr.grid.n, tx = c['city_climate.cc_tmax_change'], tn = c['city_climate.cc_tmin_change'];
+        const hotThen = c['city_climate.cc_hot_then'], hotNow = c['city_climate.cc_hot_now'], warm = c['city_climate.cc_warm_nights_now'];
+        const f40a = c['city_climate.cc_40_then'], f40b = c['city_climate.cc_40_now'];
+        if (!tx || !tx.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(tx[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = col => (col && _fin(col[i0]) ? col[i0] : NaN), sgn = x => `${x > 0 ? '+' : ''}${_round(x, 1)}`;
+        const dTx = v(tx), dTn = v(tn), hb = v(hotThen), ha = v(hotNow), wn = v(warm), a40 = v(f40a), b40 = v(f40b);
+        const stats = [
+            { label: 'Change in the average daily high, 1991-2020 vs 1951-1980', value: `${sgn(dTx)} °C` },
+            { label: 'Change in the average daily low (nights)', value: `${sgn(dTn)} °C` },
+            { label: 'Unusually hot days a year (hottest 5% of 1951-1980), then and now', value: `${_round(hb, 0)} → ${_round(ha, 0)}` },
+            { label: 'Unusually warm nights a year by the same yardstick, 1991-2020', value: `${_round(wn, 0)} (18 in 1951-1980)` },
+            { label: 'Days a year at 40 °C or more, then and now', value: _fin(a40) && (a40 > 0.5 || b40 > 0.5) ? `${_round(a40, 0)} → ${_round(b40, 0)}` : 'almost none' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = ha;
+        const nights = dTn > dTx + 0.2;
+        return {
+            columns: { since1951_hot_days: out }, idx, weightKey: 'since1951_hot_days',
+            metric: { label: 'Unusually hot days a year now (18 in 1951-1980)', value: _round(ha, 0), unit: 'days', higherIs: 'worse' },
+            headline: `Compared with 1951-1980, the 1991-2020 average daily high here is ${sgn(dTx)} °C and the daily low ${sgn(dTn)} °C. Days that used to be the hottest 5% (about 18 a year) now come ${_round(ha, 0)} times a year, and warm nights ${_round(wn, 0)} times.${nights ? ' The warming here is mostly at night, which matters for sleep and for people without cooling.' : ''} This is one series for the whole city, from IMD's daily grid.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -114,8 +143,14 @@ const UrbanLensesExtra = (() => {
             needs: ['traffic_challans.tc_per_1000', 'traffic_challans.tc_helmet_pct', 'traffic_challans.tc_signal_pct', 'traffic_challans.tc_wrongway_pct', 'traffic_challans.tc_obstruct_pct', 'population.population'],
             method: `Mumbai Traffic Police tables of violations booked from 1 January to 31 December 2024 by police station and offence (via data.opencity.in, public domain), about 8.5 lakh in all. Each block takes the figures of the law-and-order police station whose jurisdiction map holds it; all 91 station names in the table were matched to the map (21 by spelling fixes). Per 1,000 residents uses the residents of the station area, but many tickets go to people driving through, so market and transit areas score high (Pydhonie, Jogeshwari, Malvani and Khar book the most per resident). These are bookings: they show where and for what the police enforce, not how badly people drive. Mumbai only.`,
             refs: 'Mumbai Traffic Police, violations and challans 2024 by police station, via data.opencity.in (public domain); station areas from Mumbai Police jurisdiction maps' },
+        { id: 'since1951', title: 'Hotter than in 1951?', icon: '🌡️',
+            question: 'How much hotter has my city got since my grandparents were young?',
+            field: { key: 'since1951_hot_days', label: 'Unusually hot days a year, 1991-2020 (18 a year in 1951-1980)', unit: 'days', higherIs: 'worse', ramp: 'reds', domain: [10, 40] },
+            needs: ['city_climate.cc_tmax_change', 'city_climate.cc_tmin_change', 'city_climate.cc_hot_then', 'city_climate.cc_hot_now', 'city_climate.cc_warm_nights_now', 'city_climate.cc_40_then', 'city_climate.cc_40_now', 'population.population'],
+            method: `India Meteorological Department daily maximum and minimum temperatures for Delhi, Mumbai, Chennai, Bengaluru, Ahmedabad, Hyderabad, Pune and Kolkata, republished on data.opencity.in (public domain). Up to 2020 the values match IMD's gridded daily series for the city's grid cell; from 2021 the file switches source (Mumbai's mean low jumps 2 °C in one year, Pune's drops 2.3 °C), so only 1951-2020 is used, and the rain column is left out (it does not describe the city before 2021). The 1991-2020 normal period is compared with 1951-1980: changes in the mean daily high and low, how often a day beats the hottest 5% of 1951-1980 days (about 18 a year then) and a night the warmest 5% of nights, and days at 40 °C or more. A grid cell is about 100 km across, so this is the regional climate around the city; the heat maps for blocks are the hot-day, hot-night and heated-up lenses. Delhi and Kolkata show little change in daytime highs, as other studies of the Indo-Gangetic plain have found (haze and irrigation damp daytime warming), but their nights have warmed.`,
+            refs: 'India Meteorological Department daily temperature 1951-2024 for eight cities, via data.opencity.in (public domain); WMO 1991-2020 climate normals convention' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951 });
     return { ENTRIES };
 })();
