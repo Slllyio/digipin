@@ -124,6 +124,34 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    // Slopes that can slide. NASA's global landslide susceptibility map (about 1 km) sampled under each block, crossed with
+    // mapped slums where the city has them: hillside settlements are where monsoon slides kill.
+    function slidezone(fr) {
+        const c = fr.cols, n = fr.grid.n, cls = c['landslide_susceptibility.ls_class'], near = c['landslide_susceptibility.ls_near_max'];
+        const slum = c['slums_mapped.slum_pct'], pop = c['population.population'];
+        if (!cls || !cls.some(x => _fin(x) && x >= 3)) return null;
+        const idx = _residents(fr).filter(i => _fin(cls[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const mod = sum(i => cls[i] >= 3), high = sum(i => cls[i] >= 4), nearHigh = sum(i => _fin(near[i]) && near[i] >= 4);
+        const slumMod = slum ? idx.filter(i => cls[i] >= 3).reduce((s, i) => s + pop[i] * Math.min(_fin(slum[i]) ? slum[i] : 0, 100) / 100, 0) : NaN;
+        const stats = [
+            { label: 'Residents on ground of moderate or higher landslide susceptibility', value: `${_people(mod)} (${pct(mod)}%)` },
+            { label: 'Of them on high or very high', value: `${_people(high)} (${pct(high)}%)` },
+            { label: 'Residents within about 1 km of high or very high ground', value: `${_people(nearHigh)} (${pct(nearHigh)}%)` },
+            { label: 'Residents of mapped slums on moderate or higher ground', value: _fin(slumMod) ? _people(slumMod) : 'no slum map' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = cls[i];
+        return {
+            columns: { slide_class: out }, idx, weightKey: 'slide_class',
+            metric: { label: 'Residents on moderate or higher landslide susceptibility', value: pct(mod), unit: '%', higherIs: 'worse' },
+            headline: `${_people(mod)} residents here (${pct(mod)}%) live on ground NASA's global map rates moderate or higher for landslides, ${_people(high)} on high or very high${_fin(slumMod) && slumMod >= 100 ? `; about ${_people(slumMod)} of them in mapped slums, the hillside settlements where monsoon slides do most harm` : ''}. The map is about 1 km coarse, so it flags neighbourhoods with slopes that can fail, not single buildings.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -149,8 +177,14 @@ const UrbanLensesExtra = (() => {
             needs: ['city_climate.cc_tmax_change', 'city_climate.cc_tmin_change', 'city_climate.cc_hot_then', 'city_climate.cc_hot_now', 'city_climate.cc_warm_nights_now', 'city_climate.cc_40_then', 'city_climate.cc_40_now', 'population.population'],
             method: `India Meteorological Department daily maximum and minimum temperatures for Delhi, Mumbai, Chennai, Bengaluru, Ahmedabad, Hyderabad, Pune and Kolkata, republished on data.opencity.in (public domain). Up to 2020 the values match IMD's gridded daily series for the city's grid cell; from 2021 the file switches source (Mumbai's mean low jumps 2 °C in one year, Pune's drops 2.3 °C), so only 1951-2020 is used, and the rain column is left out (it does not describe the city before 2021). The 1991-2020 normal period is compared with 1951-1980: changes in the mean daily high and low, how often a day beats the hottest 5% of 1951-1980 days (about 18 a year then) and a night the warmest 5% of nights, and days at 40 °C or more. A grid cell is about 100 km across, so this is the regional climate around the city; the heat maps for blocks are the hot-day, hot-night and heated-up lenses. Delhi and Kolkata show little change in daytime highs, as other studies of the Indo-Gangetic plain have found (haze and irrigation damp daytime warming), but their nights have warmed.`,
             refs: 'India Meteorological Department daily temperature 1951-2024 for eight cities, via data.opencity.in (public domain); WMO 1991-2020 climate normals convention' },
+        { id: 'slidezone', title: 'Slopes that can slide', icon: '⛰️',
+            question: 'Is my neighbourhood on ground that could give way in heavy rain?',
+            field: { key: 'slide_class', label: 'Landslide susceptibility (1 very low ... 5 very high)', unit: 'class', higherIs: 'worse', ramp: 'reds', domain: [1, 5] },
+            needs: ['landslide_susceptibility.ls_class', 'landslide_susceptibility.ls_near_max', 'slums_mapped.slum_pct', 'population.population'],
+            method: `NASA's global landslide susceptibility map (Stanley and Kirschbaum, Natural Hazards 2017; 2023 update; public domain) scores each cell of about 1 km from very low to very high using slope, geology, distance to faults, road cuts and forest loss. It is the static layer behind NASA's LHASA landslide nowcasts, which add rainfall. Each block takes the class under its centre and the highest class in the 3 x 3 cells around it; residents of mapped slums (where the city has a slum map) on moderate or higher ground are counted separately because monsoon slides in Indian cities mostly hit hillside settlements. At 1 km the map mixes slopes with the flat ground below them, so it marks neighbourhoods to check rather than unsafe buildings; the hillside lens adds the finer DEM slope and the slides on record.`,
+            refs: 'T. Stanley and D. B. Kirschbaum, A heuristic approach to global landslide susceptibility mapping, Natural Hazards 87 (2017); NASA GPM global landslide susceptibility map, 2023 update (public domain)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951 });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone });
     return { ENTRIES };
 })();

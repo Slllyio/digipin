@@ -1020,6 +1020,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 0.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 42,
@@ -2334,6 +2340,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 3.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3304,6 +3316,12 @@
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 29,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 0.6,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitals": {
@@ -5562,6 +5580,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6352,6 +6376,12 @@
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 27,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 0.8,
+     "unit": "%",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -7494,6 +7524,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 0.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8433,6 +8469,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 29.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 5.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -11400,6 +11442,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
      "value": 8.8,
@@ -12502,6 +12550,12 @@
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 35,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "slidezone": {
+     "label": "Residents on moderate or higher landslide susceptibility",
+     "value": 6.6,
+     "unit": "%",
      "higherIs": "worse"
     },
     "schoolready": {

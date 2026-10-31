@@ -2007,3 +2007,11 @@ and low, days a year above the 1951-1980 95th percentile of highs, nights above 
 at 40 °C or more. Years with under 300 readings are skipped. One value per city is copied to every lived-in block, as
 for `city_vitals`. The series is a grid cell about 100 km across, so it is regional climate, not the city's own heat
 island; the block-level heat lenses cover that.
+
+## Slopes that can slide (`slidezone` lens, `landslide_susceptibility` dataset)
+
+`pipeline/realestate/landslidesus.py` downloads NASA's global landslide susceptibility GeoTIFF (int8, EPSG:4326,
+1/120 degree; classes 1-5, 0 for water and flat coast, 127 no data) or takes `--tif`, and reads a 3 x 3 window around
+each lived-in block centre (`boundless=True`). Blocks on class 0 or no data are dropped. Fields: `ls_class` (centre),
+`ls_near_max` (window maximum), `ls_moderate` (class 3+). The lens weights by residents and counts mapped-slum residents
+on class 3+ ground where `slums_mapped` exists.
