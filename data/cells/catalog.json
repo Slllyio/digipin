@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-31T13:35:49Z",
+  "generated": "2026-10-31T13:44:29Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -48592,6 +48592,121 @@
           },
           "json": "traffic/pune.json",
           "parquet": "traffic/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "traffic_challans",
+      "title": "Traffic violations booked by police station (Mumbai Traffic Police, 2024)",
+      "description": "Violations Mumbai Traffic Police booked in 2024 in each of 91 police station areas, by offence (via data.opencity.in); every block carries its station's figures. Counts enforcement, not offending.",
+      "source": "pipeline/realestate/trafficchallans.py (Mumbai Traffic Police violations 2024 via OpenCity; station areas from policejuris.py)",
+      "license": "Public domain (Mumbai Traffic Police via data.opencity.in)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "tc_total",
+          "label": "Traffic violations booked in the police station area, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "violations",
+          "domain": [
+            4,
+            48637
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "tc_per_1000",
+          "label": "Traffic violations booked per 1,000 residents of the station area, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "per 1,000",
+          "domain": [
+            0.1,
+            364.5
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "tc_helmet_pct",
+          "label": "Share booked for riding without a helmet",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "tc_signal_pct",
+          "label": "Share booked for jumping a signal",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "tc_wrongway_pct",
+          "label": "Share booked for wrong-side driving or entering a one-way",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "tc_obstruct_pct",
+          "label": "Share booked for causing obstruction to traffic",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "tc_drunk",
+          "label": "Drunk-driving cases booked in the station area, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            0,
+            21
+          ],
+          "ramp": "reds"
+        }
+      ],
+      "default": {
+        "field": "tc_per_1000",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "mumbai",
+          "cells": 7276,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.893798828125,
+            "east": 72.97900390625,
+            "north": 19.26953125
+          },
+          "json": "traffic_challans/mumbai.json.gz",
+          "parquet": null
         }
       ]
     },

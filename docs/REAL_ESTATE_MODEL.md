@@ -1989,3 +1989,12 @@ differ between the corridor studies and the tunnel study (table 158 PCUs run nea
 0.7), so the lens maps vehicles. The modelled `traffic_load` peak PCU near each junction does not rank the counted
 junctions (Spearman about 0.1 within 300 m, slightly negative at 800 m): the model loads road links, while a turning
 count sums every arm, so the two answer different questions.
+
+## Traffic tickets by police station, Mumbai (`challans` lens, `traffic_challans` dataset)
+
+`pipeline/realestate/trafficchallans.py` reads the station-wise violations CSV of the Mumbai Traffic Police 2024
+package, normalises station names (`norm()`: strip "Police Station" and punctuation, then `ALIAS` for the 21 spellings
+that differ from the jurisdiction map) and joins each to the `police_stations` blocks. `tc_per_1000` divides the
+station's bookings by the residents of all its blocks in the `population` dataset; the offence shares are of the
+station's own total. Helmet, signal, wrong-way (wrong side plus no entry) and obstruction shares are kept; other
+offences sit in the total.

@@ -5,7 +5,7 @@
 const UrbanLensesExtra = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _residents, wmean } = UrbanLenses._kit;
+    const { _fin, _round, _people, _residents, wmean, wquantile } = UrbanLenses._kit;
 
     // Ground that could liquefy. A published first-level assessment of Greater Chennai scores 20 m pixels for liquefaction
     // susceptibility (lithology, landform, groundwater and bedrock depth) and overlays amplified shaking into a hazard class.
@@ -64,6 +64,37 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    // Traffic tickets by police station. Mumbai Traffic Police publish the violations they booked in 2024 in each station
+    // area, by offence; every block carries its station's figures. This is enforcement, not a measure of bad driving.
+    function challans(fr) {
+        const c = fr.cols, n = fr.grid.n, per = c['traffic_challans.tc_per_1000'], helmet = c['traffic_challans.tc_helmet_pct'];
+        const signal = c['traffic_challans.tc_signal_pct'], wrong = c['traffic_challans.tc_wrongway_pct'], obst = c['traffic_challans.tc_obstruct_pct'];
+        const pop = c['population.population'];
+        if (!per || !per.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(per[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 0);
+        const heavy = sum(i => per[i] >= 100), med = wquantile(per, pop, idx, 0.5);
+        const w = col => (col ? _round(wmean(col, pop, idx), 0) : NaN);
+        const stats = [
+            { label: 'Violations booked per 1,000 residents of the station area (residents-weighted median)', value: _round(med, 0) },
+            { label: 'Residents in station areas booking 100+ per 1,000 residents', value: `${_people(heavy)} (${pct(heavy)}%)` },
+            { label: 'Share booked for riding without a helmet', value: `${w(helmet)}%` },
+            { label: 'Share booked for causing obstruction (mostly parking)', value: `${w(obst)}%` },
+            { label: 'Share booked for jumping a signal', value: `${w(signal)}%` },
+            { label: 'Share booked for wrong-side driving or entering a one-way', value: `${w(wrong)}%` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = per[i];
+        return {
+            columns: { challans_per_1000: out }, idx, weightKey: 'challans_per_1000',
+            metric: { label: 'Residents in station areas booking 100+ violations per 1,000 residents', value: pct(heavy), unit: '%', higherIs: null },
+            headline: `In 2024 the traffic police booked a median ${_round(med, 0)} violations per 1,000 residents in the station areas here, and ${pct(heavy)}% of residents live where they booked 100 or more; riding without a helmet made up ${w(helmet)}% of bookings and obstruction ${w(obst)}%. These count enforcement, so a high number can mean more patrolling as well as worse driving.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -77,8 +108,14 @@ const UrbanLensesExtra = (() => {
             needs: ['junction_counts.jc_peak_veh', 'junction_counts.jc_km', 'junction_counts.jc_daily_veh', 'population.population'],
             method: `BBMP's Comprehensive Bengaluru City Traffic Management Infrastructure Plan (final feasibility report, December 2024, via data.opencity.in) reprints the classified turning-volume counts its consultants made in 2024 at 28 junctions on Tumkur Road, JC Road, Hosur Road, Mysore Road and the north-south tunnel study area, with morning and evening peak hour vehicles and PCUs, plus 24-hour counts at seven central junctions and nine cordon roads. The tables were transcribed by hand and each site placed at its OpenStreetMap location by name. Blocks within 2 km of a counted junction take that junction's busier peak hour; vehicles are mapped because the studies used different PCU factors. Only the study corridors were counted, so blank areas mean no count, not no traffic. A check against DigiPin's own modelled traffic load found it does not rank these junctions well (Spearman about 0.1), so measured counts and the model should be read side by side.`,
             refs: 'BBMP, Comprehensive Bengaluru City Traffic Management Infrastructure Plan, final feasibility report (December 2024), tables 10, 44, 77, 93, 153 and 158, via data.opencity.in (public domain); sites © OpenStreetMap contributors' },
+        { id: 'challans', title: 'Traffic tickets by police station', icon: '🎫',
+            question: 'What do the traffic police book people for around here?',
+            field: { key: 'challans_per_1000', label: 'Traffic violations booked per 1,000 residents of the station area, 2024', unit: 'per 1,000', higherIs: null, ramp: 'reds', domain: [0, 200] },
+            needs: ['traffic_challans.tc_per_1000', 'traffic_challans.tc_helmet_pct', 'traffic_challans.tc_signal_pct', 'traffic_challans.tc_wrongway_pct', 'traffic_challans.tc_obstruct_pct', 'population.population'],
+            method: `Mumbai Traffic Police tables of violations booked from 1 January to 31 December 2024 by police station and offence (via data.opencity.in, public domain), about 8.5 lakh in all. Each block takes the figures of the law-and-order police station whose jurisdiction map holds it; all 91 station names in the table were matched to the map (21 by spelling fixes). Per 1,000 residents uses the residents of the station area, but many tickets go to people driving through, so market and transit areas score high (Pydhonie, Jogeshwari, Malvani and Khar book the most per resident). These are bookings: they show where and for what the police enforce, not how badly people drive. Mumbai only.`,
+            refs: 'Mumbai Traffic Police, violations and challans 2024 by police station, via data.opencity.in (public domain); station areas from Mumbai Police jurisdiction maps' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans });
     return { ENTRIES };
 })();

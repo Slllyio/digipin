@@ -11352,6 +11352,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "challans": {
+     "label": "Residents in station areas booking 100+ violations per 1,000 residents",
+     "value": 15,
+     "unit": "%",
+     "higherIs": null
+    },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
      "value": 8.8,
