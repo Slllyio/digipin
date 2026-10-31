@@ -2098,3 +2098,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Big estates behind walls (`closed_land`)
 
 `pipeline/realestate/closedland.py` clips Overture base-theme land use (OpenStreetMap, ODbL) to each lived-in L7 block: subtype `military`, class `railway` and subtype `golf`. Fields `cl_military_pct`, `cl_rail_pct`, `cl_golf_pct`, `cl_closed_pct` (their sum, capped at 100) and `cl_big_estate` (1 when the block touches a single estate of 50 ha or more). The `walledland` lens sums areas with the grid cell size and sets them against the lived-in area. Delhi: about 52 km² defence, 10 km² railway, 6 km² golf. A floor, since OSM leaves some defence land unmapped.
+
+## Earthquakes felt nearby since 1900 (`quake_history`)
+
+`pipeline/realestate/quakehistory.py` pulls USGS ComCat events (FDSN event service, public domain) of M4.5+ since 1900 within 900 km of each city and, for each lived-in L7 block, counts those within 300 km (`qh_n45`, `qh_n6`), keeps the largest (`qh_max_mag`, `qh_max_year`) and the distance to the nearest M5+ epicentre (`qh_near_m5_km`). The `quakepast` lens reports the resident-weighted median block. The catalogue is complete for M4.5+ only from about 1964, so counts are a floor; the BIS IS 1893 zone map is not openly licensed and is not used.

@@ -733,6 +733,34 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function quakepast(fr) {
+        const c = fr.cols, n = fr.grid.n, n45 = c['quake_history.qh_n45'], pop = c['population.population'];
+        if (!n45 || !n45.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(n45[i]));
+        if (idx.length < 5) return null;
+        const W = Array.from({ length: n }, (_, i) => (pop && _fin(pop[i]) ? pop[i] : 0));
+        const med = (a, f = x => x) => { const v = a ? idx.filter(i => _fin(a[i])) : []; return v.length ? f(wquantile(a, W, v, 0.5)) : null; };
+        const mm = c['quake_history.qh_max_mag'], my = c['quake_history.qh_max_year'], n6 = c['quake_history.qh_n6'], nk = c['quake_history.qh_near_m5_km'];
+        let top = -1;
+        for (const i of idx) if (mm && _fin(mm[i]) && (top < 0 || mm[i] > mm[top])) top = i;
+        const typ = med(n45, Math.round), six = med(n6, Math.round), near = med(nk);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = n45[i];
+        const biggest = top >= 0 ? `M${_round(mm[top], 1)}${my && _fin(my[top]) ? ` in ${my[top]}` : ''}` : null;
+        const stats = [
+            { label: 'Earthquakes M4.5+ within 300 km of the typical home since 1900', value: String(typ) },
+            { label: '…of them M6 or more', value: six == null ? 'n/a' : String(six) },
+            { label: 'Largest within 300 km of any block', value: biggest || 'none recorded' },
+            { label: 'Typical distance to the nearest M5+ epicentre', value: near == null ? 'over 900 km' : `${_round(near, -1)} km` },
+        ];
+        return {
+            columns: { quakes_300km: out }, idx, weightKey: 'quakes_300km',
+            metric: { label: 'Earthquakes M4.5+ within 300 km since 1900 (typical home)', value: typ, unit: 'events', higherIs: 'worse' },
+            headline: `Since 1900 the record shows ${typ} earthquake${typ === 1 ? '' : 's'} of magnitude 4.5 or more within 300 km of the typical home${six ? `, ${six} of them M6 or larger` : ''}${biggest ? `; the largest was ${biggest}` : ''}${near != null ? `, and the nearest M5+ epicentre is about ${_round(near, -1)} km away` : ''}. Red blocks have had the most nearby quakes. This is the USGS catalogue, which misses many events before the 1960s, not the official BIS seismic zone; building to the code for your zone matters more than this count.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -878,8 +906,14 @@ const UrbanLensesExtra = (() => {
             needs: ['closed_land.cl_military_pct', 'closed_land.cl_rail_pct', 'closed_land.cl_golf_pct', 'closed_land.cl_closed_pct', 'closed_land.cl_big_estate', 'population.population'],
             method: `Overture Maps base-theme land use (from OpenStreetMap, ODbL) is clipped to each lived-in block: subtype military (cantonments, airfields, training areas, barracks), class railway (yards, sidings, railway colonies) and subtype golf. Each block keeps the share covered by each; areas are summed over the city and set against the lived-in city area (blocks with residents). OpenStreetMap leaves some defence land blank on purpose and maps railway colonies unevenly, so totals are a floor. Ownership is not shown: some golf courses sit on defence or leased government land and are counted once, under golf.`,
             refs: 'Overture Maps Foundation, base theme land_use (ODbL 1.0, OpenStreetMap contributors); Cantonments Act 2006; Rail Land Development Authority' },
+        { id: 'quakepast', title: 'Earthquakes felt nearby since 1900', icon: '🫨',
+            question: 'How many earthquakes have struck near my city, and how big was the largest?',
+            field: { key: 'quakes_300km', label: 'Earthquakes M4.5+ within 300 km since 1900', unit: 'events', higherIs: 'worse', ramp: 'reds' },
+            needs: ['quake_history.qh_n45', 'quake_history.qh_n6', 'quake_history.qh_max_mag', 'quake_history.qh_max_year', 'quake_history.qh_near_m5_km', 'population.population'],
+            method: `Events of magnitude 4.5 or more since 1900 from the USGS ComCat catalogue (FDSN event service) are counted within 300 km of each lived-in block, with the M6+ count, the largest event and the distance to the nearest M5+ epicentre. City figures are the resident-weighted median block. The catalogue is complete for M4.5+ only from about 1964, so older counts are a floor. India's seismic zone map (BIS IS 1893) is not openly licensed and is not used.`,
+            refs: 'USGS Earthquake Hazards Program, ComCat (public domain); Bureau of Indian Standards IS 1893 (Part 1): 2016 for zones' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast });
     return { ENTRIES };
 })();

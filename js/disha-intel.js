@@ -292,6 +292,7 @@ const DishaIntel = (() => {
             confidence: /\b(data (confidence|quality|completeness)|how (reliable|accurate|complete) is (the|this) data|osm completeness|can i trust)\b/i,
             seasons: /\b(season(al|s)?|which months?|worst months?|months? (of|with) (heat|pollution|smog)|getting (hotter|warmer)|warming)\b/i,
             burden: /\b(compound (risk|hazard)s?|multi[\s-]?hazard|triple burden|most at risk overall)\b/i,
+            quakepast: /\b(earthquakes?|quakes?|seismic|tremors?)\b/i,
             all: /\b(equity|inequal\w*|unequal|unfair|gini|fairness|left behind|urban lens(es)?|lenses)\b/i,
         },
         tour: /\b(tour|fly (me )?(through|over|around)|show me around|walk me through (the |this )?city|city overview|overview of (the |this )?city)\b/i,

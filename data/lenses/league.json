@@ -138,6 +138,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 86,
+     "unit": "events",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1229,6 +1235,12 @@
      "value": 47.1,
      "unit": "km²",
      "higherIs": null
+    },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 0,
+     "unit": "events",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2652,6 +2664,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 4,
+     "unit": "events",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3731,6 +3749,12 @@
      "value": 11.4,
      "unit": "km²",
      "higherIs": null
+    },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 3,
+     "unit": "events",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -5040,6 +5064,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 88,
+     "unit": "events",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6192,6 +6222,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 1,
+     "unit": "events",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -7091,6 +7127,12 @@
      "value": 47.6,
      "unit": "km²",
      "higherIs": null
+    },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 16,
+     "unit": "events",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8340,6 +8382,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 1,
+     "unit": "events",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9390,6 +9438,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 12,
+     "unit": "events",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10439,6 +10493,12 @@
      "value": 8.3,
      "unit": "km²",
      "higherIs": null
+    },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 26,
+     "unit": "events",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11604,6 +11664,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 106,
+     "unit": "events",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12671,6 +12737,12 @@
      "value": 18.9,
      "unit": "km²",
      "higherIs": null
+    },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 32,
+     "unit": "events",
+     "higherIs": "worse"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -13883,6 +13955,12 @@
      "value": 58.2,
      "unit": "km²",
      "higherIs": null
+    },
+    "quakepast": {
+     "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
+     "value": 37,
+     "unit": "events",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

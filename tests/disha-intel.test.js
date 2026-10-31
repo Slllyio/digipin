@@ -219,6 +219,8 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('road deaths in Delhi')).toEqual({ type: 'lens', lens: 'roaddeaths', city: 'delhi' });
         expect(M('how does Delhi compare with world cities')).toEqual({ type: 'lens', lens: 'worldcard', city: 'delhi' });
         expect(M('Pune city vs the world')).toEqual({ type: 'lens', lens: 'worldcard', city: 'pune' });
+        expect(M('have there been earthquakes near Delhi')).toEqual({ type: 'lens', lens: 'quakepast', city: 'delhi' });
+        expect(M('how many earthquakes have hit Pune')).toEqual({ type: 'lens', lens: 'quakepast', city: 'pune' });
         expect(M('how much defence land is there in Delhi')).toEqual({ type: 'lens', lens: 'walledland', city: 'delhi' });
         expect(M('Pune cantonment and railway land')).toEqual({ type: 'lens', lens: 'walledland', city: 'pune' });
         expect(M('are there playgrounds near me in Delhi')).toEqual({ type: 'lens', lens: 'playreach', city: 'delhi' });
