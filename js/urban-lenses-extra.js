@@ -640,6 +640,34 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    const EARTH_BOUNDS = { bio: 'too little intact nature', gwa: 'groundwater decline', nit: 'nitrogen surplus', pho: 'phosphorus surplus', p25: 'fine-particle air pollution', slr: 'sea level rise', swa: 'surface water flows', wet: 'wet-bulb heat' };
+
+    function earthbounds(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['earth_bounds.eb_max'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`earth_bounds.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const mx = v('eb_max'), mn = v('eb_min'), wp = v('eb_world_pctile');
+        const crossed = Object.keys(EARTH_BOUNDS).filter(k => v(`eb_${k}`) === 1).map(k => EARTH_BOUNDS[k]);
+        const clear = Object.keys(EARTH_BOUNDS).filter(k => v(`eb_${k}`) === 0).map(k => EARTH_BOUNDS[k]);
+        const stats = [
+            { label: 'Boundaries crossed somewhere in the city (of 8)', value: String(crossed.length) },
+            { label: 'Most crossed at one spot / fewest', value: `${_round(mx, 0)} / ${_fin(mn) ? _round(mn, 0) : 'n/a'}` },
+            ...Object.keys(EARTH_BOUNDS).filter(k => _fin(v(`eb_${k}`))).map(k => ({ label: `Crossed: ${EARTH_BOUNDS[k]}`, value: v(`eb_${k}`) === 1 ? 'yes' : 'no' })),
+            { label: 'World cities of 1 million+ crossing fewer at one spot', value: _fin(wp) ? `${_round(wp, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = mx;
+        const list = a => (a.length > 1 ? `${a.slice(0, -1).join(', ')} and ${a.at(-1)}` : a[0] || 'none');
+        return {
+            columns: { earth_bounds_max: out }, idx, weightKey: 'earth_bounds_max',
+            metric: { label: 'Most Earth system boundaries crossed at one spot (of 8)', value: mx, unit: 'of 8', higherIs: 'worse' },
+            headline: `The land under the city crosses ${crossed.length} of the Earth Commission's 8 safe and just Earth system boundaries somewhere: ${list(crossed)}. Up to ${_round(mx, 0)} overlap at one spot, more than in ${_round(wp, 0)}% of the world's cities of a million or more.${clear.length ? ` Not crossed: ${list(clear)}.` : ''} The map is about 50 km coarse and describes the region the city draws on, not single neighbourhoods. One value for the whole city.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -767,8 +795,14 @@ const UrbanLensesExtra = (() => {
             needs: ['green_rank.gr_world_pctile', 'green_rank.gr_canopy_world_pctile', 'room_rank.rr_world_pctile', 'flood_exposure.fx_world_pctile', 'warm_days.wd_world_pctile', 'land_efficiency.le_world_pctile', 'population.population'],
             method: `A summary of the city-level rankings built from the European Commission JRC's GHSL Urban Centre Database 2025 (CC BY 4.0), each ranking the city's urban centre among the world's 524 urban centres of a million or more: mean greenness of the built-up area (2025), tree canopy height (2020), residential built-up volume per resident (2020), share of residents in the 100-year river flood zone (2020), share of days hotter than the 1961-1990 normal for the date (2010s), and built-up land growth over population growth (SDG 11.3.1, 2000-2020). Each is turned into the share of world cities the city does better than (flipping the measures where higher is worse) and the scorecard is their plain average, with equal weights. It is a conversation starter, not an index: the measures are not independent, climate drives several, and ties at zero exposure count half. See each lens for sources and caveats. One figure for the whole city.`,
             refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2 (CC BY 4.0); see the greenrank, roomrank, floodgrown, warmdays and packingin lenses' },
+        { id: 'earthbounds', title: 'Earth system boundaries crossed', icon: '🪐',
+            question: "Which of the planet's safe limits does the land around my city cross?",
+            field: { key: 'earth_bounds_max', label: 'Most Earth system boundaries crossed at one spot', unit: 'of 8', higherIs: 'worse', ramp: 'reds', domain: [2, 6] },
+            needs: ['earth_bounds.eb_max', 'earth_bounds.eb_min', 'earth_bounds.eb_world_pctile', 'earth_bounds.eb_bio', 'earth_bounds.eb_gwa', 'earth_bounds.eb_nit', 'earth_bounds.eb_pho', 'earth_bounds.eb_p25', 'earth_bounds.eb_slr', 'earth_bounds.eb_swa', 'earth_bounds.eb_wet', 'population.population'],
+            method: `The Earth Commission (Rockström and others, Nature 2023) set "safe and just" limits for eight of the planet's life-support systems and mapped where on land each is crossed at about 50 km: biosphere integrity (too little intact natural land), nitrogen and phosphorus surplus from fertiliser, surface water flows, groundwater decline, aerosols (annual PM2.5 above 15 µg/m³), climate (wet-bulb heat that harms people) and sea level rise exposure. The European Commission JRC's GHSL Urban Centre Database 2025 (CC BY 4.0) flags each boundary crossed anywhere under the city's urban centre and counts the most and fewest crossed at one spot; the most is ranked among the world's 524 urban centres of a million or more. The transgression map is Abrams (2022), figshare, CC BY 4.0. It describes the region the city sits in and draws on, so neighbourhoods do not differ. One figure for the whole city.`,
+            refs: 'J. Rockström et al., Safe and just Earth system boundaries, Nature 619 (2023); J. Abrams, Transgression map, figshare doi:10.6084/m9.figshare.20079200 (CC BY 4.0); European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, natural systems theme (CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds });
     return { ENTRIES };
 })();

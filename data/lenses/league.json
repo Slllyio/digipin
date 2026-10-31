@@ -120,6 +120,12 @@
      "unit": "/100",
      "higherIs": "better"
     },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1193,6 +1199,12 @@
      "value": 48,
      "unit": "/100",
      "higherIs": "better"
+    },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2598,6 +2610,12 @@
      "unit": "/100",
      "higherIs": "better"
     },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3659,6 +3677,12 @@
      "value": 40,
      "unit": "/100",
      "higherIs": "better"
+    },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 5,
+     "unit": "of 8",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -4950,6 +4974,12 @@
      "unit": "/100",
      "higherIs": "better"
     },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 5,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6090,6 +6120,12 @@
      "unit": "/100",
      "higherIs": "better"
     },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6971,6 +7007,12 @@
      "value": 44,
      "unit": "/100",
      "higherIs": "better"
+    },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8202,6 +8244,12 @@
      "unit": "/100",
      "higherIs": "better"
     },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9234,6 +9282,12 @@
      "unit": "/100",
      "higherIs": "better"
     },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10265,6 +10319,12 @@
      "value": 50,
      "unit": "/100",
      "higherIs": "better"
+    },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 5,
+     "unit": "of 8",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11412,6 +11472,12 @@
      "unit": "/100",
      "higherIs": "better"
     },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 5,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12461,6 +12527,12 @@
      "value": 32,
      "unit": "/100",
      "higherIs": "better"
+    },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 3,
+     "unit": "of 8",
+     "higherIs": "worse"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -13655,6 +13727,12 @@
      "value": 35,
      "unit": "/100",
      "higherIs": "better"
+    },
+    "earthbounds": {
+     "label": "Most Earth system boundaries crossed at one spot (of 8)",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

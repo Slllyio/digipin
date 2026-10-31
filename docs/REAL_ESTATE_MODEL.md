@@ -2086,3 +2086,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## City vs the world scorecard (`worldcard` lens)
 
 No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentiles already stored by `green_rank` (gr_world_pctile, gr_canopy_world_pctile), `room_rank`, `flood_exposure`, `warm_days` and `land_efficiency`, flips those where higher is worse (flood exposure, warm days, land/population ratio) so each reads as 'better than X% of world cities of 1 million+', and averages them with equal weights (WORLD_ROWS). It needs at least three measures. Heat island and soot per person have no world ranking and are left out.
+
+## Earth system boundaries crossed (`earthbounds` lens, `earth_bounds` dataset)
+
+`pipeline/realestate/earthbounds.py` reads NS_ESB_* from the natural systems theme of the GHS Urban Centre Database 2025: per-boundary transgression counts summed under the urban centre (stored as 1 when above 0) for biosphere integrity, groundwater, nitrogen, phosphorus, PM2.5, sea level rise, surface water and wet-bulb temperature, plus NS_ESB_MAX and NS_ESB_MIN (most and fewest boundaries crossed in one cell). NS_ESB_MAX is ranked among urban centres of 1 million+ worldwide. Skipped in the same theme: NS_MPA/NS_TPA (protected areas from WDPA, whose licence is non-commercial). One value per city.
