@@ -96,6 +96,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 139,
+     "unit": "m³",
+     "higherIs": "better"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1145,6 +1151,12 @@
      "value": 25.5,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 164,
+     "unit": "m³",
+     "higherIs": "better"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2526,6 +2538,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 159,
+     "unit": "m³",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3563,6 +3581,12 @@
      "value": 29.1,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 169,
+     "unit": "m³",
+     "higherIs": "better"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -4830,6 +4854,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 157,
+     "unit": "m³",
+     "higherIs": "better"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5946,6 +5976,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 84,
+     "unit": "m³",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6803,6 +6839,12 @@
      "value": 27.2,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 229,
+     "unit": "m³",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8010,6 +8052,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 133,
+     "unit": "m³",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9018,6 +9066,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 253,
+     "unit": "m³",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10025,6 +10079,12 @@
      "value": 27.3,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 115,
+     "unit": "m³",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11148,6 +11208,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 166,
+     "unit": "m³",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12173,6 +12239,12 @@
      "value": 27.8,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 92,
+     "unit": "m³",
+     "higherIs": "better"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -13343,6 +13415,12 @@
      "value": 25,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "roomrank": {
+     "label": "Residential built-up volume per resident, 2020",
+     "value": 204,
+     "unit": "m³",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

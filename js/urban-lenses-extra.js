@@ -516,6 +516,35 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function roomrank(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['room_rank.rr_m3_pp_2020'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`room_rank.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const now = v('rr_m3_pp_2020'), then = v('rr_m3_pp_2000'), ch = v('rr_change_pct'), fl = v('rr_floor_m2_pp'), wp = v('rr_world_pctile'), ip = v('rr_india_pctile'), lo = v('rr_low_pct'), mi = v('rr_mid_pct'), hi = v('rr_high_pct');
+        const pc = x => (_fin(x) ? `${_round(x, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Residential built-up volume per resident, 2020', value: _fin(now) ? `${_round(now, 0)} m³` : 'n/a' },
+            { label: 'Same in 2000', value: _fin(then) ? `${_round(then, 0)} m³` : 'n/a' },
+            { label: 'Change 2000-2020', value: _fin(ch) ? `${ch > 0 ? '+' : ''}${_round(ch, 0)}%` : 'n/a' },
+            { label: 'Rough floor area per resident (volume / 3 m, upper bound)', value: _fin(fl) ? `${_round(fl, 0)} m²` : 'n/a' },
+            { label: 'World cities of 1 million+ with less', value: pc(wp) },
+            { label: 'Indian cities of 1 million+ with less', value: pc(ip) },
+            { label: 'Residents in 1-2 / 3-7 / 8+ floor areas', value: _fin(lo) ? `${_round(lo, 0)} / ${_round(mi, 0)} / ${_round(hi, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = now;
+        const rank = _fin(wp) ? ` That is less than ${_round(100 - wp, 0)}% of the world's cities of a million or more${_fin(ip) ? ` and ${ip >= 50 ? `more than ${_round(ip, 0)}%` : `less than ${_round(100 - ip, 0)}%`} of India's` : ''}.` : '';
+        const trend = _fin(ch) ? (Math.abs(ch) < 5 ? ' It has kept pace with population since 2000.' : ch < 0 ? ` Since 2000 people arrived faster than homes were built: space per resident fell ${_round(-ch, 0)}%.` : ` Since 2000 building outpaced population: space per resident rose ${_round(ch, 0)}%.`) : '';
+        return {
+            columns: { room_rank_m3: out }, idx, weightKey: 'room_rank_m3',
+            metric: { label: 'Residential built-up volume per resident, 2020', value: now, unit: 'm³', higherIs: 'better' },
+            headline: `Homes in the city add up to about ${_round(now, 0)} m³ of building per resident (2020), very roughly ${_round(fl, 0)} m² of floor counting walls, stairs and empty flats.${rank}${trend}${_fin(hi) ? ` ${_round(hi, 0)}% of residents live where 8-floor-plus homes prevail.` : ''} One value for the whole city.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -619,8 +648,14 @@ const UrbanLensesExtra = (() => {
             needs: ['climate_twin.ct_temp_2010', 'climate_twin.ct_temp_2030', 'climate_twin.ct_temp_2030_45', 'climate_twin.ct_rain_2010', 'climate_twin.ct_rain_2030', 'climate_twin.ct_twin_id', 'climate_twin.ct_twin_dist', 'climate_twin.ct_abroad_id', 'climate_twin.ct_abroad_dist', 'population.population'],
             method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) gives every urban centre decade averages of four bioclimatic indicators from the Copernicus Climate Change Service (Wouters 2021): annual mean temperature, temperature seasonality, annual rainfall and rainfall seasonality, from reanalysis up to the 2010s and from a CMIP5 model ensemble under RCP 4.5 and RCP 8.5 for the 2020s and 2030s, averaged over the coarse (about 50 km) grid cells touching the centre. A climate analogue (Fitzpatrick and Dunn 2019; Bastin et al. 2019) is the city whose 2010s climate is closest to this city's projected 2030s climate under RCP 8.5: Euclidean distance over the four indicators, each scaled by its spread across the world's 524 urban centres of a million or more, which are the candidates. A distance above 1 is a loose match. Coarse cells blur coast and hills (Pune's cells take in Western Ghats rain), and models and reanalysis differ, so read the analogue as a picture of the regional climate shift, not a forecast. One figure for the whole city.`,
             refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, climate theme (CC BY 4.0); H. Wouters, Global bioclimatic indicators from 1979 to 2018 derived from reanalysis, Copernicus C3S CDS (doi:10.24381/cds.bce175f0); M. C. Fitzpatrick and R. R. Dunn, Contemporary climatic analogs for 540 North American urban areas in the late 21st century, Nature Communications 10 (2019)' },
+        { id: 'roomrank', title: 'Home space per resident vs the world', icon: '📐',
+            question: 'How much home space does each resident of my city have compared with other big cities?',
+            field: { key: 'room_rank_m3', label: 'Residential built-up volume per resident, 2020', unit: 'm³', higherIs: 'better', ramp: 'viridis', domain: [80, 260] },
+            needs: ['room_rank.rr_m3_pp_2020', 'room_rank.rr_m3_pp_2000', 'room_rank.rr_change_pct', 'room_rank.rr_floor_m2_pp', 'room_rank.rr_world_pctile', 'room_rank.rr_india_pctile', 'room_rank.rr_low_pct', 'room_rank.rr_mid_pct', 'room_rank.rr_high_pct', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) sums GHSL's residential built-up volume (footprints from Sentinel-2 and Landsat times heights from AW3D30, SRTM and Sentinel-2) and GHSL population over each urban centre. Volume per resident is a proxy for home floor space: divided by a 3 m storey it gives a rough floor area that also counts walls, stairs, common areas and empty flats, so it is an upper bound best used to compare cities and years. The city is ranked against the world's 524 urban centres of a million or more and India's 77. Residents are also split by the prevalent height of the residential area they live in (2020). Population and volume are modelled grids, and GHSL's residential class is everything not mapped as non-residential. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, GHSL theme (CC BY 4.0); M. Pesaresi and P. Politis, GHS-BUILT-V R2023A; M. Schiavina et al., GHS-POP R2023A' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank });
     return { ENTRIES };
 })();
