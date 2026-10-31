@@ -2062,3 +2062,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## How much hotter than the countryside? (`heatisland` lens, `heat_island` dataset)
 
 `pipeline/realestate/heatisland.py` reads the monthly UHII images from the Earth Engine community catalog: AMOD2 (all-sky MODIS Terra surface) and SAT (air), by day and by night. It masks zeros (no city) and takes the median in a 3 km disc around the GHSL urban-centre centroid. Hyderabad's centroid sits on Hussain Sagar, so a point on land is used there. It averages the images by year and stores 2016-2020 means and the 2001-2020 least-squares change per decade, plus March-May daytime surface values. Values are stored in hundredths of a degree and converted to °C. One value per city.
+
+## Greener or greyer than other cities? (`greenrank` lens, `green_rank` dataset)
+
+`pipeline/realestate/greenrank.py` reads the greenness theme of the GHS Urban Centre Database 2025 (GHS_UCDB_GLOBE_R2024A V1.2 gpkg, CC BY 4.0): mean Landsat NDVI over the built-up area and a 300 m buffer in 2000 and 2025, and mean canopy top height in 2020 (Lang et al. 2023). Each city is ranked among urban centres of 1 million+ worldwide (524) and in India (77), ties counting half. The built-up area counts (GR_SQM_*) and shares (GR_SHB_*) are not used: the shares are near zero everywhere and their units are unclear. Rainfall sets much of a city's NDVI, so the Indian ranking is the fairer comparison. One value per city, copied to every lived-in L7 block. The `greenchange` lens maps changes block by block.

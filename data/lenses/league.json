@@ -84,6 +84,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.217,
+     "unit": "NDVI",
+     "higherIs": "better"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1121,6 +1127,12 @@
      "value": 3,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.293,
+     "unit": "NDVI",
+     "higherIs": "better"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2490,6 +2502,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.319,
+     "unit": "NDVI",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3515,6 +3533,12 @@
      "value": 2.2,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.386,
+     "unit": "NDVI",
+     "higherIs": "better"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -4770,6 +4794,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.27,
+     "unit": "NDVI",
+     "higherIs": "better"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5874,6 +5904,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.279,
+     "unit": "NDVI",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6719,6 +6755,12 @@
      "value": 3.6,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.285,
+     "unit": "NDVI",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -7914,6 +7956,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.272,
+     "unit": "NDVI",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8910,6 +8958,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.237,
+     "unit": "NDVI",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -9905,6 +9959,12 @@
      "value": 2.2,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.46,
+     "unit": "NDVI",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11016,6 +11076,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.295,
+     "unit": "NDVI",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12029,6 +12095,12 @@
      "value": 2,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.281,
+     "unit": "NDVI",
+     "higherIs": "better"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -13187,6 +13259,12 @@
      "value": 2.9,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "greenrank": {
+     "label": "Mean greenness (NDVI) of the built-up area, 2025",
+     "value": 0.273,
+     "unit": "NDVI",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

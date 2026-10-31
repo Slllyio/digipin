@@ -453,6 +453,36 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function greenrank(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['green_rank.gr_ndvi_2025'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`green_rank.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const now = v('gr_ndvi_2025'), then = v('gr_ndvi_2000'), ch = v('gr_ndvi_change_pct'), wp = v('gr_world_pctile'), ip = v('gr_india_pctile'), cm = v('gr_canopy_m'), cp = v('gr_canopy_world_pctile');
+        const pc = x => (_fin(x) ? `${_round(x, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Mean greenness (NDVI) of the built-up area, 2025', value: _fin(now) ? _round(now, 2) : 'n/a' },
+            { label: 'Same in 2000', value: _fin(then) ? _round(then, 2) : 'n/a' },
+            { label: 'Change 2000-2025', value: _fin(ch) ? `${ch > 0 ? '+' : ''}${_round(ch, 0)}%` : 'n/a' },
+            { label: "World cities of 1 million+ that are less green", value: pc(wp) },
+            { label: "Indian cities of 1 million+ that are less green", value: pc(ip) },
+            { label: 'Mean tree canopy height, 2020', value: _fin(cm) ? `${_round(cm, 1)} m` : 'n/a' },
+            { label: 'World cities of 1 million+ with lower canopy', value: pc(cp) },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = now;
+        const rank = _fin(wp) ? (wp >= 50 ? `greener than ${_round(wp, 0)}% of the world's cities of a million or more` : `greyer than ${_round(100 - wp, 0)}% of the world's cities of a million or more`) : '';
+        const india = _fin(ip) ? ` and ${ip >= 50 ? `greener than ${_round(ip, 0)}%` : `greyer than ${_round(100 - ip, 0)}%`} of India's` : '';
+        const trend = _fin(ch) ? ` Since 2000 it has ${Math.abs(ch) < 3 ? 'stayed about as green' : ch > 0 ? `grown ${_round(ch, 0)}% greener` : `lost ${_round(-ch, 0)}% of its greenness`}.` : '';
+        return {
+            columns: { green_rank_ndvi: out }, idx, weightKey: 'green_rank_ndvi',
+            metric: { label: 'Mean greenness (NDVI) of the built-up area, 2025', value: now, unit: 'NDVI', higherIs: 'better' },
+            headline: `The city's built-up area has a mean greenness of ${_round(now, 2)} (2025): ${rank}${india}.${trend}${_fin(cm) ? ` Its trees average ${_round(cm, 1)} m tall.` : ''} Rainfall sets much of this, so the Indian ranking is the fairer one. One value for the whole city; the greenness-change lens maps which blocks gained or lost green.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -544,8 +574,14 @@ const UrbanLensesExtra = (() => {
             needs: ['heat_island.hi_surf_day', 'heat_island.hi_surf_night', 'heat_island.hi_air_day', 'heat_island.hi_air_night', 'heat_island.hi_surf_night_trend', 'heat_island.hi_surf_day_trend', 'heat_island.hi_air_night_trend', 'heat_island.hi_summer_surf_day', 'population.population'],
             method: `Yang, Xu, Chakraborty and others (Remote Sensing of Environment, 2024; data CC BY 4.0 via the Earth Engine community catalog) estimate the monthly urban heat island intensity of over 10,000 cities from 2001 to 2020: the city's temperature minus that of a ring of comparable countryside of the same area, with water, high ground and other confounders removed (their dynamic equal-area method). Two of their series are used: ground surface temperature from MODIS Terra under all skies (cloud gaps filled; about 10:30 in the morning and 10:30 at night) and 1 km near-surface air temperature. Each city's value is read near its GHSL urban-centre centre, averaged by year, given as the 2016-2020 mean and as a least-squares change per decade over 2001-2020. Indian cities in dry regions often show a daytime cool island before the monsoon, because bare fields around them heat faster than the city. Air temperature heat islands are smaller than surface ones. One figure for the whole city.`,
             refs: 'Q. Yang, Y. Xu, T. C. Chakraborty et al., A global urban heat island intensity dataset: generation, comparison, and analysis, Remote Sensing of Environment 312 (2024); data figshare doi:10.6084/m9.figshare.24821538 (CC BY 4.0)' },
+        { id: 'greenrank', title: 'Greener or greyer than other cities?', icon: '🌳',
+            question: 'Is my city greener or greyer than other big cities in India and the world?',
+            field: { key: 'green_rank_ndvi', label: 'Mean greenness (NDVI) of the built-up area, 2025', unit: 'NDVI', higherIs: 'better', ramp: 'greens', domain: [0.2, 0.5] },
+            needs: ['green_rank.gr_ndvi_2025', 'green_rank.gr_ndvi_2000', 'green_rank.gr_ndvi_change_pct', 'green_rank.gr_world_pctile', 'green_rank.gr_india_pctile', 'green_rank.gr_canopy_m', 'green_rank.gr_canopy_world_pctile', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) gives every one of the world's 11,422 urban centres the mean Landsat NDVI (an index of green leaf: roofs and bare ground near 0.1, lawns and crops 0.3-0.6, dense trees above 0.6) over its built-up area and a 300 m buffer, every five years as three-year averages, and the mean canopy top height there in 2020 from Lang and others' 10 m global canopy height model. The city is ranked against the 524 urban centres of a million or more worldwide and the 77 in India. An urban centre is GHSL's dense built-up area, not the municipal boundary. Rainfall and season of the images set much of the value, so a dry city will rank low however many parks it has; compare with Indian peers. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, greenness theme (doi:10.2905/1a338be6-7eaf-480c-9664-3a8ade88cbcd, CC BY 4.0); N. Lang et al., A high-resolution canopy height model of the Earth, Nature Ecology & Evolution 7 (2023)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank });
     return { ENTRIES };
 })();
