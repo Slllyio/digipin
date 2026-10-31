@@ -335,6 +335,36 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function emitters(fr) {
+        const c = fr.cols, n = fr.grid.n, pm = c['emission_sources.es_pm25_t'], ind = c['emission_sources.es_industry_pct'], home = c['emission_sources.es_homes_pct'],
+            pw = c['emission_sources.es_power_pct'], nt = c['emission_sources.es_nox_traffic_pct'], pop = c['population.population'];
+        if (!pm || !pm.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(pm[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const top = wquantile(pm, pop, idx, 0.9);
+        const hot = sum(i => pm[i] >= top), indLed = ind ? sum(i => _fin(ind[i]) && ind[i] >= 50) : NaN, homeLed = home ? sum(i => _fin(home[i]) && home[i] >= 50) : NaN;
+        const w = (col) => col ? wmean(col, pop, idx.filter(i => _fin(col[i]))) : NaN;
+        const stats = [
+            { label: 'PM2.5 emitted a year within 2 km, middle resident', value: `${_round(wquantile(pm, pop, idx, 0.5), 0)} t` },
+            { label: 'Residents where industry emits most of the PM2.5 within 2 km', value: `${_people(indLed)} (${pct(indLed)}%)` },
+            { label: 'Residents where household cooking and heating fuel emits most of it', value: `${_people(homeLed)} (${pct(homeLed)}%)` },
+            { label: 'Industry share of PM2.5 emitted near the average resident', value: `${_round(w(ind), 0)}%` },
+            { label: 'Household fuel share of PM2.5 emitted near the average resident', value: `${_round(w(home), 0)}%` },
+        ];
+        if (pw && _fin(w(pw)) && w(pw) >= 1) stats.push({ label: 'Power plant share of PM2.5 emitted near the average resident', value: `${_round(w(pw), 0)}%` });
+        if (nt && _fin(w(nt))) stats.push({ label: 'Vehicle exhaust share of NOx emitted near the average resident', value: `${_round(w(nt), 0)}%` });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = pm[i];
+        return {
+            columns: { emitters_pm25_t: out }, idx, weightKey: 'emitters_pm25_t',
+            metric: { label: 'Residents where industry emits most of the PM2.5 within 2 km', value: pct(indLed), unit: '%', higherIs: 'worse' },
+            headline: `By the EU's EDGAR inventory, industry puts out most of the fine soot emitted within 2 km of ${_people(indLed)} residents here (${pct(indLed)}%), and household cooking and heating fuel most of it for ${_people(homeLed)} (${pct(homeLed)}%). The ${_people(hot)} residents in the top tenth of blocks have ${_round(top, 0)} tonnes or more emitted around them a year.${nt && _fin(w(nt)) ? ` Vehicles show up in nitrogen oxides instead: ${_round(w(nt), 0)}% of the NOx emitted near the average resident is exhaust.` : ''} Road and construction dust are not in the inventory.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -402,8 +432,14 @@ const UrbanLensesExtra = (() => {
             needs: ['intercity_trains.it_trains_5km', 'intercity_trains.it_hub_km', 'intercity_trains.it_hub_trains', 'population.population'],
             method: `DataMeet's Indian Railways data (github.com/datameet/railways, CC0), gathered from the 2016 timetable: 8,990 stations, 5,208 trains and 417,080 scheduled stops. Only express-class trains count (Express, Superfast, Mail, Rajdhani, Shatabdi, Jan Shatabdi, Duronto, Garib Rath, Sampark Kranti); passenger, MEMU/DEMU and suburban trains are left out, and a station a train runs through without stopping (arrival equal to departure) is not counted. Each block adds up the distinct trains stopping at stations within 5 km in a straight line and finds the nearest station with 50 or more. A train counts once however many days a week it runs. The timetable is ten years old: trains added since, including the Vande Bharat expresses, are missing, and a few stations have been renamed or rebuilt.`,
             refs: 'DataMeet, Indian Railways stations, trains and schedules (S. Bhangar and S. Hussain, 2016), github.com/datameet/railways (CC0)' },
+        { id: 'emitters', title: 'Who emits the soot nearby', icon: '🏭',
+            question: 'Where does the smoke and soot around my home come from: factories, kitchens or traffic?',
+            field: { key: 'emitters_pm25_t', label: 'PM2.5 emitted within 2 km a year (EDGAR 2024)', unit: 't/yr', higherIs: 'worse', ramp: 'reds', domain: [0, 1500] },
+            needs: ['emission_sources.es_pm25_t', 'emission_sources.es_industry_pct', 'emission_sources.es_homes_pct', 'emission_sources.es_power_pct', 'emission_sources.es_nox_traffic_pct', 'population.population'],
+            method: `The European Commission Joint Research Centre's EDGAR 2025 release (CC BY 4.0) maps the tonnes of fine particles (PM2.5) and nitrogen oxides emitted in 2024 on a 1 km grid, by sector: industry, residential (cooking and heating fuel in homes), road transport exhaust, power plants, agriculture, shipping and aviation, and waste for NOx. Each block adds up the 1 km cells whose centre lies within 2 km and takes each sector's share. EDGAR is a modelled inventory: national fuel and activity totals are spread over the map using lists of plants and factories, population, roads and land use, so a cell is an estimate rather than a measurement, and its industry hot spots (Peenya and Bommasandra in Bengaluru, Sahibabad and Mundka in Delhi) are where it places factories. It counts only what chimneys, stoves and tailpipes emit: road and construction dust and the particles that form in the air from gases, which source apportionment studies find large in Indian cities, are not in it. So it shows who emits nearby, not what people breathe; the air lenses show the measured and satellite air.`,
+            refs: 'M. Crippa et al., EDGAR 2025 global emission grids at 0.01 degree for 2024, European Commission Joint Research Centre (edgar.jrc.ec.europa.eu/dataset_ghg2025, CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters });
     return { ENTRIES };
 })();

@@ -2046,3 +2046,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Long-distance trains within reach (`intercity` lens, `intercity_trains` dataset)
 
 `pipeline/realestate/intercitytrains.py` reads DataMeet's 2016 Indian Railways stations, trains and schedules (CC0). It keeps express-class trains and counts a train at a station only when it starts, ends or waits there. For each lived block it adds up the distinct such trains at stations within 5 km and finds the nearest station with 50 or more. The data has no days of operation, so a weekly train counts the same as a daily one.
+
+## Who emits the soot nearby (`emitters` lens, `emission_sources` dataset)
+
+`pipeline/realestate/emissionsources.py` reads the EDGAR 2025 1 km (0.01 degree) PM2.5 and NOx grids for 2024 (European Commission JRC, CC BY 4.0). For each lived block it sums the 1 km cells whose centre lies within 2 km and records each sector's share: industry, household fuel, power plants and road exhaust for PM2.5, and road exhaust for NOx. It also stores the block's rank among the city's blocks. EDGAR spreads national totals with proxies, and it leaves out road and construction dust and secondary particles, so the lens describes direct emitters near a block, not the air people breathe there.

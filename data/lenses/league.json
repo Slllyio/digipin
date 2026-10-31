@@ -60,6 +60,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 46.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1071,6 +1077,12 @@
     "intercity": {
      "label": "Residents with no long-distance train stop within 5 km",
      "value": 30.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 62.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2418,6 +2430,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 21.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3417,6 +3435,12 @@
     "intercity": {
      "label": "Residents with no long-distance train stop within 5 km",
      "value": 15.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 11,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -4650,6 +4674,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 35.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5730,6 +5760,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6549,6 +6585,12 @@
     "intercity": {
      "label": "Residents with no long-distance train stop within 5 km",
      "value": 24.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 38.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7722,6 +7764,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 33.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8694,6 +8742,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 13.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -9663,6 +9717,12 @@
     "intercity": {
      "label": "Residents with no long-distance train stop within 5 km",
      "value": 8.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 34.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10752,6 +10812,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 29.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -11739,6 +11805,12 @@
     "intercity": {
      "label": "Residents with no long-distance train stop within 5 km",
      "value": 12.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 38.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12873,6 +12945,12 @@
     "intercity": {
      "label": "Residents with no long-distance train stop within 5 km",
      "value": 43.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "emitters": {
+     "label": "Residents where industry emits most of the PM2.5 within 2 km",
+     "value": 30.3,
      "unit": "%",
      "higherIs": "worse"
     },
