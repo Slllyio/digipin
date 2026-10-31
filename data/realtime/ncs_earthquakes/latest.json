@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-30T23:06:49Z",
+  "generated_at_iso": "2026-10-31T02:21:39Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-31 06:00:02|25.052,91.394",
+      "magnitude": 3.4,
+      "origin_time": "2026-10-31 06:00:02",
+      "latitude": 25.052,
+      "longitude": 91.394,
+      "depth_km": 25.0,
+      "region": "Bangladesh",
+      "location": "41km SW of Cherrapunjee, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-31 04:07:55|25.997,95.415",
       "magnitude": 3.3,
@@ -11,6 +22,17 @@
       "depth_km": 108.0,
       "region": "Myanmar",
       "location": "97km ESE of Mokokchung, Nagaland, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-31 03:55:14|31.489,93.116",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-31 03:55:14",
+      "latitude": 31.489,
+      "longitude": 93.116,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "418km NNW of Basar, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     },
     {
@@ -1628,28 +1650,6 @@
       "depth_km": 15.0,
       "region": "Tibet",
       "location": "500km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 17:02:33|19.909,79.133",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-22 17:02:33",
-      "latitude": 19.909,
-      "longitude": 79.133,
-      "depth_km": 5.0,
-      "region": "Chandrapur, Maharashtra",
-      "location": "137km S of Nagpur, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 16:24:17|27.845,86.977",
-      "magnitude": 3.2,
-      "origin_time": "2026-10-22 16:24:17",
-      "latitude": 27.845,
-      "longitude": 86.977,
-      "depth_km": 9.0,
-      "region": "Nepal",
-      "location": "133km WNW of Yuksom, Sikkim, India",
       "review_status": "Reviewed"
     }
   ]
