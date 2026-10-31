@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-10-31T02:21:39Z",
+  "generated_at_iso": "2026-10-31T08:39:48Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-31 13:49:49|25.038,91.393",
+      "magnitude": 2.9,
+      "origin_time": "2026-10-31 13:49:49",
+      "latitude": 25.038,
+      "longitude": 91.393,
+      "depth_km": 15.0,
+      "region": "Bangladesh",
+      "location": "42km SW of Cherrapunjee, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-31 11:22:19|31.524,93.461",
+      "magnitude": 4.2,
+      "origin_time": "2026-10-31 11:22:19",
+      "latitude": 31.524,
+      "longitude": 93.461,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "411km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-31 10:46:10|24.748,94.717",
+      "magnitude": 3.5,
+      "origin_time": "2026-10-31 10:46:10",
+      "latitude": 24.748,
+      "longitude": 94.717,
+      "depth_km": 10.0,
+      "region": "Myanmar",
+      "location": "31km SE of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-31 07:43:33|26.950,92.638",
+      "magnitude": 2.9,
+      "origin_time": "2026-10-31 07:43:33",
+      "latitude": 26.95,
+      "longitude": 92.638,
+      "depth_km": 17.0,
+      "region": "Sonitpur, Assam",
+      "location": "36km NNW of Tezpur, Assam, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-31 06:00:02|25.052,91.394",
       "magnitude": 3.4,
@@ -1606,50 +1650,6 @@
       "depth_km": 35.0,
       "region": "Tibet",
       "location": "673km ENE of Hanley, Jammu & Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 21:09:20|31.898,93.595",
-      "magnitude": 5.0,
-      "origin_time": "2026-10-22 21:09:20",
-      "latitude": 31.898,
-      "longitude": 93.595,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "447km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 20:42:33|30.473,92.964",
-      "magnitude": 5.0,
-      "origin_time": "2026-10-22 20:42:33",
-      "latitude": 30.473,
-      "longitude": 92.964,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "323km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 20:29:41|32.592,94.217",
-      "magnitude": 5.2,
-      "origin_time": "2026-10-22 20:29:41",
-      "latitude": 32.592,
-      "longitude": 94.217,
-      "depth_km": 15.0,
-      "region": "China",
-      "location": "505km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 20:03:42|32.411,93.621",
-      "magnitude": 7.0,
-      "origin_time": "2026-10-22 20:03:42",
-      "latitude": 32.411,
-      "longitude": 93.621,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "500km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

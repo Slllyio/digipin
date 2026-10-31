@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-31T02:21:35Z",
+  "generated_at_iso": "2026-10-31T08:39:36Z",
   "count": 13,
   "records": [
+    {
+      "id": "us7000tugv",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-31T03:14:13.580000+00:00",
+      "latitude": 30.9098,
+      "longitude": 142.5186,
+      "depth_km": 10.0,
+      "place": "Izu Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tugv",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tugs",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-31T02:37:19.894000+00:00",
+      "latitude": 7.087,
+      "longitude": -34.6828,
+      "depth_km": 10.0,
+      "place": "central Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tugs",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tugf",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-31T00:32:46.687000+00:00",
+      "latitude": 33.5548,
+      "longitude": 141.8118,
+      "depth_km": 10.0,
+      "place": "223 km SE of Katsuura, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tugf",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tugd",
       "magnitude": 4.8,
@@ -121,42 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7b",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000tu6i",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-30T05:10:19.806000+00:00",
-      "latitude": -18.1766,
-      "longitude": -177.0471,
-      "depth_km": 371.793,
-      "place": "Fiji region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu6i",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tu6f",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-30T04:58:31.595000+00:00",
-      "latitude": 40.3108,
-      "longitude": 142.3621,
-      "depth_km": 56.598,
-      "place": "51 km ENE of Noda, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu6f",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tu5q",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-30T03:04:17.406000+00:00",
-      "latitude": -5.8137,
-      "longitude": 148.3151,
-      "depth_km": 116.297,
-      "place": "97 km NNE of Finschhafen, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu5q",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
