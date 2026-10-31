@@ -114,6 +114,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 30,
+     "unit": "/100",
+     "higherIs": "better"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1181,6 +1187,12 @@
      "value": 13.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 48,
+     "unit": "/100",
+     "higherIs": "better"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2580,6 +2592,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 48,
+     "unit": "/100",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3635,6 +3653,12 @@
      "value": 10,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 40,
+     "unit": "/100",
+     "higherIs": "better"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -4920,6 +4944,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 33,
+     "unit": "/100",
+     "higherIs": "better"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6054,6 +6084,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 35,
+     "unit": "/100",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6929,6 +6965,12 @@
      "value": 11.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 44,
+     "unit": "/100",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8154,6 +8196,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 47,
+     "unit": "/100",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9180,6 +9228,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 37,
+     "unit": "/100",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10205,6 +10259,12 @@
      "value": 7.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 50,
+     "unit": "/100",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11346,6 +11406,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 38,
+     "unit": "/100",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12389,6 +12455,12 @@
      "value": 27.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 32,
+     "unit": "/100",
+     "higherIs": "better"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -13577,6 +13649,12 @@
      "value": 17.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "worldcard": {
+     "label": "Average standing among the world's cities of 1 million+ (0-100)",
+     "value": 35,
+     "unit": "/100",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

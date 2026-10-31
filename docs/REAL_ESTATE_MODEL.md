@@ -2082,3 +2082,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Unusually hot days, then and now (`warmdays` lens, `warm_days` dataset)
 
 `pipeline/realestate/warmdays.py` reads CL_WDS_CUR_1970/1990/2010 from the climate theme of the GHS Urban Centre Database 2025: TX90p, the share of days above the 1961-1990 90th percentile of daily maximum temperature for the calendar day, decade averages from reanalysis. The 2010s value is ranked among urban centres of 1 million+ worldwide and in India. The CL_WDS_126/245/370/585 projections are raw CMIP6 output and several Indian cities come out lower in the 2030s than in the 2010s reanalysis, so they are not used. One value per city.
+
+## City vs the world scorecard (`worldcard` lens)
+
+No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentiles already stored by `green_rank` (gr_world_pctile, gr_canopy_world_pctile), `room_rank`, `flood_exposure`, `warm_days` and `land_efficiency`, flips those where higher is worse (flood exposure, warm days, land/population ratio) so each reads as 'better than X% of world cities of 1 million+', and averages them with equal weights (WORLD_ROWS). It needs at least three measures. Heat island and soot per person have no world ranking and are left out.

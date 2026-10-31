@@ -607,6 +607,39 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    // City-vs-world rows: [dataset.field of the world percentile, theme, true when a higher percentile is worse]
+    const WORLD_ROWS = [
+        ['green_rank.gr_world_pctile', 'greenness of the built-up area', false],
+        ['room_rank.rr_world_pctile', 'home space per resident', false],
+        ['flood_exposure.fx_world_pctile', 'share of residents in the river flood zone', true],
+        ['warm_days.wd_world_pctile', 'how often days are unusually hot', true],
+        ['land_efficiency.le_world_pctile', 'built-up land growing faster than population', true],
+        ['green_rank.gr_canopy_world_pctile', 'tree canopy height', false],
+    ];
+
+    function worldcard(fr) {
+        const c = fr.cols, n = fr.grid.n;
+        const idx = _residents(fr).filter(i => WORLD_ROWS.some(([k]) => c[k] && _fin(c[k][i])));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], rows = [];
+        for (const [k, theme, worse] of WORLD_ROWS) {
+            const a = c[k];
+            if (a && _fin(a[i0])) rows.push({ theme, better: worse ? 100 - a[i0] : a[i0] });
+        }
+        if (rows.length < 3) return null;
+        const score = rows.reduce((t, r) => t + r.better, 0) / rows.length;
+        const sorted = [...rows].sort((a, b) => b.better - a.better), best = sorted[0], worst = sorted.at(-1);
+        const stats = rows.map(r => ({ label: `Better than this share of the world's cities of 1 million+ on ${r.theme}`, value: `${_round(r.better, 0)}%` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = score;
+        return {
+            columns: { world_card_score: out }, idx, weightKey: 'world_card_score',
+            metric: { label: "Average standing among the world's cities of 1 million+ (0-100)", value: _round(score, 0), unit: '/100', higherIs: 'better' },
+            headline: `Across ${rows.length} measures the city does better than ${_round(score, 0)}% of the world's 524 cities of a million or more on average. Its strongest is ${best.theme} (better than ${_round(best.better, 0)}%); its weakest is ${worst.theme} (better than only ${_round(worst.better, 0)}%). Each measure has its own lens with the detail; climate and rainfall shape several of them, so compare with Indian cities too. One value for the whole city.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -728,8 +761,14 @@ const UrbanLensesExtra = (() => {
             needs: ['warm_days.wd_1970s', 'warm_days.wd_1990s', 'warm_days.wd_2010s', 'warm_days.wd_world_pctile', 'warm_days.wd_india_pctile', 'population.population'],
             method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) carries the climate extreme index TX90p from the Copernicus Climate Change Service (Sandstad et al. 2022): the share of days whose maximum temperature beats the 90th percentile for that calendar day (5-day window) in 1961-1990. It was about 10% in the base years by construction, so 20% means unusually hot days are twice as common. Decade averages come from reanalysis over the coarse (about 50 km) grid cells touching the urban centre. The 2010s value is ranked among the world's 524 urban centres of a million or more and India's 77. The database's CMIP6 projections for the 2030s are raw model output that does not line up with the reanalysis, so they are left out. One figure for the whole city.`,
             refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, climate theme (CC BY 4.0); M. Sandstad, C. Schwingshackl and C. Iles, Climate extreme indices and heat stress indicators derived from CMIP6 global climate projections, Copernicus C3S CDS (doi:10.24381/cds.776e08bd)' },
+        { id: 'worldcard', title: 'City vs the world scorecard', icon: '🌍',
+            question: "How does my city compare with the world's big cities?",
+            field: { key: 'world_card_score', label: "Average standing among the world's cities of 1 million+", unit: '/100', higherIs: 'better', ramp: 'viridis', domain: [20, 70] },
+            needs: ['green_rank.gr_world_pctile', 'green_rank.gr_canopy_world_pctile', 'room_rank.rr_world_pctile', 'flood_exposure.fx_world_pctile', 'warm_days.wd_world_pctile', 'land_efficiency.le_world_pctile', 'population.population'],
+            method: `A summary of the city-level rankings built from the European Commission JRC's GHSL Urban Centre Database 2025 (CC BY 4.0), each ranking the city's urban centre among the world's 524 urban centres of a million or more: mean greenness of the built-up area (2025), tree canopy height (2020), residential built-up volume per resident (2020), share of residents in the 100-year river flood zone (2020), share of days hotter than the 1961-1990 normal for the date (2010s), and built-up land growth over population growth (SDG 11.3.1, 2000-2020). Each is turned into the share of world cities the city does better than (flipping the measures where higher is worse) and the scorecard is their plain average, with equal weights. It is a conversation starter, not an index: the measures are not independent, climate drives several, and ties at zero exposure count half. See each lens for sources and caveats. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2 (CC BY 4.0); see the greenrank, roomrank, floodgrown, warmdays and packingin lenses' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard });
     return { ENTRIES };
 })();
