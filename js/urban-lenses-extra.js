@@ -545,6 +545,41 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function floodgrown(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['flood_exposure.fx_river100_pct'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`flood_exposure.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const now = v('fx_river100_pct'), y75 = v('fx_river100_1975_pct'), y00 = v('fx_river100_2000_pct'), ppl = v('fx_river100_people'), r10 = v('fx_river10_pct'), co = v('fx_coast100_pct'), l5 = v('fx_lecz5_pct'), l10 = v('fx_lecz10_pct'), wp = v('fx_world_pctile'), ip = v('fx_india_pctile');
+        const pc = x => (_fin(x) ? `${_round(x, 1)}%` : 'n/a');
+        const stats = [
+            { label: 'Residents in the 100-year river flood zone, 2020', value: pc(now) },
+            { label: 'Same in 1975 / 2000', value: `${pc(y75)} / ${pc(y00)}` },
+            { label: 'People in the 100-year river flood zone', value: _fin(ppl) ? _people(ppl) : 'n/a' },
+            { label: 'Residents in the 10-year river flood zone', value: pc(r10) },
+            { label: 'Residents in the 100-year coastal flood zone', value: pc(co) },
+            { label: 'Residents under 5 m / 10 m above sea level', value: _fin(l10) ? `${pc(l5)} / ${pc(l10)}` : 'inland' },
+            { label: 'World cities of 1 million+ with a smaller share', value: _fin(wp) ? `${_round(wp, 0)}%` : 'n/a' },
+            { label: 'Indian cities of 1 million+ with a smaller share', value: _fin(ip) ? `${_round(ip, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = now;
+        const coast = _fin(l10) && l10 >= 1 ? ` ${_round(l10, 0)}% live on land under 10 m above the sea${_fin(co) && co >= 0.5 ? `, and ${_round(co, 1)}% where a 100-year sea surge would reach` : ''}.` : '';
+        let headline;
+        if (now < 0.5) {
+            headline = `Almost none of the city's residents live where the river flood model puts a 100-year flood (${pc(now)}, 2020); its flooding is waterlogging from rain and blocked drains, which this map cannot see.${coast} One value for the whole city; the flood lenses map the low spots block by block.`;
+        } else {
+            const trend = _fin(y75) ? (now - y75 >= 1 ? `, up from ${pc(y75)} in 1975 as the city spread onto the floodplain` : `, about the same as in 1975 (${pc(y75)})`) : '';
+            headline = `${pc(now)} of the city's residents${_fin(ppl) ? `, about ${_people(ppl)} people,` : ''} live where a 100-year river flood would reach (2020)${trend}. That is a larger share than in ${_round(wp, 0)}% of the world's cities of a million or more${_fin(ip) ? ` and ${_round(ip, 0)}% of India's` : ''}.${_fin(r10) && r10 >= 1 ? ` ${pc(r10)} live in the zone a 10-year flood would reach.` : ''}${coast} The model assumes no embankments or drains. One value for the whole city.`;
+        }
+        return {
+            columns: { flood_grown_pct: out }, idx, weightKey: 'flood_grown_pct',
+            metric: { label: 'Residents in the 100-year river flood zone, 2020', value: now, unit: '%', higherIs: 'worse' },
+            headline, stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -654,8 +689,14 @@ const UrbanLensesExtra = (() => {
             needs: ['room_rank.rr_m3_pp_2020', 'room_rank.rr_m3_pp_2000', 'room_rank.rr_change_pct', 'room_rank.rr_floor_m2_pp', 'room_rank.rr_world_pctile', 'room_rank.rr_india_pctile', 'room_rank.rr_low_pct', 'room_rank.rr_mid_pct', 'room_rank.rr_high_pct', 'population.population'],
             method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) sums GHSL's residential built-up volume (footprints from Sentinel-2 and Landsat times heights from AW3D30, SRTM and Sentinel-2) and GHSL population over each urban centre. Volume per resident is a proxy for home floor space: divided by a 3 m storey it gives a rough floor area that also counts walls, stairs, common areas and empty flats, so it is an upper bound best used to compare cities and years. The city is ranked against the world's 524 urban centres of a million or more and India's 77. Residents are also split by the prevalent height of the residential area they live in (2020). Population and volume are modelled grids, and GHSL's residential class is everything not mapped as non-residential. One figure for the whole city.`,
             refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, GHSL theme (CC BY 4.0); M. Pesaresi and P. Politis, GHS-BUILT-V R2023A; M. Schiavina et al., GHS-POP R2023A' },
+        { id: 'floodgrown', title: 'Has the city grown into its floodplain?', icon: '🌊',
+            question: 'What share of my city lives in flood zones, and how does that compare with other cities and with 1975?',
+            field: { key: 'flood_grown_pct', label: 'Residents in the 100-year river flood zone, 2020', unit: '%', higherIs: 'worse', ramp: 'blues', domain: [0, 30] },
+            needs: ['flood_exposure.fx_river100_pct', 'flood_exposure.fx_river100_1975_pct', 'flood_exposure.fx_river100_2000_pct', 'flood_exposure.fx_river100_people', 'flood_exposure.fx_river10_pct', 'flood_exposure.fx_coast100_pct', 'flood_exposure.fx_lecz5_pct', 'flood_exposure.fx_lecz10_pct', 'flood_exposure.fx_world_pctile', 'flood_exposure.fx_india_pctile', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) overlays GHSL population grids for 1975 to 2020 on hazard maps for every urban centre: JRC GloFAS modelled river inundation for 10 and 100-year return periods (Baugh et al. 2024), JRC extreme sea level flood maps for a 100-year surge (Vousdoukas et al. 2018), and CIESIN's Low Elevation Coastal Zone v3 (land under 5 m and 10 m). The city's share of residents in the 100-year river flood zone is ranked among the world's 524 urban centres of a million or more and India's 77 (ties count half). Flood maps are about 90 m models of a rare flood without defences: they miss embankments, drains and the rain waterlogging that floods most Indian streets. Population after 2020 is projected, so 2020 is the latest year. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, exposure theme (CC BY 4.0); C. Baugh et al., Modelled flood inundation for different return period scenarios at the global scale, JRC (2024); M. I. Vousdoukas et al., Nature Communications 9 (2018); CIESIN, LECZ v3 (2021)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown });
     return { ENTRIES };
 })();

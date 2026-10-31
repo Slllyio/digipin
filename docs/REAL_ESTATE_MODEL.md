@@ -2074,3 +2074,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Home space per resident vs the world (`roomrank` lens, `room_rank` dataset)
 
 `pipeline/realestate/roomrank.py` reads the GHSL theme of the GHS Urban Centre Database 2025: residential built-up volume (GH_BUV_RES) and population (GH_POP_TOT) for 2000 and 2020, and residents by prevalent residential height (GH_BUT_P11/P12/P13, 1-2, 3-7 and 8+ floors, 2020). Volume per resident is ranked among urban centres of 1 million+ worldwide and in India (ties count half); floor area is volume over a 3 m storey, an upper bound that includes walls, circulation and vacant stock. The 2025 values are GHSL projections, so 2020 is used. One value per city.
+
+## Has the city grown into its floodplain? (`floodgrown` lens, `flood_exposure` dataset)
+
+`pipeline/realestate/floodexposure.py` reads the exposure theme of the GHS Urban Centre Database 2025: share of residents in the GloFAS 10 and 100-year river flood zones (EX_010_SHP, EX_100_SHP; 1975, 2000 and 2020), people in the 100-year zone (EX_100_POP), the 100-year coastal flood zone (EX_CF1_SHP) and the low elevation coastal zone under 5 m and 10 m (EX_L05_SHP, EX_LEC_SHP; coastal centres only). The 100-year share is ranked among urban centres of 1 million+ worldwide and in India, ties counting half (so cities with no exposure share the bottom rank). Skipped: EX_SHA_* (GEM seismic hazard, CC BY-NC-SA), EX_E01-E10 earthquake classes, and the cyclone wind columns, which read zero even for Chennai and Kolkata. One value per city.

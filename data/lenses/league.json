@@ -102,6 +102,12 @@
      "unit": "m³",
      "higherIs": "better"
     },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 29.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1157,6 +1163,12 @@
      "value": 164,
      "unit": "m³",
      "higherIs": "better"
+    },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2544,6 +2556,12 @@
      "unit": "m³",
      "higherIs": "better"
     },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3587,6 +3605,12 @@
      "value": 169,
      "unit": "m³",
      "higherIs": "better"
+    },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 24.2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -4860,6 +4884,12 @@
      "unit": "m³",
      "higherIs": "better"
     },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 29.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5982,6 +6012,12 @@
      "unit": "m³",
      "higherIs": "better"
     },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6845,6 +6881,12 @@
      "value": 229,
      "unit": "m³",
      "higherIs": "better"
+    },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 0.3,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8058,6 +8100,12 @@
      "unit": "m³",
      "higherIs": "better"
     },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9072,6 +9120,12 @@
      "unit": "m³",
      "higherIs": "better"
     },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10085,6 +10139,12 @@
      "value": 115,
      "unit": "m³",
      "higherIs": "better"
+    },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 28.5,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11214,6 +11274,12 @@
      "unit": "m³",
      "higherIs": "better"
     },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 10.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12245,6 +12311,12 @@
      "value": 92,
      "unit": "m³",
      "higherIs": "better"
+    },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 13.2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -13421,6 +13493,12 @@
      "value": 204,
      "unit": "m³",
      "higherIs": "better"
+    },
+    "floodgrown": {
+     "label": "Residents in the 100-year river flood zone, 2020",
+     "value": 4.3,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
