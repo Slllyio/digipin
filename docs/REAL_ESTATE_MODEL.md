@@ -1967,3 +1967,13 @@ and boys columns; BBMP's own columns are used, not Bengaluru Urban district's). 
 against the mean of `BASE` years (Chennai 2019 only, because its 2018 row is half a year; Delhi and BBMP 2017-2019) and
 the latest year's births against the same baseline. Values are copied to every lived-in L7 block, as for
 `city_road_deaths`; the lens reads `fr.city` to name the register.
+
+## Ground that could liquefy, Greater Chennai (`liquefy` lens, `liquefaction` dataset)
+
+`pipeline/realestate/liquefaction.py` downloads the Zenodo archive (record 19105121) and reads two of the authors'
+output rasters in memory, `Liquefaction_Sus_new_AHP.tif` (score 1-3.5) and `SHA_New.tif` (0-3.4), both 20 m in
+UTM 44N. Block centres from `lived_cells` are transformed with `rasterio.warp.transform`; `window_values()` takes the
+finite pixels within 120 m, and `block_rows()` keeps blocks with at least 10 mapped pixels. Class breaks come from
+the authors' QGIS project: liquefaction not likely up to 2.2, possible to 2.75, likely above; seismic hazard very low
+to 1.4, low to 2.4, moderate to 3, high above. The lens lives in js/urban-lenses-extra.js, wired into app.html, sw.js
+(cache bumped), tests/setup.js and scripts/build_lens_league.js like the other lens modules.

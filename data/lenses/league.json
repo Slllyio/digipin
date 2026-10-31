@@ -1,6 +1,6 @@
 {
  "schema": "digipin.lens-league/1",
- "generated": "2026-10-30",
+ "generated": "2026-10-31",
  "cities": {
   "ahmedabad": {
    "label": "Ahmedabad",
@@ -3273,6 +3273,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 35.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "liquefy": {
+     "label": "Residents in blocks mostly on ground likely to liquefy",
+     "value": 37,
      "unit": "%",
      "higherIs": "worse"
     },

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T17:40:22Z",
+  "generated": "2026-10-31T13:20:29Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -22785,6 +22785,100 @@
             "north": 18.6455078125
           },
           "json": "lightning/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "liquefaction",
+      "title": "Liquefaction susceptibility and seismic hazard (Greater Chennai)",
+      "description": "Share of each block on ground scored likely or possibly to liquefy in an earthquake, and its seismic hazard class, from Manoharan and Ganapathy's first-level GIS assessment of Greater Chennai (lithology, geomorphology, groundwater and bedrock depth, AHP weights; 20 m). Zenodo record 19105121, CC BY 4.0.",
+      "source": "pipeline/realestate/liquefaction.py (Zenodo 19105121 derived rasters)",
+      "license": "CC BY 4.0 (S. G. Manoharan and G. P. Ganapathy, Zenodo 19105121)",
+      "group": "Hazards",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "lq_likely_pct",
+          "label": "Ground where liquefaction is likely (share of block)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "lq_possible_pct",
+          "label": "Ground where liquefaction is possible (share of block)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "lq_index",
+          "label": "Liquefaction susceptibility score (1-3.5)",
+          "type": "number",
+          "agg": "mean",
+          "domain": [
+            1,
+            3.5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "sh_index",
+          "label": "Seismic hazard score (0-3.4)",
+          "type": "number",
+          "agg": "mean",
+          "domain": [
+            0,
+            3.4
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "sh_high_pct",
+          "label": "Ground in the high seismic hazard class (share of block)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "lq_likely_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 6585,
+          "bbox": {
+            "west": 80.139892578125,
+            "south": 12.899658203125,
+            "east": 80.31787109375,
+            "north": 13.180908203125
+          },
+          "json": "liquefaction/chennai.json",
           "parquet": null
         }
       ]
