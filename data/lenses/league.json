@@ -132,6 +132,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 6.7,
+     "unit": "km²",
+     "higherIs": null
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1217,6 +1223,12 @@
      "value": 34,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 47.1,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2634,6 +2646,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 2.9,
+     "unit": "km²",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3707,6 +3725,12 @@
      "value": 66.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 11.4,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -5010,6 +5034,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 67.5,
+     "unit": "km²",
+     "higherIs": null
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6156,6 +6186,12 @@
      "unit": "of 8",
      "higherIs": "worse"
     },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 0.2,
+     "unit": "km²",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -7049,6 +7085,12 @@
      "value": 73.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 47.6,
+     "unit": "km²",
+     "higherIs": null
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8292,6 +8334,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 1.3,
+     "unit": "km²",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9336,6 +9384,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 11.7,
+     "unit": "km²",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10379,6 +10433,12 @@
      "value": 53,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 8.3,
+     "unit": "km²",
+     "higherIs": null
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11538,6 +11598,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 29.1,
+     "unit": "km²",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12599,6 +12665,12 @@
      "value": 33.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 18.9,
+     "unit": "km²",
+     "higherIs": null
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -13805,6 +13877,12 @@
      "value": 54.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "walledland": {
+     "label": "Defence, railway and golf land mapped",
+     "value": 58.2,
+     "unit": "km²",
+     "higherIs": null
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

@@ -701,6 +701,38 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function walledland(fr) {
+        const c = fr.cols, n = fr.grid.n, cl = c['closed_land.cl_closed_pct'];
+        if (!cl || !cl.some(_fin)) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(cl[i]) && cl[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const km = k => { const a = c[`closed_land.cl_${k}_pct`]; return a ? idx.reduce((t, i) => t + (_fin(a[i]) ? a[i] / 100 : 0), 0) * fr.grid.cellKm2 : 0; };
+        const mil = km('military'), rail = km('rail'), golf = km('golf'), all = mil + rail + golf;
+        const pop = c['population.population'];
+        let lived = 0;
+        if (pop) for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0) lived++;
+        const livedKm2 = lived * fr.grid.cellKm2;
+        const big = c['closed_land.cl_big_estate'], nBig = big ? idx.filter(i => big[i] === 1).length : 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = cl[i];
+        const k1 = x => `${_round(x, 1)} km²`;
+        const stats = [
+            { label: 'Defence land mapped', value: k1(mil) },
+            { label: 'Railway land mapped', value: k1(rail) },
+            { label: 'Golf courses', value: k1(golf) },
+            { label: 'All three, as a share of the lived-in city area', value: livedKm2 ? `${_round(100 * all / livedKm2, 1)}%` : 'n/a' },
+            { label: 'Blocks touching a single estate of 50 ha or more', value: nBig.toLocaleString('en-IN') },
+        ];
+        const lead = [['defence', mil], ['railway', rail], ['golf', golf]].sort((a, b) => b[1] - a[1])[0];
+        return {
+            columns: { walled_land_pct: out }, idx, weightKey: 'walled_land_pct',
+            metric: { label: 'Defence, railway and golf land mapped', value: _round(all, 1), unit: 'km²', higherIs: null },
+            headline: `About ${k1(all)} of the city sits behind walls as defence (${k1(mil)}), railway (${k1(rail)}) or golf (${k1(golf)}) land${livedKm2 ? `, ${_round(100 * all / livedKm2, 1)}% of its lived-in area` : ''}; ${lead[0]} land is the largest. These estates are outside the municipal plan and closed to the public, which shapes where roads, parks and homes can go, and are where land is sometimes released (cantonment excision, railway land leasing). From OpenStreetMap, which leaves some defence land blank, so treat it as a floor.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -840,8 +872,14 @@ const UrbanLensesExtra = (() => {
             needs: ['play_space.pl_ground_m', 'play_space.pl_playground_m', 'play_space.pl_within_500', 'demographics.under5', 'demographics.school_age', 'population.population'],
             method: `Playgrounds and sports grounds are Overture Maps base-theme land-use polygons (from OpenStreetMap, ODbL) of the recreation subtype: playground, pitch, recreation ground, track and stadium, each reduced to its centroid. Each lived-in block takes the straight-line distance to the nearest of them and to the nearest playground. Children aged 0-14 per block come from WorldPop 2020 age structure (CC BY 4.0); where it is missing, all residents are counted. 500 m is about a 7-minute walk for a child, a common planning reach for neighbourhood play space. OpenStreetMap coverage of play space is uneven: some cities have only a handful of playgrounds mapped (Bhopal 5, Lucknow 6), so long distances there partly mean thin mapping. Guna has none mapped and is left out.`,
             refs: 'Overture Maps Foundation, base theme land_use (ODbL 1.0, OpenStreetMap contributors); WorldPop 2020 age and sex structures (CC BY 4.0)' },
+        { id: 'walledland', title: 'Big estates behind walls', icon: '🧱',
+            question: 'How much of my city is defence, railway or golf land closed to the public?',
+            field: { key: 'walled_land_pct', label: 'Defence, railway and golf land (share of block)', unit: '%', higherIs: null, ramp: 'reds', domain: [0, 100] },
+            needs: ['closed_land.cl_military_pct', 'closed_land.cl_rail_pct', 'closed_land.cl_golf_pct', 'closed_land.cl_closed_pct', 'closed_land.cl_big_estate', 'population.population'],
+            method: `Overture Maps base-theme land use (from OpenStreetMap, ODbL) is clipped to each lived-in block: subtype military (cantonments, airfields, training areas, barracks), class railway (yards, sidings, railway colonies) and subtype golf. Each block keeps the share covered by each; areas are summed over the city and set against the lived-in city area (blocks with residents). OpenStreetMap leaves some defence land blank on purpose and maps railway colonies unevenly, so totals are a floor. Ownership is not shown: some golf courses sit on defence or leased government land and are counted once, under golf.`,
+            refs: 'Overture Maps Foundation, base theme land_use (ODbL 1.0, OpenStreetMap contributors); Cantonments Act 2006; Rail Land Development Authority' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland });
     return { ENTRIES };
 })();

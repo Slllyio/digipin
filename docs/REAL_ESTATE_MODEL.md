@@ -2094,3 +2094,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Somewhere to play nearby (`playreach` lens, `play_space` dataset)
 
 `pipeline/realestate/playspace.py` reads Overture base-theme land_use polygons with subtype recreation and class playground, pitch, recreation_ground, track or stadium in the city bbox plus 1 km (DuckDB over the public S3 bucket; run with the proxy's AWS keys unset), takes centroids and their areas, and for each lived-in L7 block stores straight-line distance to the nearest playground and to the nearest of any class, plus count and area within 500 m. The lens weights blocks by WorldPop under-5 plus school-age (5-14) children, falling back to residents. Guna is left out (no play space mapped).
+
+## Big estates behind walls (`closed_land`)
+
+`pipeline/realestate/closedland.py` clips Overture base-theme land use (OpenStreetMap, ODbL) to each lived-in L7 block: subtype `military`, class `railway` and subtype `golf`. Fields `cl_military_pct`, `cl_rail_pct`, `cl_golf_pct`, `cl_closed_pct` (their sum, capped at 100) and `cl_big_estate` (1 when the block touches a single estate of 50 ha or more). The `walledland` lens sums areas with the grid cell size and sets them against the lived-in area. Delhi: about 52 km² defence, 10 km² railway, 6 km² golf. A floor, since OSM leaves some defence land unmapped.

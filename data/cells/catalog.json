@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-31T22:59:21Z",
+  "generated": "2026-10-31T23:16:02Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -8884,6 +8884,241 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "closed_land",
+      "title": "Big estates behind walls: defence, railway and golf land (Overture / OpenStreetMap)",
+      "description": "Share of each lived-in block covered by defence, railway or golf land in Overture Maps base-theme land use (release 2026-10-21.0, from OpenStreetMap). Defence land is sometimes left unmapped, so it is a floor.",
+      "source": "pipeline/realestate/closedland.py (Overture Maps base theme land_use via DuckDB)",
+      "license": "ODbL 1.0 (OpenStreetMap contributors via Overture Maps)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "cl_military_pct",
+          "label": "Defence land (Overture/OSM)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "cl_rail_pct",
+          "label": "Railway land",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "cl_golf_pct",
+          "label": "Golf courses",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "cl_closed_pct",
+          "label": "Defence, railway and golf land together",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "cl_big_estate",
+          "label": "Touches a single estate of 50 ha or more",
+          "type": "number",
+          "agg": "max",
+          "unit": "yes/no",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "reds"
+        }
+      ],
+      "default": {
+        "field": "cl_closed_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 239,
+          "bbox": {
+            "west": 72.524169921875,
+            "south": 22.980712890625,
+            "east": 72.629638671875,
+            "north": 23.10595703125
+          },
+          "json": "closed_land/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1645,
+          "bbox": {
+            "west": 77.454833984375,
+            "south": 12.886474609375,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "closed_land/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 97,
+          "bbox": {
+            "west": 77.3427734375,
+            "south": 23.2158203125,
+            "east": 77.5185546875,
+            "north": 23.294921875
+          },
+          "json": "closed_land/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 544,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.30029296875,
+            "north": 13.15673828125
+          },
+          "json": "closed_land/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 2096,
+          "bbox": {
+            "west": 76.857177734375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.85400390625
+          },
+          "json": "closed_land/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 10,
+          "bbox": {
+            "west": 77.3076171875,
+            "south": 24.637451171875,
+            "east": 77.322998046875,
+            "north": 24.641845703125
+          },
+          "json": "closed_land/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1401,
+          "bbox": {
+            "west": 78.3095703125,
+            "south": 17.311767578125,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "closed_land/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 67,
+          "bbox": {
+            "west": 75.75634765625,
+            "south": 22.5478515625,
+            "east": 75.87060546875,
+            "north": 22.813720703125
+          },
+          "json": "closed_land/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 315,
+          "bbox": {
+            "west": 75.701416015625,
+            "south": 26.8369140625,
+            "east": 75.846435546875,
+            "north": 27.001708984375
+          },
+          "json": "closed_land/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 325,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.42578125,
+            "north": 22.646728515625
+          },
+          "json": "closed_land/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 647,
+          "bbox": {
+            "west": 80.864990234375,
+            "south": 26.77978515625,
+            "east": 81.04296875,
+            "north": 26.878662109375
+          },
+          "json": "closed_land/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 925,
+          "bbox": {
+            "west": 72.7900390625,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.25634765625
+          },
+          "json": "closed_land/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 1413,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.4345703125,
+            "east": 73.96337890625,
+            "north": 18.64111328125
+          },
+          "json": "closed_land/pune.json",
+          "parquet": null
         }
       ]
     },
