@@ -1197,6 +1197,8 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.headline).toMatch(/^Of the residents whose nearby roads have a known surface, .* \(66\.7%\) live where a fifth or more/);
         expect(r.metric.value).toBe(66.7);
         expect(L._lenses.unpaved(L.frameFrom(codes, base), {})).toBeNull();
+        const g = L.frameFrom(codes, { ...base, 'road_surface.rs_unpaved_pct': by(40, 5), 'waterlogging.waterlogging_index': by(70, 70) }, { city: 'delhi' });
+        expect(L._lenses.unpaved(g, {}).headline).toMatch(/\(66\.7%\) live where those roads are also in low, waterlogging-prone ground/);
     });
 
     it('radarflood: radar flood proxy map of a named event', () => {

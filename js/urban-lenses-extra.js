@@ -187,7 +187,7 @@ const UrbanLensesExtra = (() => {
     }
 
     function unpaved(fr) {
-        const c = fr.cols, n = fr.grid.n, up = c['road_surface.rs_unpaved_pct'], kn = c['road_surface.rs_known_pct'], pop = c['population.population'];
+        const c = fr.cols, n = fr.grid.n, up = c['road_surface.rs_unpaved_pct'], kn = c['road_surface.rs_known_pct'], wl = c['waterlogging.waterlogging_index'], pop = c['population.population'];
         if (!up || !up.some(_fin)) return null;
         const idx = _residents(fr).filter(i => _fin(up[i]));
         if (idx.length < 5) return null;
@@ -203,12 +203,18 @@ const UrbanLensesExtra = (() => {
             { label: 'Residents covered (300 m or more of road with a known surface)', value: `${_people(P)} (${_round(100 * P / all, 1)}%)` },
         ];
         if (_fin(cover)) stats.push({ label: 'Road length nearby with a known surface (residents-weighted)', value: `${cover}%` });
+        let mud = '';
+        if (wl && idx.some(i => _fin(wl[i]))) {
+            const m = sum(i => up[i] >= 20 && _fin(wl[i]) && wl[i] >= 60);
+            stats.push({ label: 'Residents with a fifth or more unpaved and a high waterlogging score (60+)', value: `${_people(m)} (${pct(m)}%)` });
+            mud = ` ${_people(m)} (${pct(m)}%) live where those roads are also in low, waterlogging-prone ground, likely to turn to mud in the monsoon.`;
+        }
         const out = new Float64Array(n).fill(NaN);
         for (const i of idx) out[i] = up[i];
         return {
             columns: { unpaved_pct: out }, idx, weightKey: 'unpaved_pct',
             metric: { label: 'Residents where a fifth or more of the known roads are unpaved', value: pct(some), unit: '%', higherIs: 'worse' },
-            headline: `Of the residents whose nearby roads have a known surface, ${_people(some)} (${pct(some)}%) live where a fifth or more of that road length is unpaved, and ${_people(most)} where most of it is. Only part of the network is known (a street photo or an OpenStreetMap tag), so read this as a sample of the streets, not a full survey.`,
+            headline: `Of the residents whose nearby roads have a known surface, ${_people(some)} (${pct(some)}%) live where a fifth or more of that road length is unpaved, and ${_people(most)} where most of it is. Only part of the network is known (a street photo or an OpenStreetMap tag), so read this as a sample of the streets, not a full survey.${mud}`,
             stats,
         };
     }
@@ -253,8 +259,8 @@ const UrbanLensesExtra = (() => {
         { id: 'unpaved', title: 'Unpaved streets', icon: '🛤️',
             question: 'Are the streets around me still dirt roads?',
             field: { key: 'unpaved_pct', label: 'Unpaved share of nearby roads with a known surface', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
-            needs: ['road_surface.rs_unpaved_pct', 'road_surface.rs_known_pct', 'road_surface.rs_unpaved_km', 'population.population'],
-            method: `HeiGIT's road surface dataset for India (Heidelberg Institute for Geoinformation Technology, via the Humanitarian Data Exchange, ODbL) labels each OpenStreetMap road paved or unpaved: from its OSM surface tag where one exists, otherwise from a deep-learning model run over Mapillary street-level photos taken along it (Randhawa et al. 2024). Footways, paths, steps and cycleways are left out. Each block takes the drivable roads whose middle lies within 500 m and gets an unpaved share when at least 300 m of them have a known surface. Only 7-27% of road length in most cities is known (59% in Lucknow), and known roads lean towards main roads that are tagged or photographed, so the share is a sample, likely to under-count unpaved lanes; outer, thinly built blocks carry most of the unpaved roads (rank correlation with residents about -0.35 to -0.42 in Bengaluru, Delhi and Hyderabad).`,
+            needs: ['road_surface.rs_unpaved_pct', 'road_surface.rs_known_pct', 'road_surface.rs_unpaved_km', 'waterlogging.waterlogging_index', 'population.population'],
+            method: `HeiGIT's road surface dataset for India (Heidelberg Institute for Geoinformation Technology, via the Humanitarian Data Exchange, ODbL) labels each OpenStreetMap road paved or unpaved: from its OSM surface tag where one exists, otherwise from a deep-learning model run over Mapillary street-level photos taken along it (Randhawa et al. 2024). Footways, paths, steps and cycleways are left out. Each block takes the drivable roads whose middle lies within 500 m and gets an unpaved share when at least 300 m of them have a known surface. Only 7-27% of road length in most cities is known (59% in Lucknow), and known roads lean towards main roads that are tagged or photographed, so the share is a sample, likely to under-count unpaved lanes; outer, thinly built blocks carry most of the unpaved roads (rank correlation with residents about -0.35 to -0.42 in Bengaluru, Delhi and Hyderabad). Blocks with a fifth or more unpaved and a waterlogging index of 60 or more (DigiPin's terrain and monsoon-water score) are counted as likely to turn to mud in the rains.`,
             refs: 'HeiGIT, Mapillary-based road surface data for India (via data.humdata.org, ODbL); A. Randhawa et al., Paved or unpaved? A deep learning derived road surface global dataset from Mapillary street-view imagery, arXiv 2410.19874; © OpenStreetMap contributors' },
     ];
 
