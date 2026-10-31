@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-31T19:05:54Z",
-  "count": 10,
+  "generated_at_iso": "2026-10-31T22:28:44Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us7000tukm",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-31T21:20:39.173000+00:00",
+      "latitude": 28.114,
+      "longitude": 51.5076,
+      "depth_km": 10.0,
+      "place": "115 km SE of Bushehr, Iran",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tukm",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000tuk4",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-31T18:51:02.721000+00:00",
+      "latitude": 51.6994,
+      "longitude": -172.7931,
+      "depth_km": 44.87,
+      "place": "111 km ESE of Atka, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuk4",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "aka2026vpcige",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-31T18:50:58.577000+00:00",
+      "latitude": 51.521,
+      "longitude": -172.815,
+      "depth_km": 1.0,
+      "place": "121 km SE of Atka, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026vpcige",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tujf",
       "magnitude": 5.2,
@@ -12,7 +48,7 @@
       "place": "4 km S of Bajo Corral, Panama",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tujf",
       "tsunami": 0,
-      "significance": 429
+      "significance": 431
     },
     {
       "id": "us7000tuif",
@@ -109,18 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tufp",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000tufc",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-30T22:14:55.008000+00:00",
-      "latitude": -13.8288,
-      "longitude": 165.4282,
-      "depth_km": 10.0,
-      "place": "222 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tufc",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
