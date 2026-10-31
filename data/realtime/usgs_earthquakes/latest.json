@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-31T08:39:36Z",
-  "count": 13,
+  "generated_at_iso": "2026-10-31T14:45:43Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000tuif",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-31T11:31:12.352000+00:00",
+      "latitude": -13.9069,
+      "longitude": 165.6759,
+      "depth_km": 10.0,
+      "place": "196 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuif",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000tuht",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-31T09:18:32.051000+00:00",
+      "latitude": -13.7894,
+      "longitude": 165.2951,
+      "depth_km": 10.0,
+      "place": "236 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuht",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tuhs",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-31T09:15:52.568000+00:00",
+      "latitude": -13.7683,
+      "longitude": 165.5833,
+      "depth_km": 10.0,
+      "place": "213 km W of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuhs",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000tugv",
       "magnitude": 4.6,
@@ -95,66 +131,6 @@
       "depth_km": 10.0,
       "place": "7 km NE of Tago, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tub8",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tu83",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-30T13:18:19.151000+00:00",
-      "latitude": 40.4803,
-      "longitude": 142.4748,
-      "depth_km": 42.816,
-      "place": "68 km ENE of Kuji, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu83",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tu7m",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-30T10:45:03.842000+00:00",
-      "latitude": 39.7308,
-      "longitude": 24.2284,
-      "depth_km": 10.0,
-      "place": "42 km SE of Sykiá, Greece",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7m",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tu7k",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-30T10:24:11.303000+00:00",
-      "latitude": 8.3731,
-      "longitude": 127.3616,
-      "depth_km": 10.0,
-      "place": "104 km ENE of Barcelona, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7k",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tu7j",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-30T10:12:28.219000+00:00",
-      "latitude": -62.4457,
-      "longitude": 155.2618,
-      "depth_km": 10.0,
-      "place": "Balleny Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7j",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000tu7b",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-30T08:45:49.982000+00:00",
-      "latitude": 43.2605,
-      "longitude": 146.4242,
-      "depth_km": 43.625,
-      "place": "64 km SSW of Shikotan, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7b",
       "tsunami": 0,
       "significance": 326
     }

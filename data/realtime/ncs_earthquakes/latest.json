@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-31T08:39:48Z",
+  "generated_at_iso": "2026-10-31T14:45:44Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-31 19:06:11|33.179,91.868",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-31 19:06:11",
+      "latitude": 33.179,
+      "longitude": 91.868,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "622km N of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-31 13:49:49|25.038,91.393",
       "magnitude": 2.9,
@@ -1639,17 +1650,6 @@
       "depth_km": 15.0,
       "region": "China",
       "location": "498km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 21:15:41|33.807,86.090",
-      "magnitude": 5.0,
-      "origin_time": "2026-10-22 21:15:41",
-      "latitude": 33.807,
-      "longitude": 86.09,
-      "depth_km": 35.0,
-      "region": "Tibet",
-      "location": "673km ENE of Hanley, Jammu & Kashmir, India",
       "review_status": "Reviewed"
     }
   ]
