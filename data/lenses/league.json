@@ -72,6 +72,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 1.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 28,
@@ -1253,6 +1259,12 @@
      "value": 44,
      "unit": "%",
      "higherIs": null
+    },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "junctions": {
      "label": "Residents near a junction with 12,000+ peak hour vehicles",
@@ -2790,6 +2802,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 0.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 3.1,
@@ -3959,6 +3977,12 @@
      "value": 27,
      "unit": "%",
      "higherIs": null
+    },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 0.5,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "liquefy": {
      "label": "Residents in blocks mostly on ground likely to liquefy",
@@ -5376,6 +5400,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 0.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 16,
@@ -6648,6 +6678,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 3.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.1,
@@ -7625,6 +7661,12 @@
      "value": 28,
      "unit": "%",
      "higherIs": null
+    },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -8982,6 +9024,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 6.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.3,
@@ -10134,6 +10182,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 0.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 5.9,
@@ -11279,6 +11333,12 @@
      "value": 4,
      "unit": "%",
      "higherIs": null
+    },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -12558,6 +12618,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "unpaved": {
      "label": "Residents where a fifth or more of the known roads are unpaved",
      "value": 9.2,
@@ -13709,6 +13775,12 @@
      "value": 7,
      "unit": "%",
      "higherIs": null
+    },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 7.2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "challans": {
      "label": "Residents in station areas booking 100+ violations per 1,000 residents",
@@ -15029,6 +15101,12 @@
      "value": 44,
      "unit": "%",
      "higherIs": null
+    },
+    "afternoonheat": {
+     "label": "Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon",
+     "value": 4.6,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",

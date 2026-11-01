@@ -2166,3 +2166,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Residents since 1975 (`pop_history`)
 
 `pipeline/realestate/popsince1975.py` reduces `JRC/GHSL/P2023A/GHS_POP/<year>` (as people per km², so a block mean scales to its area) for 1975, 1990, 2000, 2010 and 2020 to lived-in L7 blocks with the same `gee.fetch(gee.to_cells(img, 100), bbox, 7)` call as the `population` layer. Counts are raw GHSL, not the calibrated `population.population`; the lens uses the calibrated figure only to weight shares of today's residents. The boom period compares gains per year, because the first gap (1975-1990) is 15 years and the rest 10. Under 300 people/km² in 1975 counts as almost empty.
+
+## Afternoon surface heat (`afternoon_heat`)
+
+`pipeline/realestate/afternoonheat.py` finds ECO_L2T_LSTE v002 granules in CMR over each city's lived-in bounding box (15 Mar-20 Jun, 2019-2025), keeps those acquired 12:30-16:30 IST, groups tiles by orbit+scene id, downloads the LST and cloud COGs in parallel through the Earthdata credential, and per scene takes the 3x3-pixel mean at each block centre (cloud = 0 and LST > 250 K, at least 5 clear pixels). Scenes seeing fewer than 200 blocks are dropped. Gaps are to the scene's median block; the lens re-centres them on the resident-weighted median, because cities with mangroves, forest or wet fields among lived-in blocks (Mumbai, Chennai) otherwise read 60% of residents as hot. Run time ~5-20 min per city; files are deleted after each city.

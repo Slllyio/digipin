@@ -5,7 +5,7 @@
 const UrbanLensesMore = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _residents, wmean } = UrbanLenses._kit;
+    const { _fin, _round, _people, _residents, wmean, wquantile } = UrbanLenses._kit;
 
     // Relative deprivation. GRDI v1 indexes each ~1 km pixel 0-100 from built-up density, night lights and their trend,
     // child dependency, infant mortality and subnational HDI; an openly licensed alternative to proprietary wealth maps.
@@ -252,6 +252,43 @@ const UrbanLensesMore = (() => {
         };
     }
 
+    // Afternoon heat that morning satellites miss: ECOSTRESS passes 12:30-16:30, Landsat at 10:30. Blocks ordinary in the
+    // morning but hot in the afternoon are usually metal and asbestos roofs, bare ground and wide paved yards.
+    function afternoonheat(fr) {
+        const c = fr.cols, n = fr.grid.n, an = c['afternoon_heat.pm_anom_c'];
+        if (!an || !an.some(_fin)) return null;
+        const lst = c['afternoon_heat.pm_lst_c'], am = c['surface_heat.uhi_anomaly_c'], pop = c['population.population'];
+        const idx = _residents(fr).filter(i => _fin(an[i]));
+        if (idx.length < 5) return null;
+        const w = i => (pop && _fin(pop[i]) ? pop[i] : 0);
+        // Re-centre on the typical resident: the stored gaps are to the median lived-in block, which in cities with
+        // mangroves, forest or wet fields inside the lived-in area is cooler than where most people live.
+        const mid = wquantile(an, pop, idx, 0.5), amIdx = am ? idx.filter(i => _fin(am[i])) : [];
+        const amMid = amIdx.length ? wquantile(am, pop, amIdx, 0.5) : 0;
+        const med = lst ? wquantile(lst, pop, idx.filter(i => _fin(lst[i])), 0.5) : NaN;
+        let all = 0, hot = 0, cool = 0, hidden = 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            const x = w(i), g = an[i] - (_fin(mid) ? mid : 0); all += x; out[i] = g;
+            if (g >= 3) { hot += x; if (am && _fin(am[i]) && am[i] - amMid < 1) hidden += x; }
+            if (g <= -3) cool += x;
+        }
+        if (!all) return null;
+        const pc = x => `${_round(100 * x / all, 1)}%`;
+        const stats = [
+            { label: 'Typical resident’s block, afternoon surface temperature (pre-monsoon, 12:30-16:30)', value: _fin(med) ? `${_round(med, 1)} °C` : 'n/a' },
+            { label: 'Residents in blocks 3 °C or more hotter than the typical resident’s in the afternoon', value: `${_people(hot)} (${pc(hot)})` },
+            { label: '…of them in blocks within 1 °C of the median on the 10:30 Landsat pass', value: am ? `${_people(hidden)} (${pc(hidden)})` : 'n/a' },
+            { label: 'Residents in blocks 3 °C or more cooler', value: `${_people(cool)} (${pc(cool)})` },
+        ];
+        return {
+            columns: { pm_anom_c: out }, idx, weightKey: 'pm_anom_c',
+            metric: { label: 'Residents in blocks 3 °C+ hotter than the typical resident’s in the afternoon', value: _round(100 * hot / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `On clear pre-monsoon afternoons the ground in the typical resident's block reaches ${_fin(med) ? `${_round(med, 0)} °C` : 'n/a'}. ${_people(hot)} residents (${pc(hot)}) live in blocks at least 3 °C hotter than that${!am ? '' : hot && hidden >= 0.25 * hot ? `, and ${_people(hidden)} of them live where the 10:30 morning satellite pass shows nothing unusual: tin and asbestos roofs, bare yards and paved lots heat up after the morning` : `; only ${_people(hidden)} of them look ordinary on the 10:30 morning pass, so morning heat maps find most of the same hotspots`}. ${_people(cool)} (${pc(cool)}) live in blocks 3 °C or more cooler, mostly under trees or near water. Surface temperature, not air temperature; NASA ECOSTRESS, 2019-2025.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'deprivation', title: 'Relative deprivation (open index)', icon: '📉',
             question: 'Which parts of my city are most deprived on an open index?',
@@ -295,8 +332,14 @@ const UrbanLensesMore = (() => {
             needs: ['pop_history.pop_1975', 'pop_history.pop_2020', 'pop_history.empty_1975', 'pop_history.boom_period', 'population.population'],
             method: `JRC's GHS-POP R2023A gives residents on a 100 m grid for every five-year epoch from 1975, back-cast from Landsat built-up area and census totals. Each lived-in L7 block sums the 1975, 1990, 2000, 2010 and 2020 epochs; a block is counted as almost empty in 1975 below 300 people per km², and its boom period is the gap that added the most residents per year (the first gap is 15 years, the others 10). Shares of today's residents use the calibrated 2020 population; the 1975-to-2020 totals are GHSL's own, uncalibrated, so they differ from census city figures and from the population lens in Bengaluru and the five electors-calibrated cities.`,
             refs: 'Schiavina M. et al. 2023, GHS-POP R2023A - GHS population grid multitemporal (1975-2030), European Commission JRC, doi:10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE (CC BY 4.0)' },
+        { id: 'afternoonheat', title: 'Afternoon heat the morning satellites miss', icon: '🌇',
+            question: 'Which parts of my city get hottest in the afternoon, when morning satellites can’t see?',
+            field: { key: 'pm_anom_c', label: 'Afternoon surface heat vs the typical resident’s block', unit: '°C', higherIs: 'worse', ramp: 'diverging', domain: [-8, 8] },
+            needs: ['afternoon_heat.pm_lst_c', 'afternoon_heat.pm_anom_c', 'surface_heat.uhi_anomaly_c', 'population.population'],
+            method: `NASA's ECOSTRESS radiometer on the International Space Station measures land surface temperature at 70 m. Because the station's orbit drifts, it sees Indian cities at all hours, unlike Landsat, which always passes around 10:30. Every ECOSTRESS v002 tile (ECO_L2T_LSTE) acquired between 12:30 and 16:30 IST from 15 March to 20 June in 2019-2025 is cloud-masked. Each lived-in L7 block takes the mean of the 3×3 pixels at its centre, and its gap to that scene's median block is averaged over all clear scenes, which removes day-to-day weather; the lens then re-centres the gaps on the resident-weighted median. Hidden afternoon hotspots are blocks 3 °C or more above that in the afternoon but within 1 °C of the resident-weighted median in the Landsat morning layer (surface_heat, 2025).`,
+            refs: 'Hook S. & Hulley G. 2022, ECOSTRESS Tiled Land Surface Temperature and Emissivity L2 Global 70 m V002, NASA LP DAAC, doi:10.5067/ECOSTRESS/ECO_L2T_LSTE.002 (NASA open data)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975 });
+    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975, afternoonheat });
     return { ENTRIES };
 })();

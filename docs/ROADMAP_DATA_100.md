@@ -388,6 +388,7 @@ Each item gives four things:
 327. ✅ **Days too hot for safe outdoor work** (`work_heat`, `workheat` lens): NASA SEDAC UHE-Daily (CC BY 4.0) days a year above the ISO WBGT limits of 30 °C and 32 °C, 1983-1992 vs 2007-2016, and the share of the rise in exposure due to warming. Chennai 106 → 132 days above 30 °C, Ahmedabad 124 (36 above 32 °C), Kolkata 81 → 122; Bengaluru and Pune almost none.
 328. ✅ **Fossil CO2 where it is burnt** (`fossil_co2`, `fossilco2` lens): ODIAC2025 1 km fossil-fuel CO2 (NIES, CC BY 4.0), 2004 vs 2024 per lived-in block; the openly licensed replacement for EDGAR CO2 (NC). Delhi region ~85 Mt in 2024 (2.9 t per resident, top 1% of blocks 26%); Bengaluru ~28 Mt, 2.1 t per resident and evenly spread.
 329. ✅ **Who lived here in 1975?** (`pop_history`, `since1975` lens): JRC GHS-POP R2023A epochs 1975-2020 (CC BY 4.0, Earth Engine) per lived-in block, whether it was almost empty in 1975 and which period grew it fastest. Bengaluru 4.9 times its 1975 count, 44% of residents where hardly anyone lived then; Kolkata only 4%, Mumbai 7%.
+330. ✅ **Afternoon heat the morning satellites miss** (`afternoon_heat`, `afternoonheat` lens): NASA ECOSTRESS v002 70 m LST from every clear pre-monsoon overpass 12:30-16:30 IST, 2019-2025 (9-36 usable scenes per city), as a gap to the scene median. Hottest typical-resident afternoons: Indore 47 °C, Pune and Jaipur 46.5 °C; Mumbai 7% of residents 3 °C+ above typical. Morning Landsat already finds most of the same hotspots.
 
 ## Parked for the keys round
 
