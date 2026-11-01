@@ -300,7 +300,7 @@ const DishaIntel = (() => {
             fair: /\b(environmental (justice|injustice)|poor(er|est)? (neighbourhoods?|neighborhoods?|areas?|residents?|people)\b.{0,40}\b(burden|worse|exposed|more|less|access)|fair(ness)? by wealth|rich (vs|versus|and) poor|wealth (gap|divide))\b/i,
             transit: /\b(public transport|transit|bus stops?|metro|stations?)\b.{0,20}\b(access|accessibility|coverage|reach|walk\w*|near\w*|far)\b|\b(access|walk\w*|near\w*|far) to (a |the )?(public transport|transit|bus stops?|metro|stations?)\b|\bsdg 11\.2\b/i,
             health: /\b(health\s?care|hospitals?|clinics?|doctors?)\b.{0,15}\b(access|accessibility|deserts?|scarc\w*|shortages?|reach)\b|\baccess to (health\s?care|hospitals?|clinics?|doctors?)\b|\bcare deserts?\b|\b2sfca\b/i,
-            air: /\b(pm\s?2\.?5|air[\s-]?pollution exposure|breathe|dirty air|(people|residents|who)\b.{0,25}\b(polluted|pollution)\b)/i,
+            air: /\b(pm\s?2\.?5|air[\s-]?pollution exposure|breathe|(dirty|dirtiest|clean|cleaner|cleanest|fresh|fresher|freshest|bad|worst|best|polluted) air|air is (the )?(cleanest|dirtiest|worst|best)|(people|residents|who)\b.{0,25}\b(polluted|pollution)\b)/i,
             lights: /\b(night[\s-]?lights?|luminosity|economic activity)\b/i,
             walk: /\b(walkability index|how walkable|walkable (streets?|city|fabric))\b/i,
             sprawl: /\b(sprawl\w*|compact(ness)?|infill|leapfrog\w*|density gradient|urban (expansion|growth pattern))\b/i,

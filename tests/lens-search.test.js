@@ -82,3 +82,12 @@ describe('LensSearch dataset fields', () => {
         expect(m).toContain('level 5 (~4 km cells)');
     });
 });
+
+describe('LensSearch question sense', () => {
+    it('reads polluted water as water, clean air as air, IT as tech', () => {
+        expect(ids('is the river near me polluted')).not.toContain('air');
+        expect(ids('which area has the cleanest air')[0]).toBe('air');
+        expect(LS.expand('where do IT workers live').has('tech')).toBe(true);
+        expect(LS.expand('where do it workers live').has('tech')).toBe(false);
+    });
+});

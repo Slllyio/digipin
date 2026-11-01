@@ -15,7 +15,7 @@ const LensSearch = (() => {
     const STOP = new Set(('a an the of in on at to for from by with and or is are was were be been it its this that these those my our your their ' +
         'i we you they me us what which who whom where when why how much many more most less least do does did can could should would will ' +
         'there here than then as if so not no any some all very about near around into over under city area areas place places part parts ' +
-        'tell show give get me please like kind sort get got have has had live living').split(' '));
+        'tell show give get me please like kind sort get got have has had live living good best nice').split(' '));
 
     // Everyday words people use -> words the lens catalogue uses.
     const SYN = {
@@ -56,8 +56,12 @@ const LensSearch = (() => {
         hilly: ['slope', 'elevation', 'terrain'], hill: ['slope', 'elevation'], steep: ['slope'], height: ['elevation', 'height'],
         humid: ['humid', 'wet', 'bulb'], humidity: ['humid'], literacy: ['literacy', 'literate'], literate: ['literacy'], migrants: ['migra'], migrant: ['migra'],
         unemployment: ['unemploy', 'job'], unemployed: ['unemploy'], river: ['river'], agricultural: ['farm', 'crop', 'cropland'], agriculture: ['farm', 'crop'],
-        fsi: ['floor', 'fsi'], far: ['floor', 'fsi'], diverse: ['diversity', 'mix'], diversity: ['diversity', 'mix'], cyclist: ['cycle', 'cycling'], cyclists: ['cycle', 'cycling'], bike: ['cycle', 'cycling'],
+        fsi: ['floor', 'fsi', 'far'], diverse: ['diversity', 'mix'], diversity: ['diversity', 'mix'], cyclist: ['cycle', 'cycling'], cyclists: ['cycle', 'cycling'], bike: ['cycle', 'cycling'],
         seniors: ['aged', 'elderly'], senior: ['aged', 'elderly'], aged: ['aged', 'elderly'], youth: ['young', 'youth'], young: ['young', 'youth'],
+        cleanest: ['clean'], dirtiest: ['dirty', 'pollution'],
+        tall: ['tall', 'height', 'storey'], tallest: ['tall', 'height', 'storey'], highrise: ['tall', 'height', 'storey'], storeys: ['storey', 'height'],
+        grown: ['growth', 'grow', 'expansion', 'built'], expanded: ['growth', 'expansion'], square: ['density'], density: ['density', 'dense'],
+        software: ['tech', 'office'], techies: ['tech', 'office'], internet: ['internet'], wifi: ['internet'],
         toddlers: ['under', 'children'], babies: ['under', 'children'],
         algae: ['algae', 'chlorophyll', 'bloom'], hyacinth: ['weed', 'weeds'], weeds: ['weed', 'weeds'], canal: ['canal', 'river'], nala: ['canal', 'drain'],
     };
@@ -73,10 +77,15 @@ const LensSearch = (() => {
     /** Query words plus their synonyms, each stemmed, with weights (own word 1, synonym 0.6). Pure. */
     function expand(q) {
         const out = new Map();
+        // 'IT' (information technology) is a stop word once lower-cased
+        if (/\bIT\b/.test(String(q || ''))) q = `${q} tech software office`;
+        // 'polluted river' is about water, not air: drop the air synonyms when the question names water
+        const watery = /\b(rivers?|lakes?|canals?|creeks?|nalas?|nullahs?|ponds?|tanks?|drains?|sewage|water|yamuna|sabarmati|musi|mula|mutha|hooghly|gomti|adyar|cooum|mithi)\b/i.test(String(q || ''));
+        const AIRY = new Set(['pollution', 'polluted', 'dirty', 'smog']);
         for (const w of tokens(q)) {
             const s = _stem(w);
-            out.set(s, Math.max(out.get(s) || 0, 1));
-            for (const x of SYN[w] || SYN[s] || []) {
+            out.set(s, Math.max(out.get(s) || 0, watery && AIRY.has(w) ? 0.2 : 1));
+            for (const x of (watery && AIRY.has(w) ? ['water', 'sewage'] : SYN[w] || SYN[s] || [])) {
                 const t = _stem(x);
                 out.set(t, Math.max(out.get(t) || 0, 0.6));
             }
@@ -180,7 +189,7 @@ const LensSearch = (() => {
 
     // Words too generic to pick a field on their own ('good' would find good_nights).
     const FIELD_STOP = new Set(('good best bad worst nice nearby near close left allowed rate number share many few residents resident people ' +
-        'here city district level total count percent pct per lakh top high low highest lowest big small').split(' '));
+        'here city district level total count percent pct per lakh top high low highest lowest big small rich old far km sq square metre metres').split(' '));
 
     // What a reader must know before trusting a dataset's block numbers.
     const CAVEAT = {
@@ -221,7 +230,7 @@ const LensSearch = (() => {
      */
     function searchFields(q, datasets, opts = {}) {
         const limit = opts.limit || 3, terms = expand(q);
-        for (const t of [...terms.keys()]) if (FIELD_STOP.has(t)) terms.delete(t);
+        for (const t of [...terms.keys()]) if (FIELD_STOP.has(t) || /^\d+$/.test(t)) terms.delete(t);
         if (!terms.size) return [];
         const docs = _fieldDocs(datasets);
         const scored = [];
