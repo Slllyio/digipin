@@ -815,6 +815,35 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function underflood(fr) {
+        const c = fr.cols, n = fr.grid.n, un = c['underpasses.up_road_n'], wl = c['waterlogging.waterlogging_index'];
+        if (!un || !un.some(_fin)) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(un[i]) && un[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const um = c['underpasses.up_road_m'], ped = c['underpasses.up_ped_n'], br = c['underpasses.up_bridge_m'];
+        const sum = (a, f = () => true) => { let t = 0; if (a) for (let i = 0; i < n; i++) if (_fin(a[i]) && f(i)) t += a[i]; return t; };
+        const total = sum(un), km = sum(um) / 1000, subways = sum(ped), flyKm = sum(br) / 1000;
+        const wet = i => wl && _fin(wl[i]) && wl[i] >= 45, vwet = i => wl && _fin(wl[i]) && wl[i] >= 65;
+        const nWet = sum(un, wet), nV = sum(un, vwet), known = sum(un, i => wl && _fin(wl[i]));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = wl && _fin(wl[i]) ? wl[i] : NaN;
+        const pc = x => (known ? `${_round(100 * x / known, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Underpass and tunnel stretches mapped', value: `${total.toLocaleString('en-IN')} (${_round(km, 1)} km)` },
+            { label: '…in blocks with high or very high waterlogging risk', value: `${nWet.toLocaleString('en-IN')} (${pc(nWet)})` },
+            { label: '…very high risk', value: `${nV.toLocaleString('en-IN')} (${pc(nV)})` },
+            { label: 'Pedestrian subways mapped', value: subways.toLocaleString('en-IN') },
+            { label: 'Flyovers and road bridges', value: `${_round(flyKm, 0)} km` },
+        ];
+        return {
+            columns: { underpass_wet: out }, idx, weightKey: 'underpass_wet', noHotspots: true,
+            metric: { label: 'Underpasses in high-waterlogging blocks', value: nWet, unit: 'underpasses', higherIs: 'worse' },
+            headline: `${total.toLocaleString('en-IN')} stretches of road run through underpasses or tunnels on the map (${_round(km, 1)} km below ground), and ${nWet.toLocaleString('en-IN')} of them (${pc(nWet)}) sit in blocks with high or very high waterlogging risk; darker blocks are wetter. A dip below the street fills first in a heavy shower and traps cars, so these are where pumps, gauges and closure barriers pay off. From OpenStreetMap, which does not separate an underpass from a road tunnel, so a floor.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -978,8 +1007,14 @@ const UrbanLensesExtra = (() => {
             needs: ['water_store.ws_trend_cm_yr', 'water_store.ws_change_cm', 'water_store.ws_low_year', 'water_store.ws_last_cm'],
             method: `NASA JPL GRACE and GRACE-FO RL06.3 v04 mascons (with the coastline resolution improvement) give the monthly water-equivalent anomaly of all water in and on the ground, against 2004-2009, in cells about 300 km across. Annual means (years with at least 6 months; mid-2017 to mid-2018 is a gap between missions) at the city centre give a 2003-2023 least-squares trend, the change between 2003-2007 and 2019-2023, and the lowest year. It cannot separate groundwater from soil moisture or reservoirs, and it cannot see a single aquifer.`,
             refs: 'Watkins et al. 2015 and Wiese et al. 2016, JPL GRACE mascons (NASA open data); Rodell et al. 2009, Nature 460:999 (north-west India groundwater)' },
+        { id: 'underflood', title: 'Underpasses that fill in the rain', icon: '🚇',
+            question: 'Which road underpasses in my city sit where water collects?',
+            field: { key: 'underpass_wet', label: 'Waterlogging index where an underpass is mapped', unit: '0-100', higherIs: 'worse', ramp: 'blues', domain: [0, 100] },
+            needs: ['underpasses.up_road_n', 'underpasses.up_road_m', 'underpasses.up_ped_n', 'underpasses.up_bridge_m', 'waterlogging.waterlogging_index'],
+            method: `Overture Maps transportation segments (from OpenStreetMap, ODbL) carry flags for the part of a road that runs in a tunnel or on a bridge. Each tunnel part on a vehicle road (not footways or tracks) is placed at its midpoint in an L7 block and counted; pedestrian subways and flyover length are kept for context. Blocks with an underpass are coloured by the DigiPin waterlogging index (terrain hollows, wetness, upstream area and paving; 45 or more is high, 65 or more very high). The index is for the block, not the dip itself, which is deeper, so the real risk is higher.`,
+            refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors); DigiPin waterlogging index (pipeline/cells/ee_layers.py)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood });
     return { ENTRIES };
 })();

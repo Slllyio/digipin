@@ -2110,3 +2110,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Water under the region, weighed from space (`water_store`)
 
 `pipeline/realestate/waterstore.py` reads `NASA/GRACE/MASS_GRIDS_V04/MASCON_CRI` (JPL RL06.3 v04 mascons, NASA open data) band `lwe_thickness` at the city centre (centres shared with `heatisland.py`), takes annual means for years with 6 or more months (the 2017-2018 gap between GRACE and GRACE-FO drops out), and stores the 2003-2023 trend, the change between 2003-2007 and 2019-2023, the lowest year and the latest anomaly. Mascons are about 300 km wide, so Delhi and Jaipur, and Bhopal and Guna, share one value. The `waterstore` lens reads it; DISHA routes only GRACE or from-space questions to it, so groundwater questions still go to `waterrisk`/`gwstress`.
+
+## Underpasses that fill in the rain (`underpasses`)
+
+`pipeline/realestate/underpasses.py` reads Overture transportation segments (subtype road) and their `road_flags`; each flagged part (`between` range) that is `is_tunnel` on a vehicle road, `is_tunnel` on a footway/steps/path (pedestrian subway) or `is_bridge` on a vehicle road is placed at its midpoint and summed per L7 block: `up_road_n`, `up_road_m`, `up_ped_n`, `up_bridge_m`. The `underflood` lens colours underpass blocks by the waterlogging index (45+ high, 65+ very high). DuckDB gotcha: new lambda syntax (`lambda x: ...`), and compute length as planar degrees times a local metres-per-degree factor.

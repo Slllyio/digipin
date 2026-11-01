@@ -156,6 +156,12 @@
      "unit": "cm/yr",
      "higherIs": "better"
     },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 24,
+     "unit": "underpasses",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1265,6 +1271,12 @@
      "value": 0.54,
      "unit": "cm/yr",
      "higherIs": "better"
+    },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 73,
+     "unit": "underpasses",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2706,6 +2718,12 @@
      "unit": "cm/yr",
      "higherIs": "better"
     },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 9,
+     "unit": "underpasses",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3803,6 +3821,12 @@
      "value": -0.25,
      "unit": "cm/yr",
      "higherIs": "better"
+    },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 41,
+     "unit": "underpasses",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -5130,6 +5154,12 @@
      "unit": "cm/yr",
      "higherIs": "better"
     },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 155,
+     "unit": "underpasses",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6300,6 +6330,12 @@
      "unit": "cm/yr",
      "higherIs": "better"
     },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 2,
+     "unit": "underpasses",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -7217,6 +7253,12 @@
      "value": 0.25,
      "unit": "cm/yr",
      "higherIs": "better"
+    },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 44,
+     "unit": "underpasses",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8484,6 +8526,12 @@
      "unit": "cm/yr",
      "higherIs": "better"
     },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 5,
+     "unit": "underpasses",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9552,6 +9600,12 @@
      "unit": "cm/yr",
      "higherIs": "better"
     },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 2,
+     "unit": "underpasses",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10619,6 +10673,12 @@
      "value": -0.84,
      "unit": "cm/yr",
      "higherIs": "better"
+    },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 28,
+     "unit": "underpasses",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11802,6 +11862,12 @@
      "unit": "cm/yr",
      "higherIs": "better"
     },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 5,
+     "unit": "underpasses",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12887,6 +12953,12 @@
      "value": -0.43,
      "unit": "cm/yr",
      "higherIs": "better"
+    },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 72,
+     "unit": "underpasses",
+     "higherIs": "worse"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -14117,6 +14189,12 @@
      "value": 0.09,
      "unit": "cm/yr",
      "higherIs": "better"
+    },
+    "underflood": {
+     "label": "Underpasses in high-waterlogging blocks",
+     "value": 41,
+     "unit": "underpasses",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-01T00:01:12Z",
+  "generated": "2026-11-01T00:18:59Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -57253,6 +57253,229 @@
             "north": 18.64111328125
           },
           "json": "tree_season/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "underpasses",
+      "title": "Road underpasses, subways and flyovers (Overture / OpenStreetMap)",
+      "description": "Parts of road segments flagged as tunnel or bridge in Overture Maps transportation (release 2026-10-21.0, from OpenStreetMap), placed at their midpoint. Underpasses and road tunnels are not told apart; a floor.",
+      "source": "pipeline/realestate/underpasses.py (Overture Maps transportation segments via DuckDB)",
+      "license": "ODbL 1.0 (OpenStreetMap contributors via Overture Maps)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "up_road_n",
+          "label": "Road underpasses and tunnels (mapped parts)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            13
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "up_road_m",
+          "label": "Length of road underground",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0,
+            21465
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "up_ped_n",
+          "label": "Pedestrian subways",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            32
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "up_bridge_m",
+          "label": "Flyover and bridge length on roads",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0,
+            40997
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "up_road_n",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 228,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.119140625
+          },
+          "json": "underpasses/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1445,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.77783203125,
+            "north": 13.136962890625
+          },
+          "json": "underpasses/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 257,
+          "bbox": {
+            "west": 77.30322265625,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.319091796875
+          },
+          "json": "underpasses/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 568,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.90185546875,
+            "east": 80.3046875,
+            "north": 13.180908203125
+          },
+          "json": "underpasses/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 2039,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "underpasses/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 78,
+          "bbox": {
+            "west": 77.270263671875,
+            "south": 24.60009765625,
+            "east": 77.34716796875,
+            "north": 24.67919921875
+          },
+          "json": "underpasses/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 580,
+          "bbox": {
+            "west": 78.30078125,
+            "south": 17.30078125,
+            "east": 78.599609375,
+            "north": 17.549072265625
+          },
+          "json": "underpasses/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 677,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "underpasses/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 255,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 26.99951171875
+          },
+          "json": "underpasses/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 481,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.449951171875,
+            "north": 22.651123046875
+          },
+          "json": "underpasses/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 243,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.049560546875,
+            "north": 26.94677734375
+          },
+          "json": "underpasses/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 880,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.8916015625,
+            "east": 72.989990234375,
+            "north": 19.267333984375
+          },
+          "json": "underpasses/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 542,
+          "bbox": {
+            "west": 73.750244140625,
+            "south": 18.43017578125,
+            "east": 73.98974609375,
+            "north": 18.64111328125
+          },
+          "json": "underpasses/pune.json",
           "parquet": null
         }
       ]
