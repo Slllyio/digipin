@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-11-01T14:44:29Z",
-  "count": 16,
+  "generated_at_iso": "2026-11-01T19:13:32Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us7000tur0",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-01T18:53:57.590000+00:00",
+      "latitude": -35.441,
+      "longitude": 78.4169,
+      "depth_km": 10.0,
+      "place": "Mid-Indian Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tur0",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tuqx",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-01T18:34:39.200000+00:00",
+      "latitude": -23.8735,
+      "longitude": 69.5217,
+      "depth_km": 10.0,
+      "place": "Mid-Indian Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqx",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000tuqv",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-01T18:30:23.197000+00:00",
+      "latitude": -23.9496,
+      "longitude": 69.5065,
+      "depth_km": 10.0,
+      "place": "Mid-Indian Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqv",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tuqk",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-01T17:11:56.053000+00:00",
+      "latitude": -56.2566,
+      "longitude": -27.1985,
+      "depth_km": 108.234,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqk",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tuqi",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-01T17:01:18.126000+00:00",
+      "latitude": 23.8055,
+      "longitude": 123.2705,
+      "depth_km": 18.483,
+      "place": "78 km SSE of Yonakuni, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqi",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tupq",
       "magnitude": 4.8,
@@ -48,7 +108,7 @@
       "place": "33 km SE of Jiufen, Taiwan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tunq",
       "tsunami": 0,
-      "significance": 357
+      "significance": 358
     },
     {
       "id": "us7000tung",
@@ -157,42 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tukm",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us7000tuk4",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-31T18:51:02.721000+00:00",
-      "latitude": 51.6994,
-      "longitude": -172.7931,
-      "depth_km": 44.87,
-      "place": "111 km ESE of Atka, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuk4",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "aka2026vpcige",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-31T18:50:58.577000+00:00",
-      "latitude": 51.521,
-      "longitude": -172.815,
-      "depth_km": 1.0,
-      "place": "121 km SE of Atka, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026vpcige",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tujf",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-10-31T15:50:18.909000+00:00",
-      "latitude": 7.5692,
-      "longitude": -80.2547,
-      "depth_km": 10.0,
-      "place": "4 km S of Bajo Corral, Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tujf",
-      "tsunami": 0,
-      "significance": 432
     }
   ]
 }
