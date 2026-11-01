@@ -1041,7 +1041,12 @@ const DishaIntel = (() => {
         return used;
     }
 
-    return { match, roadAsk, stationText, citiesIn, citeTags, answer, evidence, decorate, whereChanged, cities: _cities };
+    /** Every lens whose DISHA route matches the question, in routing order (not only the first). Pure. */
+    function lensHits(q) {
+        return Object.entries(RE.lens).filter(([id, re]) => id !== 'all' && re.test(String(q || ''))).map(([id]) => id);
+    }
+
+    return { match, roadAsk, stationText, citiesIn, citeTags, answer, evidence, decorate, whereChanged, lensHits, cities: _cities };
 })();
 
 if (typeof window !== 'undefined') {

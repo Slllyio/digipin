@@ -196,6 +196,17 @@ const DISHAActions = (() => {
         throw new Error('could not resolve a location');
     }
 
+    /** The map centre as {lat,lng}, or null when the map isn't ready. */
+    function _center() {
+        const MM = _g('MapModule');
+        const map = MM && MM.getMap ? MM.getMap() : null;
+        if (!map || !map.getCenter) return null;
+        const c = map.getCenter();
+        return { lat: c.lat, lng: c.lng };
+    }
+
+    let _league = null;   // data/lenses/league.json, fetched once for runLens ranks
+
     /** Cell data via IndexedDB cache, falling back to a live fetch (cached for reuse). */
     async function _fetchData(lat, lng) {
         const Cache = _g('DISHACache');
@@ -347,6 +358,43 @@ const DISHAActions = (() => {
             const a = await RW.ask({ road: p.road, action: p.action || 'close', period: p.period || 'am' });
             if (!a.ok) throw new Error(a.error);
             return { label: `${a.action === 'widen' ? 'Widened' : 'Closed'} ${a.road}`, observation: `roadWhatIf:\n${RW.askText(a)}` };
+        },
+
+        findlenses(p) {
+            const LS = _g('LensSearch'), UL = _g('UrbanLenses'), DI = _g('DishaIntel');
+            if (!LS || !UL) throw new Error('lens search unavailable');
+            const routed = DI && DI.lensHits ? DI.lensHits(p.query) : [];
+            const hits = LS.search(p.query, UL.catalog().filter(l => l.id !== 'siting'), { limit: 8, routed });
+            if (!hits.length) return { label: `No lenses for “${p.query}”`, observation: `findLenses: no lens matches "${p.query}"; try other words or areaInsights.` };
+            return { label: `Found ${hits.length} lenses`, observation: `findLenses "${p.query}":\n${hits.map(h => `- ${h.id}: ${h.title} (${h.question})`).join('\n')}` };
+        },
+
+        async runlens(p) {
+            const UL = _g('UrbanLenses'), UI = _g('UrbanInsights'), CS = _g('CellStore'), LS = _g('LensSearch');
+            if (!UL || !UI || !CS || !LS) throw new Error('lenses unavailable');
+            const id = String(p.lens).trim().toLowerCase();
+            if (!UL.catalog().some(l => l.id === id)) throw new Error(`unknown lens "${p.lens}"; use findLenses first`);
+            let city = null;
+            if (p.city) {
+                const t = String(p.city).trim().toLowerCase().replace(/\s+/g, '_');
+                const c = UI.cities(CS).find(x => x.name === t || x.name.replace(/_pilot$/, '') === t || x.label.toLowerCase() === t.replace(/_/g, ' '));
+                city = c ? c.name : null;
+            }
+            if (!city) {
+                let at = null;
+                try { at = p.code ? _coords(p) : null; } catch { at = null; }   // partial codes may not decode
+                at = at || _center();
+                city = at ? UI.cityAt(CS, at.lat, at.lng) : null;
+            }
+            if (!city) throw new Error('no city: name one or pan the map to a city');
+            const res = await UL.run(city, CS, { only: [id], hotspots: false });
+            const l = res.lenses.find(x => x.id === id);
+            if (!l) return { label: `${id}: no data`, observation: `runLens ${id}: ${UI.cityLabel(city)} lacks the data this lens needs.` };
+            const prof = p.code ? UL.areaProfile(res, _norm(p.code).slice(0, 6)) : null;
+            if (!_league) _league = await fetch('data/lenses/league.json').then(x => (x.ok ? x.json() : {})).catch(() => ({}));
+            const rank = UL.leagueFor(_league, city).find(r => r.id === id);
+            const text = LS.lensText(l, { stats: 8, area: prof && prof.rows.find(r => r.id === id), areaCode: prof && prof.prefix, rank });
+            return { label: `${l.title}: ${res.cityLabel}`, observation: `runLens ${id} (${res.cityLabel}):\n${text}` };
         },
 
         async livenow(p) {

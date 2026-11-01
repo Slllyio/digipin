@@ -69,6 +69,7 @@ loadGlobalScript('js/intel-brief.js', ['IntelBrief']);
 loadGlobalScript('js/insights-panel.js', ['InsightsPanel']);
 loadGlobalScript('js/agents-panel.js', ['AgentsPanel']);
 loadGlobalScript('js/disha-intel.js', ['DishaIntel']);
+loadGlobalScript('js/lens-search.js', ['LensSearch']);
 loadGlobalScript('js/growth-score.js', ['GrowthScore']);
 loadGlobalScript('js/realtime-growth.js', ['RealtimeGrowth']);
 loadGlobalScript('js/growth-widget.js', ['GrowthWidget']);

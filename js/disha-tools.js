@@ -143,6 +143,18 @@ const DISHATools = (() => {
             example: '[ACTION] runIsochrone code:39J-49L-L8T4',
         },
         {
+            name: 'findLenses', type: 'findlenses', kind: 'read', agentOnly: true,
+            args: { query: { type: 'string', required: true } },
+            desc: 'Search the ~330 urban lenses (computed analyses over the open datasets: heat, flood, air, water, health, schools, transit, housing, land value, growth, safety, climate, emissions, history and more) for the ones that answer a question; returns lens ids, titles and the question each answers.',
+            example: '[ACTION] findLenses query:"is it safe to buy a flat near the lake"',
+        },
+        {
+            name: 'runLens', type: 'runlens', kind: 'read', agentOnly: true,
+            args: { lens: { type: 'string', required: true }, city: { type: 'string' }, code: { type: 'digipin' } },
+            desc: 'Run one urban lens (id from findLenses) for a city (default: the city in view): headline finding, key statistics, the area at code against the city, the city\'s rank among all cities, and the source.',
+            example: '[ACTION] runLens lens:floodspots city:bengaluru code:39J-49L',
+        },
+        {
             name: 'liveNow', type: 'livenow', kind: 'read', agentOnly: true,
             args: { code: { type: 'digipin' } },
             desc: 'Live conditions at a cell or the map centre: weather and heavy-rain forecast, air quality (National AQI), river flow, nearby earthquakes and natural events, GPS accuracy, and live correlations with the people, flood and heat cells in view.',

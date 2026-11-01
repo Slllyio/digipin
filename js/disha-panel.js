@@ -466,8 +466,9 @@ const DISHAPanel = (() => {
         }
 
         // Smart context: filter by question type instead of sending everything,
-        // then add the cited cell-store evidence ([C#] tags) for this cell.
-        _currentContext = await _withEvidence(DISHA.buildFilteredContext(_currentCell, _currentData, modelQuestion));
+        // then add the cited cell-store evidence ([C#] tags) for this cell and
+        // the urban lenses that bear on the question (js/lens-search.js).
+        _currentContext = await _withLenses(await _withEvidence(DISHA.buildFilteredContext(_currentCell, _currentData, modelQuestion)), modelQuestion);
 
         // A pinned @score only means something to a ranking, so it implies one.
         const intent = pins.length ? 'city_scan' : DISHA.detectIntent(modelQuestion);
@@ -477,6 +478,26 @@ const DISHAPanel = (() => {
         } else {
             await streamResponse(modelQuestion);
         }
+    }
+
+    /**
+     * Append the computed results of the lenses that bear on the question
+     * (top 3 by LensSearch, run for the city in view, with the selected area
+     * against the city and the city's rank among all cities). Best-effort.
+     */
+    let _league = null;
+    async function _withLenses(context, question) {
+        if (typeof LensSearch === 'undefined' || typeof UrbanInsights === 'undefined' || typeof CellStore === 'undefined') return context;
+        try {
+            const m = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
+            const p = _currentCell && _currentCell.center ? _currentCell.center : (m && m.getCenter ? m.getCenter() : null);
+            const named = typeof DishaIntel !== 'undefined' ? DishaIntel.citiesIn(question, DishaIntel.cities()) : [];
+            const city = named[0] || (p ? UrbanInsights.cityAt(CellStore, p.lat, p.lng) : null);
+            if (!city) return context;
+            if (!_league) _league = await fetch('data/lenses/league.json').then(x => (x.ok ? x.json() : {})).catch(() => ({}));
+            const lc = await LensSearch.context(question, city, CellStore, { code: _currentCell && _currentCell.code, league: _league });
+            return lc.text ? `${context}\n\n${lc.text}` : context;
+        } catch { return context; }
     }
 
     /** Prepend the selected cell's cited cell-store evidence to a context block. */
