@@ -4,7 +4,7 @@ OpenStreetMap).
 Underpasses are where Indian cities flood first: a dip in the road below the surrounding ground fills in a heavy shower
 (Minto Bridge in Delhi, Bengaluru's KR Circle). Overture flags the parts of road segments that run in a tunnel
 (``is_tunnel``: underpasses, vehicle subways and road tunnels) or on a bridge (``is_bridge``: flyovers, elevated roads and
-river bridges). The flagged part of each segment is placed at its midpoint (dataset ``underpasses``, L7 blocks):
+river bridges). Tunnel parts are placed at their midpoint and bridge parts are spread over the blocks they cross (dataset ``underpasses``, L7 blocks):
 
     up_road_n / up_road_m    vehicle-road underpasses and tunnels: count of flagged parts, metres
     up_ped_n                 pedestrian subways (footway, steps, pedestrian or path in a tunnel)
@@ -81,13 +81,16 @@ def fetch(region, release=RELEASE):
             FROM r WHERE list_contains(f['values'], 'is_tunnel') OR list_contains(f['values'], 'is_bridge')
         )
         SELECT ST_Y(ST_LineInterpolatePoint(geometry, (a + b) / 2)), ST_X(ST_LineInterpolatePoint(geometry, (a + b) / 2)),
-               class, flag, ST_Length(geometry) * (b - a)
+               class, flag, ST_Length(geometry) * (b - a), CASE WHEN flag = 'is_bridge' THEN ST_AsText(ST_LineSubstring(geometry, a, b)) END
         FROM p
     """).fetchall()
     parts = []
-    for lat, lng, cls, flag, deg in raw:
+    from pipeline.realestate.roadsbuilding import pieces
+    for lat, lng, cls, flag, deg, wkt in raw:
         kind = kind_of(cls, flag)
-        if kind and s <= lat <= n and w <= lng <= e:
+        if kind == "bridge":  # flyovers run for kilometres: spread their length over the blocks they cross
+            parts += [(la, ln, kind, m) for la, ln, m in pieces(wkt, k) if s <= la <= n and w <= ln <= e]
+        elif kind and s <= lat <= n and w <= lng <= e:
             parts.append((lat, lng, kind, deg * k))
     return rows_from(parts)
 

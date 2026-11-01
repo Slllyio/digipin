@@ -186,6 +186,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 67,
+     "unit": "%",
+     "higherIs": null
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1324,6 +1330,12 @@
      "label": "Road under construction on the map",
      "value": 260.3,
      "unit": "km",
+     "higherIs": null
+    },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 56,
+     "unit": "%",
      "higherIs": null
     },
     "vitals": {
@@ -2796,6 +2808,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 25,
+     "unit": "%",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3922,6 +3940,12 @@
      "label": "Road under construction on the map",
      "value": 74,
      "unit": "km",
+     "higherIs": null
+    },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 52,
+     "unit": "%",
      "higherIs": null
     },
     "vitals": {
@@ -5280,6 +5304,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 68,
+     "unit": "%",
+     "higherIs": null
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6474,6 +6504,12 @@
      "unit": "outlets",
      "higherIs": null
     },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 17,
+     "unit": "%",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -7420,6 +7456,12 @@
      "label": "Road under construction on the map",
      "value": 6.4,
      "unit": "km",
+     "higherIs": null
+    },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 50,
+     "unit": "%",
      "higherIs": null
     },
     "schoolready": {
@@ -8718,6 +8760,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 27,
+     "unit": "%",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9816,6 +9864,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 42,
+     "unit": "%",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10912,6 +10966,12 @@
      "label": "Road under construction on the map",
      "value": 7.7,
      "unit": "km",
+     "higherIs": null
+    },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 40,
+     "unit": "%",
      "higherIs": null
     },
     "schoolready": {
@@ -12126,6 +12186,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 42,
+     "unit": "%",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -13240,6 +13306,12 @@
      "label": "Road under construction on the map",
      "value": 70.1,
      "unit": "km",
+     "higherIs": null
+    },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 51,
+     "unit": "%",
      "higherIs": null
     },
     "streetdogs": {
@@ -14500,6 +14572,12 @@
      "label": "Road under construction on the map",
      "value": 14.2,
      "unit": "km",
+     "higherIs": null
+    },
+    "sundayair": {
+     "label": "NO2 drop in the 2020 lockdown",
+     "value": 47,
+     "unit": "%",
      "higherIs": null
     },
     "schoolready": {

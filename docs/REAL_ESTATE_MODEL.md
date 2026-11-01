@@ -2130,3 +2130,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Roads being built now (`roads_building`)
 
 `pipeline/realestate/roadsbuilding.py` takes Overture road segments whose `road_flags` include `is_under_construction`, cuts the flagged `between` substring into ~50 m pieces (`pieces()`), and sums arterial (`rb_major_m`), other (`rb_minor_m`) and also-bridge (`rb_elevated_m`) length per L7 block (blocks under 20 m dropped). Spreading along the line matters: midpoints alone put a 10 km corridor in one block.
+
+## Air on Sundays and in the lockdown (`sunday_air`)
+
+`pipeline/realestate/sundayair.py` averages `COPERNICUS/S5P/OFFL/L3_NO2` tropospheric columns within 8 km of the city centre (centres from `heatisland.py`): Sundays (Earth Engine `getRelative('day', 'week') == 6`) against other days, 2019-2024, and 25 March-30 April 2020 against the same dates of 2019 and 2021-2023. Fields in µmol/m² and %. One value per city.

@@ -954,6 +954,30 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function sundayair(fr) {
+        const c = fr.cols, n = fr.grid.n, sd = c['sunday_air.sa_sunday_drop'];
+        if (!sd || !sd.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(sd[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`sunday_air.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const wk = v('sa_weekday'), su = v('sa_sunday'), drop = v('sa_sunday_drop'), lock = v('sa_lockdown_drop');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = drop;
+        const pc = x => (_fin(x) ? `${_round(x, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'NO2 on working days (Mon-Sat), 2019-2024', value: _fin(wk) ? `${_round(wk, 0)} µmol/m²` : 'n/a' },
+            { label: 'NO2 on Sundays', value: _fin(su) ? `${_round(su, 0)} µmol/m²` : 'n/a' },
+            { label: 'Lower on Sundays by', value: pc(drop) },
+            { label: 'Lower in the 2020 lockdown (25 Mar-30 Apr) than the same weeks of other years', value: pc(lock) },
+        ];
+        return {
+            columns: { sunday_no2_drop: out }, idx, weightKey: 'sunday_no2_drop',
+            metric: { label: 'NO2 drop in the 2020 lockdown', value: _round(lock, 0), unit: '%', higherIs: null },
+            headline: `Nitrogen dioxide over the city centre is ${pc(drop)} lower on Sundays than on working days, and it fell ${pc(lock)} in the spring 2020 lockdown. NO2 lasts only hours, so that share comes from traffic, offices and workshops that stop; what stayed in the lockdown is power plants, kilns, burning and background. A bigger lockdown drop means cleaner vehicles and less congestion would clear more of the air. One value for 8 km around the centre, from Sentinel-5P.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -1147,8 +1171,14 @@ const UrbanLensesExtra = (() => {
             needs: ['roads_building.rb_major_m', 'roads_building.rb_minor_m', 'roads_building.rb_elevated_m', 'population.population'],
             method: `Overture Maps transportation segments (from OpenStreetMap, ODbL) carry an is_under_construction flag on the part of a road being built (OSM highway=construction). Each flagged part is cut into pieces of about 50 m and placed in the L7 blocks it crosses; arterial (motorway, trunk, primary, secondary) and other roads are kept apart, and parts also flagged as bridges count as elevated. Residents are GHSL/WorldPop population of the blocks crossed. See the New roads lens for named projects with dates.`,
             refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors)' },
+        { id: 'sundayair', title: 'Air on Sundays and in the lockdown', icon: '🌤️',
+            question: 'How much of my city’s air pollution stops when the city rests?',
+            field: { key: 'sunday_no2_drop', label: 'NO2 lower on Sundays than working days', unit: '%', higherIs: null, ramp: 'viridis' },
+            needs: ['sunday_air.sa_weekday', 'sunday_air.sa_sunday', 'sunday_air.sa_sunday_drop', 'sunday_air.sa_lockdown_drop'],
+            method: `Daily Sentinel-5P TROPOMI tropospheric NO2 (OFFL L3, about 13:30 local overpass) is averaged within 8 km of the city centre for Sundays and for Monday-Saturday, 2019-2024, and for 25 March to 30 April 2020 against the same dates in 2019 and 2021-2023. Clouds and seasons are not adjusted for beyond averaging many days; the lockdown period was also a weather period, so treat its drop as approximate (studies put Indian city drops at 40-70%).`,
+            refs: 'Copernicus Sentinel-5P TROPOMI (contains modified Copernicus Sentinel data); Beirle et al. 2003, Atmos. Chem. Phys. 3:2225 (weekly cycle of NO2)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance, premiumstreets, roadsbuilding });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance, premiumstreets, roadsbuilding, sundayair });
     return { ENTRIES };
 })();
