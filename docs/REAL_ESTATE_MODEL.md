@@ -2138,3 +2138,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Diwali night air (`diwali_air`)
 
 `pipeline/realestate/diwaliair.py` averages `projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25` within 8 km of the city centre for Lakshmi Puja day plus the next day and for days 3-10 before (dates in `DIWALI`, 2017-2022; GHAP daily has no 2023 yet), and stores the all-year means, the median yearly jump, the worst year and its level. One value per city.
+
+## Relative deprivation (`deprivation`)
+
+`pipeline/realestate/deprivation.py` samples NASA SEDAC's GRDI v1 GeoTIFF (`povmap-grdi-v1.tif`, ~1 km, 0-100; download needs Earthdata access, URL in the module) at each lived-in L7 block centre. CC BY 4.0 with commercial use allowed, so it is the openly licensed candidate to replace Meta RWI (CC BY-NC) in `land_value.py` and the wealth lenses if that decision is taken. Agreement with RWI at L6 is moderate (Spearman -0.04 to -0.52 across ten cities). The lens lives in `js/urban-lenses-more.js`, the new module after `urban-lenses-extra.js` reached ~143 kB.

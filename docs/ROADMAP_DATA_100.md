@@ -381,6 +381,7 @@ Each item gives four things:
 320. ✅ **Roads being built now** (`roads_building`, `roadsbuilding` lens): Overture is_under_construction road flags (OSM, ODbL) cut into ~50 m pieces per L7 block, arterial vs other and elevated. Bengaluru 260 km (mostly new layout streets), Chennai 73 km (69 km elevated, the port corridor), Mumbai 63 km arterial. A map snapshot; named projects stay in `new_roads`.
 321. ✅ **Air on Sundays and in the lockdown** (`sunday_air`, `sundayair` lens): Sentinel-5P TROPOMI tropospheric NO2 within 8 km of the centre, Sundays vs Monday-Saturday 2019-2024 and 25 Mar-30 Apr 2020 vs the same weeks of 2019 and 2021-2023. Delhi 14% lower on Sundays and 68% lower in the lockdown; Bengaluru 17% and 56%; Bhopal and Guna barely move (1%, 17-25%). Also: underpass flyover lengths now spread along the road.
 322. ✅ **Diwali night air** (`diwali_air`, `diwaliair` lens): GHAP daily 1 km PM2.5 (CC BY 4.0) within 8 km of the centre on Diwali and the day after vs days 3-10 before, 2017-2022. Delhi 315 vs 168 µg/m³ (+84% median year, 433 in 2021); Lucknow +44%; Ahmedabad and Jaipur under +10%.
+323. ✅ **Relative deprivation, open index** (`deprivation`, `deprivation` lens in the new `js/urban-lenses-more.js`): NASA SEDAC GRDI v1 (CC BY 4.0, commercial use allowed) sampled per lived-in L7 block. Against Meta RWI at L6, Spearman -0.04 (Hyderabad) to -0.52 (Delhi). The openly licensed candidate if the CC BY-NC wealth layer has to go.
 
 ## Parked for the keys round
 
