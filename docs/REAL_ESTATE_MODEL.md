@@ -2106,3 +2106,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Dry and wet years since 1901 (`droughts`)
 
 `pipeline/realestate/droughts.py` reads SPEIbase v2.11 (`CSIC/SPEI/2_11` on Earth Engine, CC BY 4.0) band `SPEI_12_month` for each December, 1901-2024, at the city centre (centres shared with `heatisland.py`). Fields: dry years (SPEI-12 at or below -1) in 1901-1962 and 1963-2024, severely dry years (-1.5), wet years since 1963, the driest year and its value, the latest dry year, and the trend per decade. One value per city, copied to every lived-in block; the `dryyears` lens reads it.
+
+## Water under the region, weighed from space (`water_store`)
+
+`pipeline/realestate/waterstore.py` reads `NASA/GRACE/MASS_GRIDS_V04/MASCON_CRI` (JPL RL06.3 v04 mascons, NASA open data) band `lwe_thickness` at the city centre (centres shared with `heatisland.py`), takes annual means for years with 6 or more months (the 2017-2018 gap between GRACE and GRACE-FO drops out), and stores the 2003-2023 trend, the change between 2003-2007 and 2019-2023, the lowest year and the latest anomaly. Mascons are about 300 km wide, so Delhi and Jaipur, and Bhopal and Guna, share one value. The `waterstore` lens reads it; DISHA routes only GRACE or from-space questions to it, so groundwater questions still go to `waterrisk`/`gwstress`.

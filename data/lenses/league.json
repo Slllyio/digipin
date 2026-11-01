@@ -1,6 +1,6 @@
 {
  "schema": "digipin.lens-league/1",
- "generated": "2026-10-31",
+ "generated": "2026-11-01",
  "cities": {
   "ahmedabad": {
    "label": "Ahmedabad",
@@ -149,6 +149,12 @@
      "value": 11,
      "unit": "years",
      "higherIs": "worse"
+    },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": 0.16,
+     "unit": "cm/yr",
+     "higherIs": "better"
     },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
@@ -1253,6 +1259,12 @@
      "value": 12,
      "unit": "years",
      "higherIs": "worse"
+    },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": 0.54,
+     "unit": "cm/yr",
+     "higherIs": "better"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2688,6 +2700,12 @@
      "unit": "years",
      "higherIs": "worse"
     },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": 0.35,
+     "unit": "cm/yr",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3779,6 +3797,12 @@
      "value": 8,
      "unit": "years",
      "higherIs": "worse"
+    },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": -0.25,
+     "unit": "cm/yr",
+     "higherIs": "better"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -5100,6 +5124,12 @@
      "unit": "years",
      "higherIs": "worse"
     },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": -4.58,
+     "unit": "cm/yr",
+     "higherIs": "better"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6264,6 +6294,12 @@
      "unit": "years",
      "higherIs": "worse"
     },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": 0.35,
+     "unit": "cm/yr",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -7175,6 +7211,12 @@
      "value": 5,
      "unit": "years",
      "higherIs": "worse"
+    },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": 0.25,
+     "unit": "cm/yr",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8436,6 +8478,12 @@
      "unit": "years",
      "higherIs": "worse"
     },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": 0.89,
+     "unit": "cm/yr",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9498,6 +9546,12 @@
      "unit": "years",
      "higherIs": "worse"
     },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": -4.58,
+     "unit": "cm/yr",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10559,6 +10613,12 @@
      "value": 11,
      "unit": "years",
      "higherIs": "worse"
+    },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": -0.84,
+     "unit": "cm/yr",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -11736,6 +11796,12 @@
      "unit": "years",
      "higherIs": "worse"
     },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": -1.36,
+     "unit": "cm/yr",
+     "higherIs": "better"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12815,6 +12881,12 @@
      "value": 10,
      "unit": "years",
      "higherIs": "worse"
+    },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": -0.43,
+     "unit": "cm/yr",
+     "higherIs": "better"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -14039,6 +14111,12 @@
      "value": 11,
      "unit": "years",
      "higherIs": "worse"
+    },
+    "waterstore": {
+     "label": "Regional water store trend, 2003-2023",
+     "value": 0.09,
+     "unit": "cm/yr",
+     "higherIs": "better"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

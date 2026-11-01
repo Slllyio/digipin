@@ -373,6 +373,7 @@ Each item gives four things:
 312. ✅ **Big estates behind walls** (`closed_land`, `walledland` lens): Overture land use (OSM, ODbL) for defence, railway and golf land per lived-in block, with single estates of 50 ha or more flagged. Delhi has about 67 km² (52 km² defence), 3.5% of its lived-in area; OSM leaves some defence land blank, so a floor.
 313. ✅ **Earthquakes felt nearby since 1900** (`quake_history`, `quakepast` lens): USGS ComCat (public domain) events M4.5+ within 300 km of each lived-in block, M6+ count, largest event and nearest M5+ epicentre. Delhi's typical home: 88 events, 4 of M6+, largest M6.9 (1905). Ahmedabad: M7.7 Bhuj 2001. Bengaluru: under 1. BIS zones are not openly licensed, so this is the record, not the zone.
 314. ✅ **Dry and wet years since 1901** (`droughts`, `dryyears` lens): SPEIbase v2.11 (CSIC, CC BY 4.0) 12-month SPEI each December at the city centre, 1901-2024. Lucknow went from 6 dry years in 1901-1962 to 14 in 1963-2024 (driest 2010) and is the only city drying; Hyderabad went from 13 to 5. One value per city.
+315. ✅ **Water under the region, weighed from space** (`water_store`, `waterstore` lens): NASA JPL GRACE/GRACE-FO mascons (NASA open data) at the city centre, 2002-2024. The Delhi-Jaipur mascon loses 4.6 cm of water a year (75 cm since 2003-2007); Lucknow -1.4, Kolkata -0.8; Bengaluru and Indore gain. One value per city, about 300 km across.
 
 ## Parked for the keys round
 

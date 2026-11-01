@@ -789,6 +789,32 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function waterstore(fr) {
+        const c = fr.cols, n = fr.grid.n, tr = c['water_store.ws_trend_cm_yr'];
+        if (!tr || !tr.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(tr[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`water_store.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const t = v('ws_trend_cm_yr'), ch = v('ws_change_cm'), low = v('ws_low_year'), last = v('ws_last_cm');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = t;
+        const cm = x => (_fin(x) ? `${x > 0 ? '+' : ''}${_round(x, 1)} cm` : 'n/a');
+        const word = t <= -1 ? 'losing water fast' : t <= -0.3 ? 'slowly losing water' : t >= 0.3 ? 'gaining water' : 'roughly holding steady';
+        const stats = [
+            { label: 'Trend, 2003-2023', value: _fin(t) ? `${t > 0 ? '+' : ''}${_round(t, 2)} cm of water a year` : 'n/a' },
+            { label: 'Change, 2003-2007 to 2019-2023', value: cm(ch) },
+            { label: 'Lowest year', value: _fin(low) ? String(low) : 'n/a' },
+            { label: 'Latest year against 2004-2009', value: cm(last) },
+            { label: 'Same as about', value: _fin(ch) ? `${_round(Math.abs(ch) / 100 * 1e5 * 1e5 / 1e9, 1)} km³ of water per 100 km × 100 km` : 'n/a' },
+        ];
+        return {
+            columns: { water_store_trend: out }, idx, weightKey: 'water_store_trend',
+            metric: { label: 'Regional water store trend, 2003-2023', value: _round(t, 2), unit: 'cm/yr', higherIs: 'better' },
+            headline: `Weighed from space, the region around the city is ${word}: ${_fin(t) ? `${t > 0 ? '+' : ''}${_round(t, 2)} cm of water a year` : 'n/a'} since 2003, ${cm(ch)} between 2003-2007 and 2019-2023${_fin(low) ? `, lowest in ${low}` : ''}. This is groundwater, soil moisture and reservoirs together over about 300 km, so nearby cities share a value; where it falls year after year it is mostly groundwater pumped faster than the monsoon refills it.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -946,8 +972,14 @@ const UrbanLensesExtra = (() => {
             needs: ['droughts.dr_dry_early', 'droughts.dr_dry_late', 'droughts.dr_severe_years', 'droughts.dr_wet_late', 'droughts.dr_worst_year', 'droughts.dr_worst_spei', 'droughts.dr_last_dry', 'droughts.dr_trend'],
             method: `SPEIbase v2.11 (CSIC; built on CRU TS rainfall and potential evapotranspiration) gives the 12-month standardised precipitation-evapotranspiration index ending each December at the city centre's 0.5° cell, 1901-2024. A year at or below -1 counts as dry, at or below -1.5 as severely dry, at or above +1 as wet. The two 62-year halves are compared, and a least-squares trend is fitted. Early decades rest on fewer rain gauges.`,
             refs: 'Beguería S., Vicente-Serrano S.M. et al., SPEIbase v2.11 (CC BY 4.0, CSIC); Vicente-Serrano et al. 2010, J. Climate 23:1696' },
+        { id: 'waterstore', title: 'Water under the region, weighed from space', icon: '🛰️',
+            question: 'Is the ground water around my city running down?',
+            field: { key: 'water_store_trend', label: 'Regional water store trend, 2003-2023', unit: 'cm of water/yr', higherIs: 'better', ramp: 'diverging' },
+            needs: ['water_store.ws_trend_cm_yr', 'water_store.ws_change_cm', 'water_store.ws_low_year', 'water_store.ws_last_cm'],
+            method: `NASA JPL GRACE and GRACE-FO RL06.3 v04 mascons (with the coastline resolution improvement) give the monthly water-equivalent anomaly of all water in and on the ground, against 2004-2009, in cells about 300 km across. Annual means (years with at least 6 months; mid-2017 to mid-2018 is a gap between missions) at the city centre give a 2003-2023 least-squares trend, the change between 2003-2007 and 2019-2023, and the lowest year. It cannot separate groundwater from soil moisture or reservoirs, and it cannot see a single aquifer.`,
+            refs: 'Watkins et al. 2015 and Wiese et al. 2016, JPL GRACE mascons (NASA open data); Rodell et al. 2009, Nature 460:999 (north-west India groundwater)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore });
     return { ENTRIES };
 })();
