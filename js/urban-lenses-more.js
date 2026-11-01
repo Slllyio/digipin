@@ -115,6 +115,36 @@ const UrbanLensesMore = (() => {
         };
     }
 
+    // The UN SDG 11 scorecard for public space (11.7.1) and public transport (11.2.1), computed by NASA SEDAC for every
+    // GHSL urban centre on OpenStreetMap, so cities can be set against each other on one yardstick.
+    function sdgcard(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['sdg_city.sdg_space_pct'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`sdg_city.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const sp = v('sdg_space_pct'), sa = v('sdg_space_access_pct'), tr = v('sdg_transit_pct');
+        const pc = x => (_fin(x) ? `${_round(x, 1)}%` : 'n/a'), rk = k => (_fin(v(k)) ? `${_round(v(k), 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Open public space, share of the urban area (SDG 11.7.1)', value: pc(sp) },
+            { label: '…Indian / world cities of 1 million+ with less', value: `${rk('sdg_space_india_pctile')} / ${rk('sdg_space_world_pctile')}` },
+            { label: 'Residents within 400 m of open public space (SDG 11.7.1)', value: pc(sa) },
+            { label: '…Indian / world cities of 1 million+ scoring lower', value: `${rk('sdg_space_access_india_pctile')} / ${rk('sdg_space_access_world_pctile')}` },
+            { label: 'Residents with convenient public transport (SDG 11.2.1)', value: pc(tr) },
+            { label: '…Indian / world cities of 1 million+ scoring lower', value: `${rk('sdg_transit_india_pctile')} / ${rk('sdg_transit_world_pctile')}` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _fin(sa) ? sa : sp;
+        const access = _fin(sa) ? ` and ${pc(sa)} of residents live within 400 m of one (more than in ${rk('sdg_space_access_world_pctile')} of the world's cities of a million or more)` : '';
+        const transit = _fin(tr) ? ` ${pc(tr)} of residents can walk to public transport (500 m to a bus stop or 1 km to rail), more than in ${rk('sdg_transit_india_pctile')} of India's big cities and ${rk('sdg_transit_world_pctile')} of the world's.` : '';
+        return {
+            columns: { sdg_score: out }, idx, weightKey: 'sdg_score',
+            metric: { label: 'Residents within 400 m of open public space (SDG 11.7.1)', value: _fin(sa) ? _round(sa, 1) : _round(sp, 1), unit: '%', higherIs: 'better' },
+            headline: `On the UN's SDG 11 yardstick, open public space covers ${pc(sp)} of the urban area, more than in ${rk('sdg_space_india_pctile')} of India's cities of a million or more${access}.${transit} Both counts come from OpenStreetMap, so unmapped parks and bus stops pull a city down; the parks and transit lenses show the block-by-block picture. One value for the whole city.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'deprivation', title: 'Relative deprivation (open index)', icon: '📉',
             question: 'Which parts of my city are most deprived on an open index?',
@@ -134,8 +164,14 @@ const UrbanLensesMore = (() => {
             needs: ['urban_expansion.urban_2000', 'urban_expansion.p2030', 'built_up.built_change_pct', 'population.population'],
             method: `The Global Grid of Probabilities of Urban Expansion to 2030 (Seto, Güneralp and Hutyra 2015, NASA SEDAC) starts from MODIS urban land around 2000 and gives every cell that was not urban then (about 5 km wide) a Monte-Carlo probability of turning urban by 2030, driven by population density and regional population and GDP projections. Each lived-in L7 block takes the cell at its centre. Because the forecast used only 2000 data, it is checked against GHSL's new built surface 2000→2020 (percentage points of the block): blocks given under 50% odds that still gained 20 pp or more are growth the forecast missed. Across eight cities the forecast and real growth agree only weakly (Spearman 0.41 in Indore, about 0.2 in Bengaluru, −0.38 in Chennai, near 0 elsewhere), so this is a check on forecasting, not a forecast itself.`,
             refs: 'Seto K.C., Güneralp B. & Hutyra L.R. 2012, Global forecasts of urban expansion to 2030, PNAS 109(40):16083; data: NASA SEDAC 2015, doi:10.7927/H4Z899CG (free use with attribution); GHSL R2023A built surface (JRC, CC BY 4.0)' },
+        { id: 'sdgcard', title: 'UN SDG 11 scorecard: public space and transit', icon: '🇺🇳',
+            question: 'How does my city score on the UN SDG 11 public space and transport indicators?',
+            field: { key: 'sdg_score', label: 'Residents within 400 m of open public space', unit: '%', higherIs: 'better', ramp: 'greens', domain: [0, 100] },
+            needs: ['sdg_city.sdg_space_pct', 'sdg_city.sdg_space_india_pctile', 'sdg_city.sdg_space_world_pctile', 'sdg_city.sdg_space_access_pct', 'sdg_city.sdg_space_access_india_pctile', 'sdg_city.sdg_space_access_world_pctile', 'sdg_city.sdg_transit_pct', 'sdg_city.sdg_transit_india_pctile', 'sdg_city.sdg_transit_world_pctile', 'population.population'],
+            method: `NASA SEDAC's SDG Indicators 2023 release (CIESIN) computes two UN Sustainable Development Goal 11 indicators for every city in the JRC GHS Urban Centre Database. SDG 11.7.1 is the share of the urban centre's area that is OpenStreetMap open public space, and the share of WorldPop residents within 400 m of it; SDG 11.2.1 is the share of residents within 500 m of a low-capacity stop (bus) or 1 km of a high-capacity one (rail, BRT, ferry). Ranks set each score against the 1 million+ urban centres in India and worldwide. Both rest on OSM mapping, which is patchy in Indian cities, and the urban centre outline is GHSL's, not the municipal boundary.`,
+            refs: 'CIESIN 2023, SDG Indicator 11.7.1: Urban Public Space, Availability and Access, doi:10.7927/eavc-4k45; SDG Indicator 11.2.1: Urban Access to Public Transport, doi:10.7927/1a5z-3h71; NASA SEDAC (CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck });
+    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard });
     return { ENTRIES };
 })();
