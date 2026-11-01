@@ -928,6 +928,32 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function roadsbuilding(fr) {
+        const c = fr.cols, n = fr.grid.n, mj = c['roads_building.rb_major_m'], mn = c['roads_building.rb_minor_m'], el = c['roads_building.rb_elevated_m'], pop = c['population.population'];
+        if (!mj || !mj.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(mj, i) + v(mn, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        let M = 0, m = 0, E = 0, ppl = 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) { M += v(mj, i); m += v(mn, i); E += v(el, i); ppl += v(pop, i); out[i] = v(mj, i) + v(mn, i); }
+        const km = x => `${_round(x / 1000, 1)} km`;
+        const stats = [
+            { label: 'Arterial roads under construction', value: km(M) },
+            { label: 'Other roads under construction', value: km(m) },
+            { label: '…of which elevated (flyovers, elevated corridors)', value: km(E) },
+            { label: 'Blocks the new roads pass through', value: idx.length.toLocaleString('en-IN') },
+            { label: 'Residents of those blocks', value: _people(ppl) },
+        ];
+        return {
+            columns: { road_building_m: out }, idx, weightKey: 'road_building_m', noHotspots: true,
+            metric: { label: 'Road under construction on the map', value: _round((M + m) / 1000, 1), unit: 'km', higherIs: null },
+            headline: `The map shows ${km(M + m)} of road under construction, ${km(M)} of it arterial${E ? ` and ${km(E)} elevated` : ''}, passing through ${idx.length.toLocaleString('en-IN')} blocks where ${_people(ppl)} people live. New arterials and flyovers change who can reach what, and land along them is often priced up before they open; construction also brings dust, diversions and noise for a few years. Brighter blocks have more. A snapshot of OpenStreetMap: some sites stay tagged after opening and many are never tagged.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -1115,8 +1141,14 @@ const UrbanLensesExtra = (() => {
             needs: ['premium_brands.pb_premium', 'premium_brands.pb_everyday', 'premium_brands.pb_premium_share'],
             method: `Overture Maps places (confidence 0.6 or more, not closed) are matched on brand name against a list of premium chains (Starbucks and other coffee chains, international fashion and sportswear, jewellery chains, luxury and premium car showrooms, multiplexes, premium gyms, five-star and upscale hotel chains) and everyday chains (fast food, supermarkets, public-sector banks, fuel, budget hotels). Outlets are counted per L7 block. Tested against Meta's Relative Wealth Index at L6 in ten cities, premium counts and premium share correlate weakly or not at all (Spearman about -0.1 to 0.4), so this is a retail-location signal, not an affluence measure.`,
             refs: 'Overture Maps Foundation, places theme (CDLA-Permissive-2.0)' },
+        { id: 'roadsbuilding', title: 'Roads being built now', icon: '🚜',
+            question: 'Which new roads and flyovers are being built in my city right now?',
+            field: { key: 'road_building_m', label: 'Road under construction in the block', unit: 'm', higherIs: null, ramp: 'viridis' },
+            needs: ['roads_building.rb_major_m', 'roads_building.rb_minor_m', 'roads_building.rb_elevated_m', 'population.population'],
+            method: `Overture Maps transportation segments (from OpenStreetMap, ODbL) carry an is_under_construction flag on the part of a road being built (OSM highway=construction). Each flagged part is cut into pieces of about 50 m and placed in the L7 blocks it crosses; arterial (motorway, trunk, primary, secondary) and other roads are kept apart, and parts also flagged as bridges count as elevated. Residents are GHSL/WorldPop population of the blocks crossed. See the New roads lens for named projects with dates.`,
+            refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance, premiumstreets });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance, premiumstreets, roadsbuilding });
     return { ENTRIES };
 })();

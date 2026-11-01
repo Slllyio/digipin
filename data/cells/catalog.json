@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-01T01:34:46Z",
+  "generated": "2026-11-01T01:52:41Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -48859,6 +48859,205 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "roads_building",
+      "title": "Roads being built now (Overture / OpenStreetMap)",
+      "description": "Parts of road segments flagged under construction in Overture Maps transportation (release 2026-10-21.0, from OpenStreetMap), spread over the blocks they cross. A snapshot of the map: some sites stay tagged after opening.",
+      "source": "pipeline/realestate/roadsbuilding.py (Overture Maps transportation segments via DuckDB)",
+      "license": "ODbL 1.0 (OpenStreetMap contributors via Overture Maps)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "rb_major_m",
+          "label": "Arterial road under construction",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0,
+            40873
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "rb_minor_m",
+          "label": "Other road under construction",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0,
+            4666
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "rb_elevated_m",
+          "label": "Elevated road or flyover under construction",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0,
+            40873
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "rb_major_m",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 44,
+          "bbox": {
+            "west": 72.489013671875,
+            "south": 23.00048828125,
+            "east": 72.6494140625,
+            "north": 23.121337890625
+          },
+          "json": "roads_building/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 659,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.838134765625,
+            "east": 77.780029296875,
+            "north": 13.136962890625
+          },
+          "json": "roads_building/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 13,
+          "bbox": {
+            "west": 77.41748046875,
+            "south": 23.18505859375,
+            "east": 77.485595703125,
+            "north": 23.257568359375
+          },
+          "json": "roads_building/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 153,
+          "bbox": {
+            "west": 80.144287109375,
+            "south": 12.9150390625,
+            "east": 80.289306640625,
+            "north": 13.1171875
+          },
+          "json": "roads_building/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 246,
+          "bbox": {
+            "west": 76.883544921875,
+            "south": 28.399169921875,
+            "east": 77.2900390625,
+            "north": 28.821044921875
+          },
+          "json": "roads_building/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 32,
+          "bbox": {
+            "west": 78.324951171875,
+            "south": 17.307373046875,
+            "east": 78.58642578125,
+            "north": 17.51611328125
+          },
+          "json": "roads_building/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 67,
+          "bbox": {
+            "west": 75.76953125,
+            "south": 22.56982421875,
+            "east": 75.98486328125,
+            "north": 22.791748046875
+          },
+          "json": "roads_building/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 61,
+          "bbox": {
+            "west": 75.7080078125,
+            "south": 26.82373046875,
+            "east": 75.892578125,
+            "north": 26.988525390625
+          },
+          "json": "roads_building/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 24,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.5654296875,
+            "east": 88.3115234375,
+            "north": 22.58740234375
+          },
+          "json": "roads_building/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 21,
+          "bbox": {
+            "west": 80.979248046875,
+            "south": 26.760009765625,
+            "east": 81.023193359375,
+            "north": 26.825927734375
+          },
+          "json": "roads_building/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 284,
+          "bbox": {
+            "west": 72.81201171875,
+            "south": 18.889404296875,
+            "east": 72.989990234375,
+            "north": 19.267333984375
+          },
+          "json": "roads_building/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 53,
+          "bbox": {
+            "west": 73.772216796875,
+            "south": 18.44775390625,
+            "east": 73.974365234375,
+            "north": 18.64111328125
+          },
+          "json": "roads_building/pune.json",
+          "parquet": null
         }
       ]
     },

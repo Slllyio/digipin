@@ -180,6 +180,12 @@
      "unit": "outlets",
      "higherIs": null
     },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 10.1,
+     "unit": "km",
+     "higherIs": null
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1312,6 +1318,12 @@
      "label": "Premium chain outlets mapped",
      "value": 450,
      "unit": "outlets",
+     "higherIs": null
+    },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 260.3,
+     "unit": "km",
      "higherIs": null
     },
     "vitals": {
@@ -2778,6 +2790,12 @@
      "unit": "outlets",
      "higherIs": null
     },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 3.1,
+     "unit": "km",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3898,6 +3916,12 @@
      "label": "Premium chain outlets mapped",
      "value": 183,
      "unit": "outlets",
+     "higherIs": null
+    },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 74,
+     "unit": "km",
      "higherIs": null
     },
     "vitals": {
@@ -5248,6 +5272,12 @@
      "label": "Premium chain outlets mapped",
      "value": 729,
      "unit": "outlets",
+     "higherIs": null
+    },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 73.1,
+     "unit": "km",
      "higherIs": null
     },
     "vitals": {
@@ -7386,6 +7416,12 @@
      "unit": "outlets",
      "higherIs": null
     },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 6.4,
+     "unit": "km",
+     "higherIs": null
+    },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
      "value": 65,
@@ -8676,6 +8712,12 @@
      "unit": "outlets",
      "higherIs": null
     },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 20.6,
+     "unit": "km",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9768,6 +9810,12 @@
      "unit": "outlets",
      "higherIs": null
     },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 17.8,
+     "unit": "km",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10858,6 +10906,12 @@
      "label": "Premium chain outlets mapped",
      "value": 137,
      "unit": "outlets",
+     "higherIs": null
+    },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 7.7,
+     "unit": "km",
      "higherIs": null
     },
     "schoolready": {
@@ -12066,6 +12120,12 @@
      "unit": "outlets",
      "higherIs": null
     },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 4.5,
+     "unit": "km",
+     "higherIs": null
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -13174,6 +13234,12 @@
      "label": "Premium chain outlets mapped",
      "value": 462,
      "unit": "outlets",
+     "higherIs": null
+    },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 70.1,
+     "unit": "km",
      "higherIs": null
     },
     "streetdogs": {
@@ -14428,6 +14494,12 @@
      "label": "Premium chain outlets mapped",
      "value": 245,
      "unit": "outlets",
+     "higherIs": null
+    },
+    "roadsbuilding": {
+     "label": "Road under construction on the map",
+     "value": 14.2,
+     "unit": "km",
      "higherIs": null
     },
     "schoolready": {

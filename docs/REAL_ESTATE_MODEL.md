@@ -2126,3 +2126,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Premium high streets (`premium_brands`)
 
 `pipeline/realestate/premiumbrands.py` reads Overture places with a brand (confidence 0.6+, not closed) and matches `brand.names.primary` against two regexes, `PREMIUM` and `EVERYDAY` (premium wins). Fields per L7 block: `pb_premium`, `pb_everyday`, and `pb_premium_share` where 3+ chain outlets match. Against Meta RWI at L6 in ten cities, premium counts gave Spearman -0.06 (Delhi) to 0.42 (Bengaluru) and premium share about zero, so it is not used as a wealth replacement; the `premiumstreets` lens says so.
+
+## Roads being built now (`roads_building`)
+
+`pipeline/realestate/roadsbuilding.py` takes Overture road segments whose `road_flags` include `is_under_construction`, cuts the flagged `between` substring into ~50 m pieces (`pieces()`), and sums arterial (`rb_major_m`), other (`rb_minor_m`) and also-bridge (`rb_elevated_m`) length per L7 block (blocks under 20 m dropped). Spreading along the line matters: midpoints alone put a 10 km corridor in one block.
