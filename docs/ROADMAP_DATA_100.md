@@ -382,6 +382,7 @@ Each item gives four things:
 321. ✅ **Air on Sundays and in the lockdown** (`sunday_air`, `sundayair` lens): Sentinel-5P TROPOMI tropospheric NO2 within 8 km of the centre, Sundays vs Monday-Saturday 2019-2024 and 25 Mar-30 Apr 2020 vs the same weeks of 2019 and 2021-2023. Delhi 14% lower on Sundays and 68% lower in the lockdown; Bengaluru 17% and 56%; Bhopal and Guna barely move (1%, 17-25%). Also: underpass flyover lengths now spread along the road.
 322. ✅ **Diwali night air** (`diwali_air`, `diwaliair` lens): GHAP daily 1 km PM2.5 (CC BY 4.0) within 8 km of the centre on Diwali and the day after vs days 3-10 before, 2017-2022. Delhi 315 vs 168 µg/m³ (+84% median year, 433 in 2021); Lucknow +44%; Ahmedabad and Jaipur under +10%.
 323. ✅ **Relative deprivation, open index** (`deprivation`, `deprivation` lens in the new `js/urban-lenses-more.js`): NASA SEDAC GRDI v1 (CC BY 4.0, commercial use allowed) sampled per lived-in L7 block. Against Meta RWI at L6, Spearman -0.04 (Hyderabad) to -0.52 (Delhi). The openly licensed candidate if the CC BY-NC wealth layer has to go.
+324. ✅ **Built up but not a town in 2011** (`settlement_2011`, `ruralrun` lens): SEDAC Spatial Data from the 2011 India Census (CC BY 4.0) settlement class per lived-in block: statutory town, census town, outgrowth or village. Delhi region: 34% of today's residents were outside a municipal town in 2011 (28% in census towns); Chennai's and Hyderabad's edges likewise.
 
 ## Parked for the keys round
 

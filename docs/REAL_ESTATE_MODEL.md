@@ -2142,3 +2142,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Relative deprivation (`deprivation`)
 
 `pipeline/realestate/deprivation.py` samples NASA SEDAC's GRDI v1 GeoTIFF (`povmap-grdi-v1.tif`, ~1 km, 0-100; download needs Earthdata access, URL in the module) at each lived-in L7 block centre. CC BY 4.0 with commercial use allowed, so it is the openly licensed candidate to replace Meta RWI (CC BY-NC) in `land_value.py` and the wealth lenses if that decision is taken. Agreement with RWI at L6 is moderate (Spearman -0.04 to -0.52 across ten cities). The lens lives in `js/urban-lenses-more.js`, the new module after `urban-lenses-extra.js` reached ~143 kB.
+
+## Built up but not a town in 2011 (`settlement_2011`)
+
+`pipeline/realestate/settlement2011.py` samples SEDAC's census-class GeoTIFF (values 1 village, 2 statutory town, 3 census town, 4 outgrowth, 5 uninhabited; ~1 km majority class) at lived-in block centres and stores one-hot fields. The `ruralrun` lens sets today's residents against the 2011 class and against 2023 building cover. Licence CC BY 4.0; SEDAC files download through the Earthdata proxy.
