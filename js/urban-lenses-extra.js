@@ -900,6 +900,34 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function premiumstreets(fr) {
+        const c = fr.cols, n = fr.grid.n, pr = c['premium_brands.pb_premium'], ev = c['premium_brands.pb_everyday'];
+        if (!pr || !pr.some(_fin)) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if ((_fin(pr[i]) && pr[i] > 0) || (ev && _fin(ev[i]) && ev[i] > 0)) idx.push(i);
+        if (idx.length < 5) return null;
+        let P = 0, E = 0;
+        for (const i of idx) { P += _fin(pr[i]) ? pr[i] : 0; E += ev && _fin(ev[i]) ? ev[i] : 0; }
+        if (!P) return null;
+        const withP = idx.filter(i => _fin(pr[i]) && pr[i] > 0).sort((a, b) => pr[b] - pr[a]);
+        const top = Math.max(1, Math.round(withP.length * 0.1)), topSum = withP.slice(0, top).reduce((t, i) => t + pr[i], 0);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _fin(pr[i]) ? pr[i] : 0;
+        const stats = [
+            { label: 'Premium chain outlets mapped', value: P.toLocaleString('en-IN') },
+            { label: 'Everyday chain outlets mapped', value: E.toLocaleString('en-IN') },
+            { label: 'Premium share of chain outlets', value: `${_round(100 * P / (P + E), 0)}%` },
+            { label: 'Blocks with a premium outlet', value: withP.length.toLocaleString('en-IN') },
+            { label: 'Share of premium outlets in the top tenth of those blocks', value: `${_round(100 * topSum / P, 0)}%` },
+        ];
+        return {
+            columns: { premium_outlets: out }, idx, weightKey: 'premium_outlets', noHotspots: true,
+            metric: { label: 'Premium chain outlets mapped', value: P, unit: 'outlets', higherIs: null },
+            headline: `${P.toLocaleString('en-IN')} premium chain outlets (coffee chains, fashion, jewellery, luxury car showrooms, multiplexes, big hotels) are mapped, ${_round(100 * P / (P + E), 0)}% of matched chain outlets, and the busiest tenth of the blocks that have one hold ${_round(100 * topSum / P, 0)}% of them: the city's premium high streets and malls. Brighter blocks have more. This shows where retailers pay for footfall, not where wealthy people live: block by block it does not track the wealth index. From Overture places brand names; big chains are mapped best.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -1081,8 +1109,14 @@ const UrbanLensesExtra = (() => {
             needs: ['water_balance.ta_pr_base', 'water_balance.ta_pr_now', 'water_balance.ta_pet_base', 'water_balance.ta_pet_now', 'water_balance.ta_def_base', 'water_balance.ta_def_now', 'water_balance.ta_vpd_base', 'water_balance.ta_vpd_now'],
             method: `TerraClimate (University of Idaho; CRU and ERA5-based monthly climate on a ~4 km grid) gives monthly precipitation, Penman-Monteith potential evapotranspiration (which uses sunshine, wind, humidity and temperature), climatic water deficit and vapour pressure deficit. At the city centre, annual totals are averaged for 1961-1990 and 2015-2024; vapour pressure deficit is the March-May mean. Gridded climate in the 1960s rests on fewer stations.`,
             refs: 'Abatzoglou J.T. et al. 2018, TerraClimate, Scientific Data 5:170191 (CC0); Roderick and Farquhar 2002, Science 298:1410 (evaporation paradox)' },
+        { id: 'premiumstreets', title: 'Premium high streets', icon: '🛍️',
+            question: 'Where do premium brands open shops in my city?',
+            field: { key: 'premium_outlets', label: 'Premium chain outlets', unit: 'outlets', higherIs: null, ramp: 'viridis' },
+            needs: ['premium_brands.pb_premium', 'premium_brands.pb_everyday', 'premium_brands.pb_premium_share'],
+            method: `Overture Maps places (confidence 0.6 or more, not closed) are matched on brand name against a list of premium chains (Starbucks and other coffee chains, international fashion and sportswear, jewellery chains, luxury and premium car showrooms, multiplexes, premium gyms, five-star and upscale hotel chains) and everyday chains (fast food, supermarkets, public-sector banks, fuel, budget hotels). Outlets are counted per L7 block. Tested against Meta's Relative Wealth Index at L6 in ten cities, premium counts and premium share correlate weakly or not at all (Spearman about -0.1 to 0.4), so this is a retail-location signal, not an affluence measure.`,
+            refs: 'Overture Maps Foundation, places theme (CDLA-Permissive-2.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance, premiumstreets });
     return { ENTRIES };
 })();

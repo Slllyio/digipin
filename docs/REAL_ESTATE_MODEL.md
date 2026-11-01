@@ -2122,3 +2122,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Rain against evaporation since the 1960s (`water_balance`)
 
 `pipeline/realestate/waterbalance.py` reads `IDAHO_EPSCOR/TERRACLIMATE` bands `pet`, `def` (x0.1 mm), `pr` (mm) and `vpd` (x0.01 kPa) at the city centre, sums full years and averages 1961-1990 against 2015-2024 (vpd as the March-May mean). One value per city. The `waterbalance` lens explains a fall in evaporative demand (dimming and wind stilling) rather than assuming warming raised it.
+
+## Premium high streets (`premium_brands`)
+
+`pipeline/realestate/premiumbrands.py` reads Overture places with a brand (confidence 0.6+, not closed) and matches `brand.names.primary` against two regexes, `PREMIUM` and `EVERYDAY` (premium wins). Fields per L7 block: `pb_premium`, `pb_everyday`, and `pb_premium_share` where 3+ chain outlets match. Against Meta RWI at L6 in ten cities, premium counts gave Spearman -0.06 (Delhi) to 0.42 (Bengaluru) and premium share about zero, so it is not used as a wealth replacement; the `premiumstreets` lens says so.
