@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-11-01T07:51:15Z",
-  "count": 15,
+  "generated_at_iso": "2026-11-01T14:44:29Z",
+  "count": 16,
   "records": [
+    {
+      "id": "us7000tupq",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-01T12:08:30.561000+00:00",
+      "latitude": -13.8667,
+      "longitude": 165.6199,
+      "depth_km": 10.0,
+      "place": "203 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tupq",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tupp",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-01T11:56:51.778000+00:00",
+      "latitude": -14.0776,
+      "longitude": 165.767,
+      "depth_km": 10.0,
+      "place": "176 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tupp",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tupl",
+      "magnitude": 6.0,
+      "origin_time_utc": "2026-11-01T11:47:03.778000+00:00",
+      "latitude": -14.1689,
+      "longitude": 165.8242,
+      "depth_km": 10.0,
+      "place": "165 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tupl",
+      "tsunami": 0,
+      "significance": 554
+    },
+    {
+      "id": "us7000tunq",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-01T08:20:07.549000+00:00",
+      "latitude": 24.8805,
+      "longitude": 122.0621,
+      "depth_km": 118.799,
+      "place": "33 km SE of Jiufen, Taiwan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tunq",
+      "tsunami": 0,
+      "significance": 357
+    },
+    {
+      "id": "us7000tung",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-01T07:37:47.343000+00:00",
+      "latitude": -13.9872,
+      "longitude": 165.6642,
+      "depth_km": 10.0,
+      "place": "191 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tung",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tund",
       "magnitude": 5.1,
@@ -84,7 +144,7 @@
       "place": "58 km SSE of Shima, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuku",
       "tsunami": 0,
-      "significance": 561
+      "significance": 563
     },
     {
       "id": "us7000tukm",
@@ -132,55 +192,7 @@
       "place": "4 km S of Bajo Corral, Panama",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tujf",
       "tsunami": 0,
-      "significance": 431
-    },
-    {
-      "id": "us7000tumt",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-31T13:56:59.106000+00:00",
-      "latitude": -22.8,
-      "longitude": 170.4074,
-      "depth_km": 10.0,
-      "place": "295 km ESE of Tadine, New Caledonia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tumt",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tuif",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-31T11:31:12.352000+00:00",
-      "latitude": -13.9069,
-      "longitude": 165.6759,
-      "depth_km": 10.0,
-      "place": "196 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuif",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000tuht",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-31T09:18:32.051000+00:00",
-      "latitude": -13.7894,
-      "longitude": 165.2951,
-      "depth_km": 10.0,
-      "place": "236 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuht",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tuhs",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-31T09:15:52.568000+00:00",
-      "latitude": -13.7683,
-      "longitude": 165.5833,
-      "depth_km": 10.0,
-      "place": "213 km W of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuhs",
-      "tsunami": 0,
-      "significance": 369
+      "significance": 432
     }
   ]
 }
