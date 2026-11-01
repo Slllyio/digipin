@@ -2118,3 +2118,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Private lanes closed to the public (`gated_streets`)
 
 `pipeline/realestate/gatedstreets.py` places every Overture road segment at its midpoint in an L7 block. Local streets (residential, living street, service, unclassified) whose `access_restrictions` include an `allowed` rule recognised `as_private` count as private; segments `denied` in one heading for all modes count as one-way. Fields `gs_local_km`, `gs_private_km`, `gs_private_pct` (blocks with 300 m+ local street) and `gs_oneway_pct`. The `gatedlanes` lens complements the `gated` lens, which counts gate and barrier nodes from `street_infra`.
+
+## Rain against evaporation since the 1960s (`water_balance`)
+
+`pipeline/realestate/waterbalance.py` reads `IDAHO_EPSCOR/TERRACLIMATE` bands `pet`, `def` (x0.1 mm), `pr` (mm) and `vpd` (x0.01 kPa) at the city centre, sums full years and averages 1961-1990 against 2015-2024 (vpd as the March-May mean). One value per city. The `waterbalance` lens explains a fall in evaporative demand (dimming and wind stilling) rather than assuming warming raised it.

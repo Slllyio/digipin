@@ -873,6 +873,33 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function waterbalance(fr) {
+        const c = fr.cols, n = fr.grid.n, dn = c['water_balance.ta_def_now'];
+        if (!dn || !dn.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(dn[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`water_balance.ta_${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const pb = v('pr_base'), pn = v('pr_now'), eb = v('pet_base'), en = v('pet_now'), db = v('def_base'), dn0 = v('def_now'), vb = v('vpd_base'), vn = v('vpd_now');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = dn0;
+        const mm = x => (_fin(x) ? `${Math.round(x).toLocaleString('en-IN')} mm` : 'n/a');
+        const ch = (a, b) => (_fin(a) && _fin(b) && a ? `${b >= a ? '+' : ''}${_round(100 * (b - a) / a, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Rainfall a year, 1961-1990 → 2015-2024', value: `${mm(pb)} → ${mm(pn)} (${ch(pb, pn)})` },
+            { label: 'Evaporative demand a year', value: `${mm(eb)} → ${mm(en)} (${ch(eb, en)})` },
+            { label: 'Water deficit a year (demand rain and soil cannot meet)', value: `${mm(db)} → ${mm(dn0)} (${ch(db, dn0)})` },
+            { label: 'Air dryness in March-May (vapour pressure deficit)', value: _fin(vb) && _fin(vn) ? `${_round(vb, 2)} → ${_round(vn, 2)} kPa` : 'n/a' },
+        ];
+        const fell = _fin(eb) && _fin(en) && en < eb;
+        const why = fell ? ' Evaporative demand fell even as the city warmed, as across most of India: haze dims the sun and winds have calmed (the "evaporation paradox"), so cleaner air could push it back up.' : ' Evaporative demand rose, so lakes, soil and trees lose water faster than they did.';
+        return {
+            columns: { water_deficit_now: out }, idx, weightKey: 'water_deficit_now',
+            metric: { label: 'Water deficit a year, 2015-2024', value: Math.round(dn0), unit: 'mm', higherIs: 'worse' },
+            headline: `Against the 1961-1990 normal, the last ten years brought ${mm(pn)} of rain a year (${ch(pb, pn)}), while the air could evaporate ${mm(en)} (${ch(eb, en)}); the yearly water deficit, the demand that rain and soil cannot meet, went from ${mm(db)} to ${mm(dn0)}.${why} One value for the city centre's 4 km cell.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -1048,8 +1075,14 @@ const UrbanLensesExtra = (() => {
             needs: ['gated_streets.gs_private_pct', 'gated_streets.gs_local_km', 'gated_streets.gs_private_km', 'gated_streets.gs_oneway_pct', 'population.population'],
             method: `Complements the Gated colonies lens (which counts gates and barriers): this one measures street length. Overture Maps transportation segments (from OpenStreetMap, ODbL) are placed at their midpoints in L7 blocks. Local streets (residential, living street, service, unclassified) with an access restriction recognised as private (OSM access=private) are summed against all local street length; blocks need 300 m of mapped local street. One-way roads are those denied in one heading for all modes. Residents in blocks where half or more of local lanes are private are counted with GHSL/WorldPop population. Gates that are not tagged, and lanes closed only at night, will not show.`,
             refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors)' },
+        { id: 'waterbalance', title: 'Rain against evaporation since the 1960s', icon: '💧',
+            question: 'Has my city got more rain or less since the 1960s, and does the air pull more water out now?',
+            field: { key: 'water_deficit_now', label: 'Water deficit a year, 2015-2024', unit: 'mm', higherIs: 'worse', ramp: 'heat' },
+            needs: ['water_balance.ta_pr_base', 'water_balance.ta_pr_now', 'water_balance.ta_pet_base', 'water_balance.ta_pet_now', 'water_balance.ta_def_base', 'water_balance.ta_def_now', 'water_balance.ta_vpd_base', 'water_balance.ta_vpd_now'],
+            method: `TerraClimate (University of Idaho; CRU and ERA5-based monthly climate on a ~4 km grid) gives monthly precipitation, Penman-Monteith potential evapotranspiration (which uses sunshine, wind, humidity and temperature), climatic water deficit and vapour pressure deficit. At the city centre, annual totals are averaged for 1961-1990 and 2015-2024; vapour pressure deficit is the March-May mean. Gridded climate in the 1960s rests on fewer stations.`,
+            refs: 'Abatzoglou J.T. et al. 2018, TerraClimate, Scientific Data 5:170191 (CC0); Roderick and Farquhar 2002, Science 298:1410 (evaporation paradox)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance });
     return { ENTRIES };
 })();

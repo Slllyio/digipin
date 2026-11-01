@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-01T00:54:22Z",
+  "generated": "2026-11-01T01:18:51Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -63347,6 +63347,409 @@
           },
           "json": "water/pune/{prefix}.json.gz",
           "parquet": "water/pune.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "water_balance",
+      "title": "Rain against evaporation since the 1960s (TerraClimate, 1961-1990 vs 2015-2024)",
+      "description": "Potential evapotranspiration, climatic water deficit, rainfall and March-May vapour pressure deficit at the city centre's ~4 km TerraClimate cell, the 1961-1990 normal against 2015-2024. One value per city.",
+      "source": "pipeline/realestate/waterbalance.py (IDAHO_EPSCOR/TERRACLIMATE via Earth Engine)",
+      "license": "CC0 1.0 / public domain (Abatzoglou et al. 2018, Scientific Data 5:170191)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "ta_pet_base",
+          "label": "Evaporative demand (potential evapotranspiration), 1961-1990",
+          "type": "number",
+          "agg": "max",
+          "unit": "mm/yr",
+          "domain": [
+            1390,
+            1838
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "ta_pet_now",
+          "label": "Evaporative demand, 2015-2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "mm/yr",
+          "domain": [
+            1370,
+            1802
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "ta_def_base",
+          "label": "Climatic water deficit, 1961-1990",
+          "type": "number",
+          "agg": "max",
+          "unit": "mm/yr",
+          "domain": [
+            386,
+            1102
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "ta_def_now",
+          "label": "Climatic water deficit, 2015-2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "mm/yr",
+          "domain": [
+            341,
+            1048
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "ta_pr_base",
+          "label": "Rainfall, 1961-1990",
+          "type": "number",
+          "agg": "max",
+          "unit": "mm/yr",
+          "domain": [
+            618,
+            2515
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "ta_pr_now",
+          "label": "Rainfall, 2015-2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "mm/yr",
+          "domain": [
+            694,
+            2869
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "ta_vpd_base",
+          "label": "Air dryness in March-May (vapour pressure deficit), 1961-1990",
+          "type": "number",
+          "agg": "max",
+          "unit": "kPa",
+          "domain": [
+            1.6,
+            3.79
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "ta_vpd_now",
+          "label": "Air dryness in March-May, 2015-2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "kPa",
+          "domain": [
+            1.57,
+            3.66
+          ],
+          "ramp": "heat"
+        }
+      ],
+      "default": {
+        "field": "ta_def_now",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "water_balance/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "water_balance/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6565,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "water_balance/bhopal.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 10493,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "water_balance/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "water_balance/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "water_balance/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "water_balance/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 33489,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "water_balance/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "water_balance/jaipur/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "water_balance/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "water_balance/lucknow/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 16475,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "water_balance/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK4",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKM",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "water_balance/pune/{prefix}.json.gz",
+          "parquet": null,
           "shards": {
             "prefixLen": 4,
             "keys": [

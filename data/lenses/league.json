@@ -168,6 +168,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 1048,
+     "unit": "mm",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1288,6 +1294,12 @@
      "label": "Local streets marked private",
      "value": 19.5,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 767,
+     "unit": "mm",
      "higherIs": "worse"
     },
     "vitals": {
@@ -2742,6 +2754,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 890,
+     "unit": "mm",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3850,6 +3868,12 @@
      "label": "Local streets marked private",
      "value": 16.4,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 691,
+     "unit": "mm",
      "higherIs": "worse"
     },
     "vitals": {
@@ -5190,6 +5214,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 801,
+     "unit": "mm",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6372,6 +6402,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 965,
+     "unit": "mm",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -7300,6 +7336,12 @@
      "label": "Local streets marked private",
      "value": 15.6,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 858,
+     "unit": "mm",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -8580,6 +8622,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 945,
+     "unit": "mm",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9660,6 +9708,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 966,
+     "unit": "mm",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10738,6 +10792,12 @@
      "label": "Local streets marked private",
      "value": 9.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 341,
+     "unit": "mm",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -11934,6 +11994,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 686,
+     "unit": "mm",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -13030,6 +13096,12 @@
      "label": "Local streets marked private",
      "value": 42,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 805,
+     "unit": "mm",
      "higherIs": "worse"
     },
     "streetdogs": {
@@ -14272,6 +14344,12 @@
      "label": "Local streets marked private",
      "value": 28.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "waterbalance": {
+     "label": "Water deficit a year, 2015-2024",
+     "value": 837,
+     "unit": "mm",
      "higherIs": "worse"
     },
     "schoolready": {
