@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-01T19:13:32Z",
+  "generated_at_iso": "2026-11-01T22:51:42Z",
   "count": 18,
   "records": [
+    {
+      "id": "us7000turv",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-01T22:22:44.414000+00:00",
+      "latitude": -35.403,
+      "longitude": 78.404,
+      "depth_km": 10.0,
+      "place": "Mid-Indian Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000turv",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000turj",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-01T21:26:57.524000+00:00",
+      "latitude": -27.291,
+      "longitude": -177.8708,
+      "depth_km": 150.95,
+      "place": "Kermadec Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000turj",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tur0",
       "magnitude": 4.8,
@@ -13,6 +37,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tur0",
       "tsunami": 0,
       "significance": 354
+    },
+    {
+      "id": "us7000tuqy",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-01T18:42:57.023000+00:00",
+      "latitude": 19.7626,
+      "longitude": 121.328,
+      "depth_km": 38.488,
+      "place": "101 km SW of Basco, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqy",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us7000tuqx",
@@ -181,42 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tule",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000tuky",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-10-31T22:42:39.540000+00:00",
-      "latitude": -13.8729,
-      "longitude": 165.6456,
-      "depth_km": 10.0,
-      "place": "200 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuky",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000tuku",
-      "magnitude": 6.0,
-      "origin_time_utc": "2026-10-31T22:15:02.901000+00:00",
-      "latitude": 33.822,
-      "longitude": 136.9854,
-      "depth_km": 352.449,
-      "place": "58 km SSE of Shima, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuku",
-      "tsunami": 0,
-      "significance": 563
-    },
-    {
-      "id": "us7000tukm",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-31T21:20:39.173000+00:00",
-      "latitude": 28.114,
-      "longitude": 51.5076,
-      "depth_km": 10.0,
-      "place": "115 km SE of Bushehr, Iran",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tukm",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }

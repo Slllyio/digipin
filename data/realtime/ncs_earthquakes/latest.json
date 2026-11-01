@@ -1,7 +1,84 @@
 {
-  "generated_at_iso": "2026-11-01T19:13:37Z",
+  "generated_at_iso": "2026-11-01T22:51:43Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-02 03:52:33|26.589,90.475",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-02 03:52:33",
+      "latitude": 26.589,
+      "longitude": 90.475,
+      "depth_km": 10.0,
+      "region": "Chirang, Assam",
+      "location": "122km NNE of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 03:36:02|37.067,71.653",
+      "magnitude": 3.4,
+      "origin_time": "2026-11-02 03:36:02",
+      "latitude": 37.067,
+      "longitude": 71.653,
+      "depth_km": 37.0,
+      "region": "Tajikistan",
+      "location": "97km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 02:22:13|26.954,89.231",
+      "magnitude": 2.9,
+      "origin_time": "2026-11-02 02:22:13",
+      "latitude": 26.954,
+      "longitude": 89.231,
+      "depth_km": 8.0,
+      "region": "Bhutan",
+      "location": "70km SW of Thimphu, Bhutan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 01:53:39|25.669,90.625",
+      "magnitude": 3.4,
+      "origin_time": "2026-11-02 01:53:39",
+      "latitude": 25.669,
+      "longitude": 90.625,
+      "depth_km": 10.0,
+      "region": "East Garo Hills, Meghalaya",
+      "location": "45km ENE of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 01:45:18|39.182,75.122",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-02 01:45:18",
+      "latitude": 39.182,
+      "longitude": 75.122,
+      "depth_km": 142.0,
+      "region": "Xinjiang",
+      "location": "413km S of Bishkek, Kyrgyzstan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 01:05:02|24.550,93.439",
+      "magnitude": 3.4,
+      "origin_time": "2026-11-02 01:05:02",
+      "latitude": 24.55,
+      "longitude": 93.439,
+      "depth_km": 25.0,
+      "region": "Churachandpur, Manipur",
+      "location": "33km WSW of Bishnupur, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 00:33:21|24.546,93.448",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-02 00:33:21",
+      "latitude": 24.546,
+      "longitude": 93.448,
+      "depth_km": 29.0,
+      "region": "Churachandpur, Manipur",
+      "location": "32km WSW of Bishnupur, Manipur, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-01 23:27:47|37.332,75.042",
       "magnitude": 4.2,
@@ -1573,83 +1650,6 @@
       "depth_km": 5.0,
       "region": "Shimla, Himachal Pradesh",
       "location": "51km ENE of Shimla, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 02:15:13|24.654,94.593",
-      "magnitude": 3.3,
-      "origin_time": "2026-10-23 02:15:13",
-      "latitude": 24.654,
-      "longitude": 94.593,
-      "depth_km": 13.0,
-      "region": "Myanmar",
-      "location": "33km SSE of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 02:06:33|33.194,94.514",
-      "magnitude": 4.5,
-      "origin_time": "2026-10-23 02:06:33",
-      "latitude": 33.194,
-      "longitude": 94.514,
-      "depth_km": 15.0,
-      "region": "China",
-      "location": "566km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 00:51:09|25.001,94.853",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-23 00:51:09",
-      "latitude": 25.001,
-      "longitude": 94.853,
-      "depth_km": 99.0,
-      "region": "Myanmar",
-      "location": "38km ENE of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 00:38:47|32.315,76.370",
-      "magnitude": 2.3,
-      "origin_time": "2026-10-23 00:38:47",
-      "latitude": 32.315,
-      "longitude": 76.37,
-      "depth_km": 5.0,
-      "region": "Chamba, Himachal Pradesh",
-      "location": "11km NNE of Dharamshala, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 00:35:32|32.725,94.228",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-23 00:35:32",
-      "latitude": 32.725,
-      "longitude": 94.228,
-      "depth_km": 15.0,
-      "region": "China",
-      "location": "519km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 00:01:53|32.391,93.312",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-23 00:01:53",
-      "latitude": 32.391,
-      "longitude": 93.312,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "507km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 23:55:23|32.711,94.078",
-      "magnitude": 4.4,
-      "origin_time": "2026-10-22 23:55:23",
-      "latitude": 32.711,
-      "longitude": 94.078,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "520km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
