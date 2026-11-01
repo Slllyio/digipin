@@ -383,6 +383,7 @@ Each item gives four things:
 322. ✅ **Diwali night air** (`diwali_air`, `diwaliair` lens): GHAP daily 1 km PM2.5 (CC BY 4.0) within 8 km of the centre on Diwali and the day after vs days 3-10 before, 2017-2022. Delhi 315 vs 168 µg/m³ (+84% median year, 433 in 2021); Lucknow +44%; Ahmedabad and Jaipur under +10%.
 323. ✅ **Relative deprivation, open index** (`deprivation`, `deprivation` lens in the new `js/urban-lenses-more.js`): NASA SEDAC GRDI v1 (CC BY 4.0, commercial use allowed) sampled per lived-in L7 block. Against Meta RWI at L6, Spearman -0.04 (Hyderabad) to -0.52 (Delhi). The openly licensed candidate if the CC BY-NC wealth layer has to go.
 324. ✅ **Built up but not a town in 2011** (`settlement_2011`, `ruralrun` lens): SEDAC Spatial Data from the 2011 India Census (CC BY 4.0) settlement class per lived-in block: statutory town, census town, outgrowth or village. Delhi region: 34% of today's residents were outside a municipal town in 2011 (28% in census towns); Chennai's and Hyderabad's edges likewise.
+325. ✅ **Did the 2015 growth forecast come true?** (`urban_expansion`, `forecastcheck` lens): SEDAC Global Grid of Probabilities of Urban Expansion to 2030 (Seto et al. 2015; free use with attribution, commercial allowed), checked against GHSL new built surface 2000-2020. Chennai: growth mostly surprised the forecast (13.4 pp built where odds were poor against 3 pp where expected); Indore is the best match (Spearman 0.41).
 
 ## Parked for the keys round
 

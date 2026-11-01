@@ -2146,3 +2146,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Built up but not a town in 2011 (`settlement_2011`)
 
 `pipeline/realestate/settlement2011.py` samples SEDAC's census-class GeoTIFF (values 1 village, 2 statutory town, 3 census town, 4 outgrowth, 5 uninhabited; ~1 km majority class) at lived-in block centres and stores one-hot fields. The `ruralrun` lens sets today's residents against the 2011 class and against 2023 building cover. Licence CC BY 4.0; SEDAC files download through the Earthdata proxy.
+
+## Urban expansion forecast hindcast (`urban_expansion`)
+
+`pipeline/realestate/urbanexpansion.py` samples SEDAC's `global-grid-prob-urban-expansion-2030-wgs84.tif` (2.5 arc-minutes, ~5 km; 0-100 is the probability a cell non-urban in 2000 turns urban by 2030, 101 is MODIS urban circa 2000, 255 no data) at lived-in L7 block centres and stores `urban_2000` and `p2030`. The values are close to bimodal (mostly 0-10 or 90-100) at this resolution. The `forecastcheck` lens compares the forecast with GHSL `built_up.built_change_pct` (2000-2020): blocks given under 50% odds that gained 20 pp or more of built surface count as growth the forecast missed. Spearman of `p2030` against real change across non-urban-2000 blocks: Indore 0.41, Bengaluru 0.23, Delhi 0.09, Mumbai 0.07, Hyderabad 0.05, Pune 0.02, Lucknow −0.01, Chennai −0.38. Against our own `growth.urban_2035_pct` it agrees only weakly too (0.03-0.42). Licence: free to use, adapt and redistribute incl. commercially with clear attribution (CIESIN readme, USE CONSTRAINTS).

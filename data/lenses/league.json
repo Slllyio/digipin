@@ -42,6 +42,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 0.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 28,
@@ -1191,6 +1197,12 @@
     "ruralrun": {
      "label": "Residents in blocks outside a municipal town in 2011",
      "value": 7,
+     "unit": "%",
+     "higherIs": null
+    },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 2.2,
      "unit": "%",
      "higherIs": null
     },
@@ -2700,6 +2712,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 1.9,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 3.1,
@@ -3837,6 +3855,12 @@
     "ruralrun": {
      "label": "Residents in blocks outside a municipal town in 2011",
      "value": 20,
+     "unit": "%",
+     "higherIs": null
+    },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 5.9,
      "unit": "%",
      "higherIs": null
     },
@@ -5226,6 +5250,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 0.2,
+     "unit": "%",
+     "higherIs": null
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 16,
@@ -6468,6 +6498,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 8.2,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.1,
@@ -7413,6 +7449,12 @@
     "ruralrun": {
      "label": "Residents in blocks outside a municipal town in 2011",
      "value": 14,
+     "unit": "%",
+     "higherIs": null
+    },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 1.2,
      "unit": "%",
      "higherIs": null
     },
@@ -8742,6 +8784,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 0.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.3,
@@ -9864,6 +9912,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 7.3,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 5.9,
@@ -10977,6 +11031,12 @@
     "ruralrun": {
      "label": "Residents in blocks outside a municipal town in 2011",
      "value": 3,
+     "unit": "%",
+     "higherIs": null
+    },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 0,
      "unit": "%",
      "higherIs": null
     },
@@ -12228,6 +12288,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 10.3,
+     "unit": "%",
+     "higherIs": null
+    },
     "unpaved": {
      "label": "Residents where a fifth or more of the known roads are unpaved",
      "value": 9.2,
@@ -13346,6 +13412,12 @@
     },
     "ruralrun": {
      "label": "Residents in blocks outside a municipal town in 2011",
+     "value": 0,
+     "unit": "%",
+     "higherIs": null
+    },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
      "value": 0,
      "unit": "%",
      "higherIs": null
@@ -14637,6 +14709,12 @@
     "ruralrun": {
      "label": "Residents in blocks outside a municipal town in 2011",
      "value": 13,
+     "unit": "%",
+     "higherIs": null
+    },
+    "forecastcheck": {
+     "label": "Residents in blocks where growth beat the forecast",
+     "value": 1.8,
      "unit": "%",
      "higherIs": null
     },

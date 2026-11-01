@@ -81,6 +81,7 @@ const DishaIntel = (() => {
             badairdays: /\b(bad[- ]air days?|(unhealthy|polluted|smoggy) days?|days? (above|over|exceeding) (the )?(safe |pm ?2\.?5 |naaqs |air quality )?(limit|standard)|how many days (is|was) (the )?air (bad|poor|unhealthy))\b/i,
             greenchange: /\b((lost|losing|lose) (its |their |the )?(green|greenery|green cover|trees|tree cover)|green(ery| cover)? (lost|loss) since|(browned|greened|turned (brown|green)) since|(green|greenery|tree cover) (then and now|over (the )?(years|decades?)|since (19|20)\d\d))\b/i,
             heatedup: /\b((have|has) (got|gotten|grown|become|turned) (much )?(hotter|warmer)|heat(ed|ing) up (over|since)|warm(ed|ing) (most|fastest)|hotter than (it was|before|in (19|20)\d\d)|(hotter|warmer) since (19|20)\d\d|(heat|temperature) (change|trend)s? since)\b/i,
+            forecastcheck: /\b((growth|expansion|sprawl) forecasts?|forecasts? (of|for) (urban )?(growth|expansion|sprawl)|(did|has) (my |the )?(city|it) grow where|grew where (it was|they) (expected|predicted|forecast)|(urban expansion|sprawl) (to|by) 2030)\b/i,
             ruralrun: /\b(census towns?|outgrowths?|urban villages?|(still|were) villages?|panchayat (areas?|run|governed)|outside (the )?(municipal|corporation) (limits?|boundar\w*))\b/i,
             deprivation: /\b(depriv\w*|grdi|most deprived|poorest (areas?|parts?|neighbou?rhoods?|blocks?)|poverty (map|index))\b/i,
             diwaliair: /\b(diwali|deepavali|fire ?crackers?|crackers? (smoke|pollution))\b/i,
