@@ -192,6 +192,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 84,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1337,6 +1343,12 @@
      "value": 56,
      "unit": "%",
      "higherIs": null
+    },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 38,
+     "unit": "µg/m³",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
@@ -2814,6 +2826,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 65,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3947,6 +3965,12 @@
      "value": 52,
      "unit": "%",
      "higherIs": null
+    },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 40,
+     "unit": "µg/m³",
+     "higherIs": "worse"
     },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2019 average",
@@ -5310,6 +5334,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 315,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6510,6 +6540,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 57,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -7463,6 +7499,12 @@
      "value": 50,
      "unit": "%",
      "higherIs": null
+    },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 64,
+     "unit": "µg/m³",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -8766,6 +8808,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 60,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9870,6 +9918,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 84,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10973,6 +11027,12 @@
      "value": 40,
      "unit": "%",
      "higherIs": null
+    },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 109,
+     "unit": "µg/m³",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
@@ -12192,6 +12252,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 170,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -13313,6 +13379,12 @@
      "value": 51,
      "unit": "%",
      "higherIs": null
+    },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 87,
+     "unit": "µg/m³",
+     "higherIs": "worse"
     },
     "streetdogs": {
      "label": "Street dogs per km of street (residents-weighted)",
@@ -14579,6 +14651,12 @@
      "value": 47,
      "unit": "%",
      "higherIs": null
+    },
+    "diwaliair": {
+     "label": "PM2.5 on Diwali and the day after",
+     "value": 62,
+     "unit": "µg/m³",
+     "higherIs": "worse"
     },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",

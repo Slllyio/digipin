@@ -81,6 +81,7 @@ const DishaIntel = (() => {
             badairdays: /\b(bad[- ]air days?|(unhealthy|polluted|smoggy) days?|days? (above|over|exceeding) (the )?(safe |pm ?2\.?5 |naaqs |air quality )?(limit|standard)|how many days (is|was) (the )?air (bad|poor|unhealthy))\b/i,
             greenchange: /\b((lost|losing|lose) (its |their |the )?(green|greenery|green cover|trees|tree cover)|green(ery| cover)? (lost|loss) since|(browned|greened|turned (brown|green)) since|(green|greenery|tree cover) (then and now|over (the )?(years|decades?)|since (19|20)\d\d))\b/i,
             heatedup: /\b((have|has) (got|gotten|grown|become|turned) (much )?(hotter|warmer)|heat(ed|ing) up (over|since)|warm(ed|ing) (most|fastest)|hotter than (it was|before|in (19|20)\d\d)|(hotter|warmer) since (19|20)\d\d|(heat|temperature) (change|trend)s? since)\b/i,
+            diwaliair: /\b(diwali|deepavali|fire ?crackers?|crackers? (smoke|pollution))\b/i,
             sundayair: /\b(lockdown (air|pollution|no2)|air\b.{0,20}\b(during|in) (the )?(covid )?lockdown|(air|pollution|no2) (on|during) (sundays?|weekends?|(the )?lockdown)|sunday (air|pollution)|weekend (air|pollution)|weekly cycle)\b/i,
             roadsbuilding: /\b(roads? (being built|under construction)|flyovers? (being built|under construction)|under[- ]construction (roads?|flyovers?)|construction of (new )?(roads?|flyovers?))\b/i,
             premiumstreets: /\b(premium (brands?|shops?|stores?|outlets?|high streets?|retail)|luxury (brands?|shops?|stores?|retail)|where (do|does) (starbucks|zara|apple|premium brands?) open)\b/i,

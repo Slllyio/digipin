@@ -978,6 +978,32 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function diwaliair(fr) {
+        const c = fr.cols, n = fr.grid.n, jp = c['diwali_air.dw_jump_pct'];
+        if (!jp || !jp.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(jp[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`diwali_air.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const b = v('dw_before'), a = v('dw_after'), j = v('dw_jump_pct'), wy = v('dw_worst_year'), wa = v('dw_worst_after'), ny = v('dw_years');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = a;
+        const ug = x => (_fin(x) ? `${Math.round(x)} µg/m³` : 'n/a');
+        const times = _fin(a) && a > 0 ? _round(a / 60, 1) : NaN;
+        const stats = [
+            { label: 'PM2.5 in the week before Diwali (average of years)', value: ug(b) },
+            { label: 'PM2.5 on Diwali and the day after', value: ug(a) },
+            { label: 'Jump in the median year', value: _fin(j) ? `+${Math.round(j)}%` : 'n/a' },
+            { label: 'Biggest jump', value: _fin(wy) ? `${wy} (${ug(wa)} on Diwali and the day after)` : 'n/a' },
+            { label: 'Years compared', value: _fin(ny) ? `${ny} (2017-2022)` : 'n/a' },
+        ];
+        return {
+            columns: { diwali_pm25: out }, idx, weightKey: 'diwali_pm25',
+            metric: { label: 'PM2.5 on Diwali and the day after', value: Math.round(a), unit: 'µg/m³', higherIs: 'worse' },
+            headline: `On Diwali and the day after, PM2.5 over the city centre averages ${ug(a)}, against ${ug(b)} in the week before: in the median year it is ${_fin(j) ? `${Math.round(j)}%` : 'n/a'} higher${_fin(times) && times > 1 ? `, and ${times} times the Indian daily limit of 60` : ''}. The worst jump was in ${_fin(wy) ? wy : 'n/a'}. Firecrackers add to crop-fire smoke and the first still winter nights, so the jump depends on the weather as much as the crackers. One value for 8 km around the centre, from GHAP daily satellite-based PM2.5.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -1177,8 +1203,14 @@ const UrbanLensesExtra = (() => {
             needs: ['sunday_air.sa_weekday', 'sunday_air.sa_sunday', 'sunday_air.sa_sunday_drop', 'sunday_air.sa_lockdown_drop'],
             method: `Daily Sentinel-5P TROPOMI tropospheric NO2 (OFFL L3, about 13:30 local overpass) is averaged within 8 km of the city centre for Sundays and for Monday-Saturday, 2019-2024, and for 25 March to 30 April 2020 against the same dates in 2019 and 2021-2023. Clouds and seasons are not adjusted for beyond averaging many days; the lockdown period was also a weather period, so treat its drop as approximate (studies put Indian city drops at 40-70%).`,
             refs: 'Copernicus Sentinel-5P TROPOMI (contains modified Copernicus Sentinel data); Beirle et al. 2003, Atmos. Chem. Phys. 3:2225 (weekly cycle of NO2)' },
+        { id: 'diwaliair', title: 'Diwali night air', icon: '🎆',
+            question: 'How bad does the air get on Diwali in my city?',
+            field: { key: 'diwali_pm25', label: 'PM2.5 on Diwali and the day after', unit: 'µg/m³', higherIs: 'worse', ramp: 'reds' },
+            needs: ['diwali_air.dw_before', 'diwali_air.dw_after', 'diwali_air.dw_jump_pct', 'diwali_air.dw_worst_year', 'diwali_air.dw_worst_after', 'diwali_air.dw_years'],
+            method: `GHAP daily 1 km PM2.5 (satellite aerosol, reanalysis and ground monitors combined by machine learning) is averaged within 8 km of the city centre on Lakshmi Puja day and the day after, and on days 3-10 before, for each Diwali from 2017 to 2022. The yearly percentage jumps are summarised by their median. Daily estimates smooth the overnight peak that monitors see, so the real night-time spike is sharper.`,
+            refs: 'Wei J. et al., GHAP global 1 km daily PM2.5 (CC BY 4.0); CPCB National Ambient Air Quality Standards (60 µg/m³, 24 hours)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance, premiumstreets, roadsbuilding, sundayair });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance, premiumstreets, roadsbuilding, sundayair, diwaliair });
     return { ENTRIES };
 })();

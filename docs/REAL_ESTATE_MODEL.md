@@ -2134,3 +2134,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Air on Sundays and in the lockdown (`sunday_air`)
 
 `pipeline/realestate/sundayair.py` averages `COPERNICUS/S5P/OFFL/L3_NO2` tropospheric columns within 8 km of the city centre (centres from `heatisland.py`): Sundays (Earth Engine `getRelative('day', 'week') == 6`) against other days, 2019-2024, and 25 March-30 April 2020 against the same dates of 2019 and 2021-2023. Fields in µmol/m² and %. One value per city.
+
+## Diwali night air (`diwali_air`)
+
+`pipeline/realestate/diwaliair.py` averages `projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25` within 8 km of the city centre for Lakshmi Puja day plus the next day and for days 3-10 before (dates in `DIWALI`, 2017-2022; GHAP daily has no 2023 yet), and stores the all-year means, the median yearly jump, the worst year and its level. One value per city.
