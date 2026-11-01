@@ -60,6 +60,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 2.6,
+     "unit": "t CO2",
+     "higherIs": "worse"
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 28,
@@ -1228,6 +1234,12 @@
      "label": "Days a year above WBGT 30 °C, 2007-2016",
      "value": 0,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 2.1,
+     "unit": "t CO2",
      "higherIs": "worse"
     },
     "junctions": {
@@ -2754,6 +2766,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 1.5,
+     "unit": "t CO2",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 3.1,
@@ -3910,6 +3928,12 @@
      "label": "Days a year above WBGT 30 °C, 2007-2016",
      "value": 132,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 3.2,
+     "unit": "t CO2",
      "higherIs": "worse"
     },
     "liquefy": {
@@ -5316,6 +5340,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 2.9,
+     "unit": "t CO2",
+     "higherIs": "worse"
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 16,
@@ -6576,6 +6606,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 0.7,
+     "unit": "t CO2",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.1,
@@ -7540,6 +7576,12 @@
      "label": "Days a year above WBGT 30 °C, 2007-2016",
      "value": 20,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 2.9,
+     "unit": "t CO2",
      "higherIs": "worse"
     },
     "since1951": {
@@ -8886,6 +8928,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 1.7,
+     "unit": "t CO2",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.3,
@@ -10026,6 +10074,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 2.6,
+     "unit": "t CO2",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 5.9,
@@ -11158,6 +11212,12 @@
      "label": "Days a year above WBGT 30 °C, 2007-2016",
      "value": 122,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 1.8,
+     "unit": "t CO2",
      "higherIs": "worse"
     },
     "since1951": {
@@ -12426,6 +12486,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 2.5,
+     "unit": "t CO2",
+     "higherIs": "worse"
+    },
     "unpaved": {
      "label": "Residents where a fifth or more of the known roads are unpaved",
      "value": 9.2,
@@ -13564,6 +13630,12 @@
      "label": "Days a year above WBGT 30 °C, 2007-2016",
      "value": 64,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 1.8,
+     "unit": "t CO2",
      "higherIs": "worse"
     },
     "challans": {
@@ -14872,6 +14944,12 @@
      "label": "Days a year above WBGT 30 °C, 2007-2016",
      "value": 0,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "fossilco2": {
+     "label": "Fossil CO2 per resident of lived-in blocks, 2024",
+     "value": 1.4,
+     "unit": "t CO2",
      "higherIs": "worse"
     },
     "since1951": {

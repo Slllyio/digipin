@@ -2158,3 +2158,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Days too hot for safe outdoor work (`work_heat`)
 
 `pipeline/realestate/workheat.py` reads `wbgtmax30_EXP.csv`, `wbgtmax32_EXP.csv` and `wbgtmax30_TREND_ALL.csv` from SEDAC's UHE-Daily csv-json zip (1.9 GB; the STATS and json files can be deleted, leaving ~300 MB). A settlement only has rows if it had at least one day over the threshold, so missing years count as zero and a city with no settlement within 25 km of `heatisland.CENTRE` (Bengaluru) had none. The warming share is `coef_heat / coef_pdays` (person-day slopes; the readme leaves `coef_attrib` undocumented, so it is not used). Ranks use settlements of 1 million+ by 2016 population. CC BY 4.0.
+
+## Fossil CO2 per block (`fossil_co2`)
+
+`pipeline/realestate/fossilco2.py` samples ODIAC2025 (NIES, CC BY 4.0) at lived-in block centres. The monthly global 1 km GeoTIFFs are ~100 MB gzipped but 3.7 GB unpacked, so each is downloaded, gunzipped, cropped to India (68-98 E, 6-37 N, 3720 x 3600 px) and deleted in turn, and the twelve crops are summed into `india_<year>.npy` (about 3 minutes a month). Units are tonnes of carbon per pixel per month; ×44/12 and ÷ pixel area give t CO2/km²/yr. Changes against 2004 are left blank where 2004 was under 100 t/km². Growth since 2004 follows night-light brightening as well as fuel use. Unlike EDGAR CO2/GHG (IEA inputs, CC BY-NC-ND), ODIAC can be used commercially.

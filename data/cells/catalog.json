@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-01T04:33:50Z",
+  "generated": "2026-11-01T05:08:19Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -20346,6 +20346,352 @@
               "4FKM",
               "4FKP",
               "4FKT"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "fossil_co2",
+      "title": "Fossil-fuel CO2 per km\u00b2, 2004 and 2024 (ODIAC2025)",
+      "description": "ODIAC2025 fossil-fuel CO2 (combustion and cement, no international bunkers) on a ~1 km grid: point sources at their own location, the rest spread by satellite night lights. Monthly tonnes of carbon summed per year and converted to t CO2 per km\u00b2. Sampled at each lived-in block's centre.",
+      "source": "pipeline/realestate/fossilco2.py (NIES ODIAC2025 1 km monthly GeoTIFFs)",
+      "license": "CC BY 4.0 (Oda T. & Maksyutov S., ODIAC Fossil Fuel CO2 Emissions Dataset, NIES, doi:10.17595/20170411.001)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "co2_2024",
+          "label": "Fossil CO2 emitted, 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "t CO2/km\u00b2/yr",
+          "domain": [
+            0.0,
+            19849242.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "co2_2004",
+          "label": "Fossil CO2 emitted, 2004",
+          "type": "number",
+          "agg": "mean",
+          "unit": "t CO2/km\u00b2/yr",
+          "domain": [
+            0.0,
+            6853718.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "co2_change_pct",
+          "label": "Change in fossil CO2, 2004 to 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -100.0,
+            2008.0
+          ],
+          "ramp": "diverging",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "co2_2024",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "fossil_co2/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "fossil_co2/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6565,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "fossil_co2/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 10493,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "fossil_co2/chennai/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "fossil_co2/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "fossil_co2/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "fossil_co2/hyderabad/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 33489,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "fossil_co2/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "fossil_co2/jaipur/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "fossil_co2/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "fossil_co2/lucknow/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 16475,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "fossil_co2/mumbai/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK4",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKM",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "fossil_co2/pune/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
             ]
           }
         }

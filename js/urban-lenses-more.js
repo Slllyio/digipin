@@ -181,6 +181,43 @@ const UrbanLensesMore = (() => {
         };
     }
 
+    // Fossil-fuel CO2 where it is burnt, 2004 against 2024 (ODIAC, CC BY 4.0): the open stand-in for EDGAR CO2, whose
+    // licence rules out commercial use. Night lights spread most of it, power plants sit at their own coordinates.
+    function fossilco2(fr) {
+        const c = fr.cols, n = fr.grid.n, now = c['fossil_co2.co2_2024'];
+        if (!now || !now.some(_fin)) return null;
+        const old = c['fossil_co2.co2_2004'], pop = c['population.population'];
+        const idx = _residents(fr).filter(i => _fin(now[i]));
+        if (idx.length < 5) return null;
+        const km2 = fr.grid.cellKm2, w = i => (pop && _fin(pop[i]) ? pop[i] : 0);
+        let tNow = 0, tOld = 0, people = 0;
+        const vals = [];
+        for (const i of idx) {
+            tNow += now[i] * km2; people += w(i); vals.push(now[i] * km2);
+            if (old && _fin(old[i])) tOld += old[i] * km2;
+        }
+        if (!tNow || !people) return null;
+        vals.sort((a, b) => b - a);
+        const top = vals.slice(0, Math.max(1, Math.round(vals.length / 100))).reduce((a, b) => a + b, 0);
+        const mt = x => (x >= 1e6 ? `${_round(x / 1e6, 1)} million t` : `${_round(x / 1e3, 0)} thousand t`);
+        const per = tNow / people, ch = tOld ? 100 * (tNow / tOld - 1) : NaN;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = now[i];
+        const stats = [
+            { label: 'Fossil CO2 emitted over lived-in blocks, 2024', value: mt(tNow) },
+            { label: '…2004', value: tOld ? mt(tOld) : 'n/a' },
+            { label: 'Change 2004 → 2024', value: _fin(ch) ? `${ch >= 0 ? '+' : ''}${_round(ch, 0)}%` : 'n/a' },
+            { label: 'Per resident of those blocks, 2024', value: `${_round(per, 1)} t CO2` },
+            { label: 'Share emitted in the top 1% of blocks', value: `${_round(100 * top / tNow, 0)}%` },
+        ];
+        return {
+            columns: { co2_t_km2: out }, idx, weightKey: 'co2_t_km2',
+            metric: { label: 'Fossil CO2 per resident of lived-in blocks, 2024', value: _round(per, 1), unit: 't CO2', higherIs: 'worse' },
+            headline: `About ${mt(tNow)} of fossil CO2 were emitted over the city's lived-in blocks in 2024${_fin(ch) ? `, ${ch >= 0 ? 'up' : 'down'} ${_round(Math.abs(ch), 0)}% on 2004` : ''}: roughly ${_round(per, 1)} t per resident, against an Indian average near 2 t. ${top / tNow >= 0.15 ? `The top 1% of blocks account for ${_round(100 * top / tNow, 0)}%, which is where power plants, refineries or the busiest districts sit.` : `Emissions are spread out: the top 1% of blocks account for only ${_round(100 * top / tNow, 0)}%.`} India's national total grew about 2.5 times over the same years, and ODIAC spreads it by night lights, so a fast-brightening city gains more than its share; read it as where fuel is likely burnt, not a measured footprint.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'deprivation', title: 'Relative deprivation (open index)', icon: '📉',
             question: 'Which parts of my city are most deprived on an open index?',
@@ -212,8 +249,14 @@ const UrbanLensesMore = (() => {
             needs: ['work_heat.wh30_early', 'work_heat.wh30_late', 'work_heat.wh32_early', 'work_heat.wh32_late', 'work_heat.wh_heat_share', 'work_heat.wh30_india_pctile', 'population.population'],
             method: `NASA SEDAC's Global High Resolution Daily Extreme Urban Heat Exposure (UHE-Daily, Tuholske et al. 2021) computes the daily maximum Wet Bulb Globe Temperature from CHIRTS-daily temperature and humidity (~5 km) over more than 10,000 GHSL urban settlements, 1983-2016, and counts days above the ISO occupational heat-stress limits: 30 °C, when heavy work needs enforced rest, and 32 °C, when even light work is unsafe. It splits the rise in person-days of exposure into warming (more hot days for the 1983 population) and population growth; the share here is the warming slope over the total slope for 30 °C. The settlement nearest the city centre (within 25 km, most populous) stands for the city; a city with no row had no such day. Ranks are against India's settlements of a million or more.`,
             refs: 'Tuholske C. et al. 2021, Global urban population exposure to extreme heat, PNAS 118(41):e2024792118; data: CIESIN, NASA SEDAC, doi:10.7927/fq7g-ny13 (CC BY 4.0)' },
+        { id: 'fossilco2', title: 'Fossil CO2 where it is burnt', icon: '🏭',
+            question: 'Where is fossil CO2 emitted in my city, and how has it grown since 2004?',
+            field: { key: 'co2_t_km2', label: 'Fossil CO2, 2024', unit: 't CO2/km²/yr', higherIs: 'worse', ramp: 'reds' },
+            needs: ['fossil_co2.co2_2024', 'fossil_co2.co2_2004', 'fossil_co2.co2_change_pct', 'population.population'],
+            method: `ODIAC2025 (Oda and Maksyutov, NIES Japan) distributes national fossil-fuel CO2 totals from combustion and cement (international aviation and shipping excluded) on a 30 arc-second (~1 km) grid each month: large power plants are placed at their reported coordinates and the remaining emissions follow VIIRS/DMSP night lights. The twelve monthly grids of 2004 and 2024 are summed and converted from tonnes of carbon to tonnes of CO2 per km²; each lived-in L7 block takes the pixel at its centre and the city total is density times block area over lived-in blocks only. Because lights stand in for fuel use, bright commercial districts look high and dark industrial sites can look low. It replaces EDGAR CO2, which is not licensed for commercial use.`,
+            refs: 'Oda T., Maksyutov S. & Andres R.J. 2018, The Open-source Data Inventory for Anthropogenic CO2, version 2016 (ODIAC2016), Earth Syst. Sci. Data 10:87; data: ODIAC2025, NIES, doi:10.17595/20170411.001 (CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat });
+    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2 });
     return { ENTRIES };
 })();
