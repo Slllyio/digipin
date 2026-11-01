@@ -218,6 +218,40 @@ const UrbanLensesMore = (() => {
         };
     }
 
+    // The long view: how many people lived in each block in 1975 against 2020 (GHSL back-cast), and which period filled it.
+    function since1975(fr) {
+        const c = fr.cols, n = fr.grid.n, p20 = c['pop_history.pop_2020'];
+        if (!p20 || !p20.some(_fin)) return null;
+        const p75 = c['pop_history.pop_1975'], emp = c['pop_history.empty_1975'], boom = c['pop_history.boom_period'], pop = c['population.population'];
+        const idx = _residents(fr).filter(i => _fin(p20[i]));
+        if (idx.length < 5) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), w = i => v(pop, i);
+        let all = 0, then = 0, nowRaw = 0, empty = 0;
+        const byP = [0, 0, 0, 0, 0];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            const x = w(i); all += x; then += v(p75, i); nowRaw += v(p20, i);
+            if (v(emp, i) >= 0.5) empty += x;
+            const b = boom && _fin(boom[i]) ? Math.round(boom[i]) : 0;
+            if (b >= 1 && b <= 4) { byP[b] += x; out[i] = b; }
+        }
+        if (!all || !then) return null;
+        const pc = x => `${_round(100 * x / all, 0)}%`, names = ['', '1975-1990', '1990-2000', '2000-2010', '2010-2020'];
+        const top = [1, 2, 3, 4].reduce((a, b) => (byP[b] > byP[a] ? b : a), 1);
+        const stats = [
+            { label: 'Residents in these blocks, 1975 (GHSL)', value: _people(then) },
+            { label: '…2020 (GHSL)', value: _people(nowRaw) },
+            { label: 'Today’s residents in blocks almost empty in 1975 (under 300 per km²)', value: `${_people(empty)} (${pc(empty)})` },
+            ...[1, 2, 3, 4].map(b => ({ label: `Today’s residents in blocks that grew fastest in ${names[b]}`, value: `${_people(byP[b])} (${pc(byP[b])})` })),
+        ];
+        return {
+            columns: { boom_period: out }, idx, weightKey: 'boom_period', noHotspots: true,
+            metric: { label: 'Today’s residents in blocks almost empty in 1975', value: _round(100 * empty / all, 0), unit: '%', higherIs: null },
+            headline: `These blocks held about ${_people(then)} people in 1975 and ${_people(nowRaw)} in 2020 on GHSL's count, ${_round(nowRaw / then, 1)} times as many. ${pc(empty)} of today's residents live where there were fewer than 300 people per km² in 1975 (then fields, villages or scrub). For the largest share of residents (${pc(byP[top])}) the fastest growth came in ${names[top]}. GHSL back-casts 1975 from Landsat built-up land and census totals, so read districts rather than single blocks.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'deprivation', title: 'Relative deprivation (open index)', icon: '📉',
             question: 'Which parts of my city are most deprived on an open index?',
@@ -255,8 +289,14 @@ const UrbanLensesMore = (() => {
             needs: ['fossil_co2.co2_2024', 'fossil_co2.co2_2004', 'fossil_co2.co2_change_pct', 'population.population'],
             method: `ODIAC2025 (Oda and Maksyutov, NIES Japan) distributes national fossil-fuel CO2 totals from combustion and cement (international aviation and shipping excluded) on a 30 arc-second (~1 km) grid each month: large power plants are placed at their reported coordinates and the remaining emissions follow VIIRS/DMSP night lights. The twelve monthly grids of 2004 and 2024 are summed and converted from tonnes of carbon to tonnes of CO2 per km²; each lived-in L7 block takes the pixel at its centre and the city total is density times block area over lived-in blocks only. Because lights stand in for fuel use, bright commercial districts look high and dark industrial sites can look low. It replaces EDGAR CO2, which is not licensed for commercial use.`,
             refs: 'Oda T., Maksyutov S. & Andres R.J. 2018, The Open-source Data Inventory for Anthropogenic CO2, version 2016 (ODIAC2016), Earth Syst. Sci. Data 10:87; data: ODIAC2025, NIES, doi:10.17595/20170411.001 (CC BY 4.0)' },
+        { id: 'since1975', title: 'Who lived here in 1975?', icon: '⏳',
+            question: 'How many people lived in my area in 1975, and when did it fill up?',
+            field: { key: 'boom_period', label: 'Period that added the most residents (1 = 1975-90, 2 = 1990-2000, 3 = 2000-10, 4 = 2010-20)', unit: 'period', higherIs: null, ramp: 'viridis', domain: [1, 4] },
+            needs: ['pop_history.pop_1975', 'pop_history.pop_2020', 'pop_history.empty_1975', 'pop_history.boom_period', 'population.population'],
+            method: `JRC's GHS-POP R2023A gives residents on a 100 m grid for every five-year epoch from 1975, back-cast from Landsat built-up area and census totals. Each lived-in L7 block sums the 1975, 1990, 2000, 2010 and 2020 epochs; a block is counted as almost empty in 1975 below 300 people per km², and its boom period is the gap that added the most residents per year (the first gap is 15 years, the others 10). Shares of today's residents use the calibrated 2020 population; the 1975-to-2020 totals are GHSL's own, uncalibrated, so they differ from census city figures and from the population lens in Bengaluru and the five electors-calibrated cities.`,
+            refs: 'Schiavina M. et al. 2023, GHS-POP R2023A - GHS population grid multitemporal (1975-2030), European Commission JRC, doi:10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE (CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2 });
+    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975 });
     return { ENTRIES };
 })();

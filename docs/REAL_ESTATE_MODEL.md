@@ -2162,3 +2162,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Fossil CO2 per block (`fossil_co2`)
 
 `pipeline/realestate/fossilco2.py` samples ODIAC2025 (NIES, CC BY 4.0) at lived-in block centres. The monthly global 1 km GeoTIFFs are ~100 MB gzipped but 3.7 GB unpacked, so each is downloaded, gunzipped, cropped to India (68-98 E, 6-37 N, 3720 x 3600 px) and deleted in turn, and the twelve crops are summed into `india_<year>.npy` (about 3 minutes a month). Units are tonnes of carbon per pixel per month; ×44/12 and ÷ pixel area give t CO2/km²/yr. Changes against 2004 are left blank where 2004 was under 100 t/km². Growth since 2004 follows night-light brightening as well as fuel use. Unlike EDGAR CO2/GHG (IEA inputs, CC BY-NC-ND), ODIAC can be used commercially.
+
+## Residents since 1975 (`pop_history`)
+
+`pipeline/realestate/popsince1975.py` reduces `JRC/GHSL/P2023A/GHS_POP/<year>` (as people per km², so a block mean scales to its area) for 1975, 1990, 2000, 2010 and 2020 to lived-in L7 blocks with the same `gee.fetch(gee.to_cells(img, 100), bbox, 7)` call as the `population` layer. Counts are raw GHSL, not the calibrated `population.population`; the lens uses the calibrated figure only to weight shares of today's residents. The boom period compares gains per year, because the first gap (1975-1990) is 15 years and the rest 10. Under 300 people/km² in 1975 counts as almost empty.

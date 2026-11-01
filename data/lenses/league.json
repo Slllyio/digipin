@@ -66,6 +66,12 @@
      "unit": "t CO2",
      "higherIs": "worse"
     },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 17,
+     "unit": "%",
+     "higherIs": null
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 28,
@@ -1241,6 +1247,12 @@
      "value": 2.1,
      "unit": "t CO2",
      "higherIs": "worse"
+    },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 44,
+     "unit": "%",
+     "higherIs": null
     },
     "junctions": {
      "label": "Residents near a junction with 12,000+ peak hour vehicles",
@@ -2772,6 +2784,12 @@
      "unit": "t CO2",
      "higherIs": "worse"
     },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 38,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 3.1,
@@ -3935,6 +3953,12 @@
      "value": 3.2,
      "unit": "t CO2",
      "higherIs": "worse"
+    },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 27,
+     "unit": "%",
+     "higherIs": null
     },
     "liquefy": {
      "label": "Residents in blocks mostly on ground likely to liquefy",
@@ -5346,6 +5370,12 @@
      "unit": "t CO2",
      "higherIs": "worse"
     },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 13,
+     "unit": "%",
+     "higherIs": null
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 16,
@@ -6612,6 +6642,12 @@
      "unit": "t CO2",
      "higherIs": "worse"
     },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 44,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.1,
@@ -7583,6 +7619,12 @@
      "value": 2.9,
      "unit": "t CO2",
      "higherIs": "worse"
+    },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 28,
+     "unit": "%",
+     "higherIs": null
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -8934,6 +8976,12 @@
      "unit": "t CO2",
      "higherIs": "worse"
     },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 30,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.3,
@@ -10080,6 +10128,12 @@
      "unit": "t CO2",
      "higherIs": "worse"
     },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 45,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 5.9,
@@ -11219,6 +11273,12 @@
      "value": 1.8,
      "unit": "t CO2",
      "higherIs": "worse"
+    },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 4,
+     "unit": "%",
+     "higherIs": null
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -12492,6 +12552,12 @@
      "unit": "t CO2",
      "higherIs": "worse"
     },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 35,
+     "unit": "%",
+     "higherIs": null
+    },
     "unpaved": {
      "label": "Residents where a fifth or more of the known roads are unpaved",
      "value": 9.2,
@@ -13637,6 +13703,12 @@
      "value": 1.8,
      "unit": "t CO2",
      "higherIs": "worse"
+    },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 7,
+     "unit": "%",
+     "higherIs": null
     },
     "challans": {
      "label": "Residents in station areas booking 100+ violations per 1,000 residents",
@@ -14951,6 +15023,12 @@
      "value": 1.4,
      "unit": "t CO2",
      "higherIs": "worse"
+    },
+    "since1975": {
+     "label": "Today’s residents in blocks almost empty in 1975",
+     "value": 44,
+     "unit": "%",
+     "higherIs": null
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
