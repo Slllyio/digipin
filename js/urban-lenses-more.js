@@ -5,7 +5,7 @@
 const UrbanLensesMore = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _residents, wmean, wquantile } = UrbanLenses._kit;
+    const { _fin, _round, _people, _residents, wmean, wquantile, within } = UrbanLenses._kit;
 
     // Relative deprivation. GRDI v1 indexes each ~1 km pixel 0-100 from built-up density, night lights and their trend,
     // child dependency, infant mortality and subnational HDI; an openly licensed alternative to proprietary wealth maps.
@@ -289,6 +289,55 @@ const UrbanLensesMore = (() => {
         };
     }
 
+    // River, canal and creek colour from Sentinel-2: floating weeds (NDVI on permanent water) and algae (NDCI on open
+    // water). Lakes and tanks are the lakehealth lens's; this one keeps blocks the Copernicus DEM calls river.
+    function riverwater(fr) {
+        const c = fr.cols, n = fr.grid.n, wp = c['water_colour.wc_water_pct'];
+        if (!wp || !wp.some(_fin)) return null;
+        const weed = c['water_colour.wc_weed_pct'], ndci = c['water_colour.wc_ndci'], pop = c['population.population'];
+        const riv = c['water_colour.wc_river'];
+        const wet = [];
+        for (let i = 0; i < n; i++) if (_fin(wp[i]) && wp[i] > 0 && (!riv || riv[i] === 1)) wet.push(i);
+        if (wet.length < 3) return null;
+        const state = new Float64Array(n).fill(NaN), bad = new Float64Array(n), any = new Float64Array(n);
+        let nWeed = 0, nAlgae = 0, waterKm2 = 0;
+        for (const i of wet) {
+            const isWeed = weed && _fin(weed[i]) && weed[i] >= 25, isAlgae = ndci && _fin(ndci[i]) && ndci[i] >= 0.15;
+            state[i] = isWeed ? 2 : isAlgae ? 1 : 0;
+            if (isWeed) nWeed++; else if (isAlgae) nAlgae++;
+            if (isWeed || isAlgae) bad[i] = 1;
+            any[i] = 1;
+            waterKm2 += (wp[i] / 100) * fr.grid.cellKm2;
+        }
+        const nearBad = within(fr.grid, bad, 0.5), nearAny = within(fr.grid, any, 0.5);
+        let all = 0, near = 0, nearB = 0;
+        for (const i of _residents(fr)) {
+            const x = pop && _fin(pop[i]) ? pop[i] : 0; all += x;
+            if (nearAny[i] > 0) near += x;
+            if (nearBad[i] > 0) nearB += x;
+        }
+        if (!all) return null;
+        const score = i => (weed && _fin(weed[i]) ? weed[i] : 0) + (ndci && _fin(ndci[i]) ? 100 * ndci[i] : 0);
+        const worst = wet.slice().sort((a, b) => score(b) - score(a)).slice(0, 3);
+        const pc = (x, t) => `${_round(100 * x / (t || 1), 1)}%`;
+        const stats = [
+            { label: 'Blocks with permanent river, canal or creek water', value: `${wet.length} (${_round(waterKm2, 1)} km² of water)` },
+            { label: 'Water blocks covered by floating weeds or a dense bloom (25%+ of the water)', value: `${nWeed} (${pc(nWeed, wet.length)})` },
+            { label: '…other water blocks with algae-rich water (chlorophyll index 0.15+)', value: `${nAlgae} (${pc(nAlgae, wet.length)})` },
+            { label: 'Residents within about 500 m of the river, canals or creeks', value: `${_people(near)} (${pc(near, all)})` },
+            { label: '…of them next to weed-covered or algae-rich water', value: `${_people(nearB)} (${pc(nearB, near)})` },
+            ...worst.map((i, k) => ({ label: `Worst-looking stretch ${k + 1}: ${fr.grid.codes[i]}`,
+                value: `weeds ${weed && _fin(weed[i]) ? _round(weed[i], 0) : 'n/a'}% of the water; chlorophyll index ${ndci && _fin(ndci[i]) ? _round(ndci[i], 2) : 'n/a (no open water)'}` })),
+        ];
+        const share = _round(100 * (nWeed + nAlgae) / wet.length, 0);
+        return {
+            columns: { water_state: state }, idx: wet, weightKey: 'water_state',
+            metric: { label: 'Residents near rivers and creeks whose water looks weed-covered or algae-rich', value: _round(100 * nearB / (near || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `From space, ${share}% of the city's ${wet.length} blocks of river, canal and creek water look unhealthy in the dry season: ${nWeed} are mostly covered by floating weeds or a dense bloom and ${nAlgae} more are green with algae, the usual sign of sewage and fertiliser feeding the water. ${_people(nearB)} residents (${pc(nearB, near)} of the ${_people(near)} living within about 500 m of the river) live next to such stretches. This is water colour seen by Sentinel-2, not a lab test for sewage or oxygen; dark, deep polluted water can look clean.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'deprivation', title: 'Relative deprivation (open index)', icon: '📉',
             question: 'Which parts of my city are most deprived on an open index?',
@@ -338,8 +387,14 @@ const UrbanLensesMore = (() => {
             needs: ['afternoon_heat.pm_lst_c', 'afternoon_heat.pm_anom_c', 'surface_heat.uhi_anomaly_c', 'population.population'],
             method: `NASA's ECOSTRESS radiometer on the International Space Station measures land surface temperature at 70 m. Because the station's orbit drifts, it sees Indian cities at all hours, unlike Landsat, which always passes around 10:30. Every ECOSTRESS v002 tile (ECO_L2T_LSTE) acquired between 12:30 and 16:30 IST from 15 March to 20 June in 2019-2025 is cloud-masked. Each lived-in L7 block takes the mean of the 3×3 pixels at its centre, and its gap to that scene's median block is averaged over all clear scenes, which removes day-to-day weather; the lens then re-centres the gaps on the resident-weighted median. Hidden afternoon hotspots are blocks 3 °C or more above that in the afternoon but within 1 °C of the resident-weighted median in the Landsat morning layer (surface_heat, 2025).`,
             refs: 'Hook S. & Hulley G. 2022, ECOSTRESS Tiled Land Surface Temperature and Emissivity L2 Global 70 m V002, NASA LP DAAC, doi:10.5067/ECOSTRESS/ECO_L2T_LSTE.002 (NASA open data)' },
+        { id: 'riverwater', title: 'Rivers and creeks: weeds and algae from space', icon: '🦠',
+            question: 'Is the river, canal or creek near me polluted, choked with weeds or green with algae?',
+            field: { key: 'water_state', label: 'Water state (0 clearer, 1 algae-rich, 2 weed-covered)', unit: 'class', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            needs: ['water_colour.wc_water_pct', 'water_colour.wc_weed_pct', 'water_colour.wc_ndci', 'water_colour.wc_ndti', 'population.population'],
+            method: `Copernicus Sentinel-2 surface reflectance scenes from March to May 2024 and 2025 (the dry season, when blooms and weed mats peak and cloud is low) are cloud-masked and reduced to a median. Permanent water is where JRC Global Surface Water found water in 60% or more of observations since 1984, minus the sea; the Copernicus DEM GLO-30 water body mask then keeps blocks whose water is mostly river or canal (lakes and tanks are the lake health lens). Narrow streams and nalas under about 30 m wide are not in the mask and are missed. On that water, pixels with NDVI 0.3 or more are floating weeds (mostly water hyacinth) or a dense surface bloom; on the remaining open water (NDVI under 0.1) the Normalised Difference Chlorophyll Index (B5−B4)/(B5+B4) estimates chlorophyll, and 0.15 or more points to eutrophic, nutrient-rich water (Mishra & Mishra 2012). Each L7 block with 5% or more water is classed weed-covered (25%+ of its water), algae-rich, or clearer; residents within about 500 m of such a block count as living next to it. Colour cannot see coliform, BOD or toxic effluent, so treat clearer as "no visible bloom", not as clean.`,
+            refs: 'Copernicus Sentinel-2 MSI Level-2A (ESA, free and open); Pekel J.-F. et al. 2016, High-resolution mapping of global surface water and its long-term changes, Nature 540:418 (JRC GSW v1.4, CC BY 4.0); Mishra S. & Mishra D.R. 2012, Normalized difference chlorophyll index, Remote Sens. Environ. 117:394' },
     ];
 
-    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975, afternoonheat });
+    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975, afternoonheat, riverwater });
     return { ENTRIES };
 })();

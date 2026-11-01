@@ -59,6 +59,7 @@ const LensSearch = (() => {
         fsi: ['floor', 'fsi'], far: ['floor', 'fsi'], diverse: ['diversity', 'mix'], diversity: ['diversity', 'mix'], cyclist: ['cycle', 'cycling'], cyclists: ['cycle', 'cycling'], bike: ['cycle', 'cycling'],
         seniors: ['aged', 'elderly'], senior: ['aged', 'elderly'], aged: ['aged', 'elderly'], youth: ['young', 'youth'], young: ['young', 'youth'],
         toddlers: ['under', 'children'], babies: ['under', 'children'],
+        algae: ['algae', 'chlorophyll', 'bloom'], hyacinth: ['weed', 'weeds'], weeds: ['weed', 'weeds'], canal: ['canal', 'river'], nala: ['canal', 'drain'],
     };
 
     const _stem = w => w.replace(/(ings|ing|ies|es|s|ed)$/, (m) => (m === 'ies' ? 'y' : '')).slice(0, 12);
@@ -282,7 +283,7 @@ const LensSearch = (() => {
             for (const i of idx) { T += col[i]; if (col[i] > 0 && fin(pop[i])) cov += pop[i]; }
             const rate = P ? (T / P) * 1e5 : null;
             lines.push(`  · City total ${_fmt(T)}${unit}${peopleUnit ? ` (${P ? _fmt(100 * T / P) : 'n/a'}% of residents)` : ` (${_fmt(rate)} per lakh residents)`}; `
-                + `${P ? Math.round(100 * cov / P) : 'n/a'}% of residents live in a block (~1 km²) with at least one`);
+                + `${P ? Math.round(100 * cov / P) : 'n/a'}% of residents live in a block (~250 m square) with at least one`);
             if (inArea.length) {
                 let a = 0, ap = 0;
                 for (const i of inArea) { a += col[i]; if (fin(pop[i])) ap += pop[i]; }
@@ -332,7 +333,7 @@ const LensSearch = (() => {
         if (!blocks.length) return { text: '', fields: [] };
         return {
             fields: hits.map(h => `${h.ds}.${h.key}`),
-            text: `=== RELEVANT DATASET FIELDS for ${typeof UrbanInsights !== 'undefined' ? UrbanInsights.cityLabel(city) : city} (per ~1 km² DIGIPIN block; cite the source) ===\n${blocks.join('\n')}`,
+            text: `=== RELEVANT DATASET FIELDS for ${typeof UrbanInsights !== 'undefined' ? UrbanInsights.cityLabel(city) : city} (per ~250 m DIGIPIN level-7 block; cite the source) ===\n${blocks.join('\n')}`,
         };
     }
 

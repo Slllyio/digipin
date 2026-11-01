@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-01T06:12:23Z",
+  "generated": "2026-11-01T16:33:08Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -67539,6 +67539,172 @@
             "north": 22.63134765625
           },
           "json": "water_bodies/kolkata.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "water_colour",
+      "title": "River and creek water colour: algae, mud and weeds (Sentinel-2)",
+      "description": "Median of cloud-free Copernicus Sentinel-2 surface reflectance scenes, March-May 2024-2025, over permanent water (JRC Global Surface Water occurrence 60%+, sea removed and only river and canal water kept with the Copernicus DEM GLO-30 water body mask; lakes and tanks are in the lakes dataset). Floating weeds or dense bloom: NDVI 0.3+ on water. On open water (NDVI below 0.1): NDCI (B5-B4)/(B5+B4) for chlorophyll, above 0.15 suggests nutrient-rich, eutrophic water (Mishra & Mishra 2012); NDTI (B4-B3)/(B4+B3) for turbidity. Blocks with under 5% water are left out. Colour indices, not BOD or coliform measurements; sewage shows up through the algae and weeds it feeds.",
+      "source": "pipeline/realestate/watercolour.py (Copernicus Sentinel-2 SR and JRC Global Surface Water via Earth Engine)",
+      "license": "Copernicus Sentinel data and Copernicus DEM (free, full and open; modified); JRC GSW CC BY 4.0 (Pekel et al. 2016)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "wc_water_pct",
+          "label": "Permanent river, canal or creek water in the block",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "wc_river",
+          "label": "Mostly river, canal or creek water (1)",
+          "type": "number",
+          "agg": "mode",
+          "unit": "yes/no",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "wc_weed_pct",
+          "label": "Water covered by floating weeds or a dense bloom",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of water",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wc_ndci",
+          "label": "Algae (chlorophyll index, NDCI) on open water",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            -0.1,
+            0.25
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wc_ndti",
+          "label": "Muddiness (turbidity index, NDTI) on open water",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            -0.2,
+            0.2
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "wc_weed_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 76,
+          "bbox": {
+            "west": 72.554931640625,
+            "south": 22.989501953125,
+            "east": 72.603271484375,
+            "north": 23.086181640625
+          },
+          "json": "water_colour/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 42,
+          "bbox": {
+            "west": 80.232177734375,
+            "south": 12.91943359375,
+            "east": 80.29150390625,
+            "north": 13.071044921875
+          },
+          "json": "water_colour/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 111,
+          "bbox": {
+            "west": 77.015380859375,
+            "south": 28.548583984375,
+            "east": 77.318603515625,
+            "north": 28.821044921875
+          },
+          "json": "water_colour/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 265,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.52587890625,
+            "east": 88.36865234375,
+            "north": 22.651123046875
+          },
+          "json": "water_colour/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 36,
+          "bbox": {
+            "west": 80.90234375,
+            "south": 26.845703125,
+            "east": 80.97265625,
+            "north": 26.887451171875
+          },
+          "json": "water_colour/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 330,
+          "bbox": {
+            "west": 72.7900390625,
+            "south": 18.8916015625,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "water_colour/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 67,
+          "bbox": {
+            "west": 73.833740234375,
+            "south": 18.50927734375,
+            "east": 73.991943359375,
+            "north": 18.583984375
+          },
+          "json": "water_colour/pune.json",
           "parquet": null
         }
       ]

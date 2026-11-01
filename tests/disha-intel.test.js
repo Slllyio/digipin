@@ -224,6 +224,8 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('what is the SDG 11.3.1 land use efficiency in Delhi')).toEqual({ type: 'lens', lens: 'packingin', city: 'delhi' });
         expect(M('which areas of Delhi get hottest in the afternoon')).toEqual({ type: 'lens', lens: 'afternoonheat', city: 'delhi' });
         expect(M('afternoon heat hotspots in Pune')).toEqual({ type: 'lens', lens: 'afternoonheat', city: 'pune' });
+        expect(M('is the river in Delhi polluted')).toEqual({ type: 'lens', lens: 'riverwater', city: 'delhi' });
+        expect(M('is the Mutha river in Pune full of sewage')).toEqual({ type: 'lens', lens: 'riverwater', city: 'pune' });
         expect(M('how many people lived in Delhi in 1975')).toEqual({ type: 'lens', lens: 'since1975', city: 'delhi' });
         expect(M('when did my area fill up in Pune')).toEqual({ type: 'lens', lens: 'since1975', city: 'pune' });
         expect(M('where are the CO2 emissions in Delhi')).toEqual({ type: 'lens', lens: 'fossilco2', city: 'delhi' });
