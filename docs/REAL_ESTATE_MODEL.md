@@ -2114,3 +2114,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Underpasses that fill in the rain (`underpasses`)
 
 `pipeline/realestate/underpasses.py` reads Overture transportation segments (subtype road) and their `road_flags`; each flagged part (`between` range) that is `is_tunnel` on a vehicle road, `is_tunnel` on a footway/steps/path (pedestrian subway) or `is_bridge` on a vehicle road is placed at its midpoint and summed per L7 block: `up_road_n`, `up_road_m`, `up_ped_n`, `up_bridge_m`. The `underflood` lens colours underpass blocks by the waterlogging index (45+ high, 65+ very high). DuckDB gotcha: new lambda syntax (`lambda x: ...`), and compute length as planar degrees times a local metres-per-degree factor.
+
+## Private lanes closed to the public (`gated_streets`)
+
+`pipeline/realestate/gatedstreets.py` places every Overture road segment at its midpoint in an L7 block. Local streets (residential, living street, service, unclassified) whose `access_restrictions` include an `allowed` rule recognised `as_private` count as private; segments `denied` in one heading for all modes count as one-way. Fields `gs_local_km`, `gs_private_km`, `gs_private_pct` (blocks with 300 m+ local street) and `gs_oneway_pct`. The `gatedlanes` lens complements the `gated` lens, which counts gate and barrier nodes from `street_infra`.

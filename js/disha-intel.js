@@ -81,6 +81,7 @@ const DishaIntel = (() => {
             badairdays: /\b(bad[- ]air days?|(unhealthy|polluted|smoggy) days?|days? (above|over|exceeding) (the )?(safe |pm ?2\.?5 |naaqs |air quality )?(limit|standard)|how many days (is|was) (the )?air (bad|poor|unhealthy))\b/i,
             greenchange: /\b((lost|losing|lose) (its |their |the )?(green|greenery|green cover|trees|tree cover)|green(ery| cover)? (lost|loss) since|(browned|greened|turned (brown|green)) since|(green|greenery|tree cover) (then and now|over (the )?(years|decades?)|since (19|20)\d\d))\b/i,
             heatedup: /\b((have|has) (got|gotten|grown|become|turned) (much )?(hotter|warmer)|heat(ed|ing) up (over|since)|warm(ed|ing) (most|fastest)|hotter than (it was|before|in (19|20)\d\d)|(hotter|warmer) since (19|20)\d\d|(heat|temperature) (change|trend)s? since)\b/i,
+            gatedlanes: /\b(private (lanes?|streets?|roads?)|access[- ]private|lanes? closed to the public|one[- ]way streets?)\b/i,
             underflood: /\b(underpass(es)?|subways?|road tunnels?|flyovers?)\b/i,
             waterstore: /\b(grace(-fo)? (satellites?|data|mission)|(total )?water (store|storage) (from space|trend|from satellites?)|satellite (ground ?water|water storage)|ground ?water from space|weigh\w* (the )?water)\b/i,
             dryyears: /\b(droughts?( years?| history| since)?|dry years?|getting drier|drying (up|out)|spei)\b/i,

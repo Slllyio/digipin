@@ -375,6 +375,7 @@ Each item gives four things:
 314. ✅ **Dry and wet years since 1901** (`droughts`, `dryyears` lens): SPEIbase v2.11 (CSIC, CC BY 4.0) 12-month SPEI each December at the city centre, 1901-2024. Lucknow went from 6 dry years in 1901-1962 to 14 in 1963-2024 (driest 2010) and is the only city drying; Hyderabad went from 13 to 5. One value per city.
 315. ✅ **Water under the region, weighed from space** (`water_store`, `waterstore` lens): NASA JPL GRACE/GRACE-FO mascons (NASA open data) at the city centre, 2002-2024. The Delhi-Jaipur mascon loses 4.6 cm of water a year (75 cm since 2003-2007); Lucknow -1.4, Kolkata -0.8; Bengaluru and Indore gain. One value per city, about 300 km across.
 316. ✅ **Underpasses that fill in the rain** (`underpasses`, `underflood` lens): Overture transportation road flags (OSM, ODbL) for tunnel and bridge parts of roads, placed per L7 block, set against the waterlogging index. Bengaluru: 417 underpass/tunnel stretches (25 km), 18% in high-waterlogging blocks; Mumbai 48 km below ground and 336 km of flyovers and bridges.
+317. ✅ **Private lanes closed to the public** (`gated_streets`, `gatedlanes` lens): Overture transportation access restrictions (OSM access=private, ODbL) on local streets per L7 block, plus the one-way share. Mumbai 42% of local street length private (society driveways and campuses), Pune 29%, Ahmedabad 22%, Lucknow 5%. Complements the gates-and-barriers `gated` lens.
 
 ## Parked for the keys round
 

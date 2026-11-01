@@ -844,6 +844,35 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function gatedlanes(fr) {
+        const c = fr.cols, n = fr.grid.n, pp = c['gated_streets.gs_private_pct'], pop = c['population.population'];
+        if (!pp || !pp.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(pp[i]));
+        if (idx.length < 5) return null;
+        const lk = c['gated_streets.gs_local_km'], pk = c['gated_streets.gs_private_km'], ow = c['gated_streets.gs_oneway_pct'];
+        let loc = 0, prv = 0, all = 0, half = 0;
+        for (let i = 0; i < n; i++) { if (lk && _fin(lk[i])) loc += lk[i]; if (pk && _fin(pk[i])) prv += pk[i]; }
+        for (const i of idx) { const w = pop && _fin(pop[i]) ? pop[i] : 0; all += w; if (pp[i] >= 50) half += w; }
+        const W = Array.from({ length: n }, (_, i) => (pop && _fin(pop[i]) ? pop[i] : 0));
+        const owIdx = ow ? idx.filter(i => _fin(ow[i])) : [];
+        const owMed = owIdx.length ? wquantile(ow, W, owIdx, 0.5) : NaN;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = pp[i];
+        const share = loc ? 100 * prv / loc : 0, pc = x => (all ? `${_round(100 * x / all, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Local streets mapped', value: `${_round(loc, 0).toLocaleString('en-IN')} km` },
+            { label: '…marked private (gated colonies, societies, campuses)', value: `${_round(prv, 0).toLocaleString('en-IN')} km (${_round(share, 1)}%)` },
+            { label: 'Residents in blocks where half or more of the lanes are private', value: `${_people(half)} (${pc(half)})` },
+            { label: 'One-way share of road length, typical home', value: _fin(owMed) ? `${_round(owMed, 0)}%` : 'n/a' },
+        ];
+        return {
+            columns: { private_lanes_pct: out }, idx, weightKey: 'private_lanes_pct',
+            metric: { label: 'Local streets marked private', value: _round(share, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_round(share, 1)}% of the city's mapped local streets (${_round(prv, 0).toLocaleString('en-IN')} km) are marked private: gated colonies, housing societies, campuses and cantonments. ${_people(half)} people (${pc(half)}) live in blocks where half or more of the lanes are closed to the public, which makes short walks long and pushes traffic onto a few main roads. Red blocks are the most gated. OpenStreetMap tags private lanes unevenly, so treat it as a floor.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -1013,8 +1042,14 @@ const UrbanLensesExtra = (() => {
             needs: ['underpasses.up_road_n', 'underpasses.up_road_m', 'underpasses.up_ped_n', 'underpasses.up_bridge_m', 'waterlogging.waterlogging_index'],
             method: `Overture Maps transportation segments (from OpenStreetMap, ODbL) carry flags for the part of a road that runs in a tunnel or on a bridge. Each tunnel part on a vehicle road (not footways or tracks) is placed at its midpoint in an L7 block and counted; pedestrian subways and flyover length are kept for context. Blocks with an underpass are coloured by the DigiPin waterlogging index (terrain hollows, wetness, upstream area and paving; 45 or more is high, 65 or more very high). The index is for the block, not the dip itself, which is deeper, so the real risk is higher.`,
             refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors); DigiPin waterlogging index (pipeline/cells/ee_layers.py)' },
+        { id: 'gatedlanes', title: 'Private lanes closed to the public', icon: '🔒',
+            question: 'How much of my neighbourhood is behind gates, with lanes I cannot walk through?',
+            field: { key: 'private_lanes_pct', label: 'Share of local streets marked private', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 100] },
+            needs: ['gated_streets.gs_private_pct', 'gated_streets.gs_local_km', 'gated_streets.gs_private_km', 'gated_streets.gs_oneway_pct', 'population.population'],
+            method: `Complements the Gated colonies lens (which counts gates and barriers): this one measures street length. Overture Maps transportation segments (from OpenStreetMap, ODbL) are placed at their midpoints in L7 blocks. Local streets (residential, living street, service, unclassified) with an access restriction recognised as private (OSM access=private) are summed against all local street length; blocks need 300 m of mapped local street. One-way roads are those denied in one heading for all modes. Residents in blocks where half or more of local lanes are private are counted with GHSL/WorldPop population. Gates that are not tagged, and lanes closed only at night, will not show.`,
+            refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes });
     return { ENTRIES };
 })();
