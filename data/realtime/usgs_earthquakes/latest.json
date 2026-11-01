@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-31T22:28:44Z",
+  "generated_at_iso": "2026-11-01T01:23:49Z",
   "count": 12,
   "records": [
+    {
+      "id": "us7000tule",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-31T23:57:55.354000+00:00",
+      "latitude": -13.8748,
+      "longitude": 165.6627,
+      "depth_km": 10.0,
+      "place": "199 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tule",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tuky",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-31T22:42:39.540000+00:00",
+      "latitude": -13.8729,
+      "longitude": 165.6456,
+      "depth_km": 10.0,
+      "place": "200 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuky",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000tuku",
+      "magnitude": 6.0,
+      "origin_time_utc": "2026-10-31T22:15:02.901000+00:00",
+      "latitude": 33.822,
+      "longitude": 136.9854,
+      "depth_km": 352.449,
+      "place": "58 km SSE of Shima, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuku",
+      "tsunami": 0,
+      "significance": 559
+    },
     {
       "id": "us7000tukm",
       "magnitude": 5.0,
@@ -109,42 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tugs",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000tugf",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-31T00:32:46.687000+00:00",
-      "latitude": 33.5548,
-      "longitude": 141.8118,
-      "depth_km": 10.0,
-      "place": "223 km SE of Katsuura, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tugf",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tugd",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-31T00:26:35.699000+00:00",
-      "latitude": -14.8091,
-      "longitude": 167.9478,
-      "depth_km": 10.0,
-      "place": "97 km ENE of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tugd",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tufp",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-30T22:46:57.982000+00:00",
-      "latitude": -16.5439,
-      "longitude": -69.4844,
-      "depth_km": 194.807,
-      "place": "33 km NE of Mazo Cruz, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tufp",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }

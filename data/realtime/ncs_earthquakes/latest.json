@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-31T22:28:45Z",
+  "generated_at_iso": "2026-11-01T01:23:49Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-01 06:12:13|36.658,71.982",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-01 06:12:13",
+      "latitude": 36.658,
+      "longitude": 71.982,
+      "depth_km": 10.0,
+      "region": "Afghanistan",
+      "location": "136km ESE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-01 03:35:44|33.685,86.188",
       "magnitude": 3.8,
@@ -1639,17 +1650,6 @@
       "depth_km": 15.0,
       "region": "Tibet",
       "location": "349km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 21:47:11|32.502,93.710",
-      "magnitude": 4.8,
-      "origin_time": "2026-10-22 21:47:11",
-      "latitude": 32.502,
-      "longitude": 93.71,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "507km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-31T22:28:42Z",
+  "generated_at_iso": "2026-11-01T01:23:46Z",
   "count": 100,
   "records": [
+    {
+      "id": "1793495717294007",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightning  is very likely to occur at isolated places over Coimbatore, Erode, The Nilgiris in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 01 Nov 2026 01:15:19 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793495717294007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1793460089801008",
       "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
@@ -1087,17 +1098,6 @@
       "area": "",
       "published_utc": "Fri, 30 Oct 2026 12:21:50 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793362799002008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793362611098008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 30 Oct 2026 12:17:59 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793362611098008",
       "severity": "Minor",
       "category": "Other",
       "tags": []
