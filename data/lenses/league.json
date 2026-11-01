@@ -54,6 +54,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 124,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 28,
@@ -1217,6 +1223,12 @@
      "value": 71.2,
      "unit": "%",
      "higherIs": "better"
+    },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 0,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "junctions": {
      "label": "Residents near a junction with 12,000+ peak hour vehicles",
@@ -2736,6 +2748,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 25,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 3.1,
@@ -3887,6 +3905,12 @@
      "value": 45.2,
      "unit": "%",
      "higherIs": "better"
+    },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 132,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "liquefy": {
      "label": "Residents in blocks mostly on ground likely to liquefy",
@@ -5286,6 +5310,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 88,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 16,
@@ -6540,6 +6570,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 26,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.1,
@@ -7499,6 +7535,12 @@
      "value": 51.4,
      "unit": "%",
      "higherIs": "better"
+    },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 20,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -8838,6 +8880,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 14,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.3,
@@ -9972,6 +10020,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 39,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 5.9,
@@ -11099,6 +11153,12 @@
      "value": 44.1,
      "unit": "%",
      "higherIs": "better"
+    },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 122,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -12360,6 +12420,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 100,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "unpaved": {
      "label": "Residents where a fifth or more of the known roads are unpaved",
      "value": 9.2,
@@ -13493,6 +13559,12 @@
      "value": 72.6,
      "unit": "%",
      "higherIs": "better"
+    },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 64,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "challans": {
      "label": "Residents in station areas booking 100+ violations per 1,000 residents",
@@ -14795,6 +14867,12 @@
      "value": 60.4,
      "unit": "%",
      "higherIs": "better"
+    },
+    "workheat": {
+     "label": "Days a year above WBGT 30 °C, 2007-2016",
+     "value": 0,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",

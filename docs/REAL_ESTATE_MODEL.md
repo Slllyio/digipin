@@ -2154,3 +2154,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## UN SDG 11 scorecard (`sdg_city`)
 
 `pipeline/realestate/sdgcity.py` reads the two NASA SEDAC SDG Indicators 2023 CSV tables (11.7.1 Urban Public Space, 11.2.1 Urban Access to Public Transport; CC BY 4.0, Earthdata download URLs in the module), which share the GHS-UCDB row order and are joined on `OID_`. -9999 is no data (Guna has no 11.7.1 access figure). Several centres can share a name (Jaipur has a 6,759-person namesake), so the most populous Indian match wins; Delhi is `Delhi [New Delhi]`. Ranks use `landefficiency.below_share` over urban centres of 1 million+. One value per city, copied to every lived-in L7 block. Both indicators rest on OSM tags, so they understate cities with thin mapping.
+
+## Days too hot for safe outdoor work (`work_heat`)
+
+`pipeline/realestate/workheat.py` reads `wbgtmax30_EXP.csv`, `wbgtmax32_EXP.csv` and `wbgtmax30_TREND_ALL.csv` from SEDAC's UHE-Daily csv-json zip (1.9 GB; the STATS and json files can be deleted, leaving ~300 MB). A settlement only has rows if it had at least one day over the threshold, so missing years count as zero and a city with no settlement within 25 km of `heatisland.CENTRE` (Bengaluru) had none. The warming share is `coef_heat / coef_pdays` (person-day slopes; the readme leaves `coef_attrib` undocumented, so it is not used). Ranks use settlements of 1 million+ by 2016 population. CC BY 4.0.

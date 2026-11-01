@@ -145,6 +145,42 @@ const UrbanLensesMore = (() => {
         };
     }
 
+    // Days too hot and humid to work outdoors safely (ISO WBGT limits), early 1980s against the 2010s, and how much of the
+    // extra exposure came from warming rather than from more people. City-level, from NASA SEDAC UHE-Daily.
+    function workheat(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['work_heat.wh30_late'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`work_heat.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const e30 = v('wh30_early'), l30 = v('wh30_late'), e32 = v('wh32_early'), l32 = v('wh32_late'), hs = v('wh_heat_share'), ip = v('wh30_india_pctile');
+        const d = x => (_fin(x) ? `${_round(x, x < 10 ? 1 : 0)}` : 'n/a');
+        const stats = [
+            { label: 'Days a year above WBGT 30 °C (heavy outdoor work unsafe), 1983-1992', value: d(e30) },
+            { label: '…2007-2016', value: d(l30) },
+            { label: 'Days a year above WBGT 32 °C (even light outdoor work unsafe), 1983-1992', value: d(e32) },
+            { label: '…2007-2016', value: d(l32) },
+            { label: 'Share of the rise in person-days due to warming (rest is population growth)', value: _fin(hs) ? `${_round(hs, 0)}%` : 'n/a' },
+            { label: 'Indian settlements of 1 million+ with fewer such days, 2007-2016', value: _fin(ip) ? `${_round(ip, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = l30;
+        let head;
+        if (!(l30 > 0.5)) {
+            head = 'Between 1983 and 2016 the city almost never passed a wet-bulb globe temperature of 30 °C, the ISO limit above which heavy outdoor work needs enforced rest; its height keeps humid heat in check, even though hot afternoons are getting more common.';
+        } else {
+            const light = l32 >= 1 ? ` On ${d(l32)} of those days (${d(e32)} in the 1980s) it passed 32 °C, when even light work outside is unsafe.` : '';
+            const why = _fin(hs) ? ` About ${_round(hs, 0)}% of the extra person-days of exposure since 1983 came from warming itself; the rest from more people living there.` : '';
+            head = `In 2007-2016 the city averaged ${d(l30)} days a year with a wet-bulb globe temperature above 30 °C, the ISO limit above which heavy outdoor work (construction, loading, street vending) needs enforced rest, up from ${d(e30)} in 1983-1992.${light}${why} Only ${_fin(ip) ? `${_round(100 - ip, 0)}%` : 'a few'} of India's cities of a million or more have more such days.`;
+        }
+        return {
+            columns: { work_heat_days: out }, idx, weightKey: 'work_heat_days',
+            metric: { label: 'Days a year above WBGT 30 °C, 2007-2016', value: _fin(l30) ? _round(l30, 0) : 0, unit: 'days', higherIs: 'worse' },
+            headline: `${head} Readings are for the whole urban settlement on a ~5 km grid (CHIRTS-daily), so shade, roofs and work hours are left out. One value for the whole city.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'deprivation', title: 'Relative deprivation (open index)', icon: '📉',
             question: 'Which parts of my city are most deprived on an open index?',
@@ -170,8 +206,14 @@ const UrbanLensesMore = (() => {
             needs: ['sdg_city.sdg_space_pct', 'sdg_city.sdg_space_india_pctile', 'sdg_city.sdg_space_world_pctile', 'sdg_city.sdg_space_access_pct', 'sdg_city.sdg_space_access_india_pctile', 'sdg_city.sdg_space_access_world_pctile', 'sdg_city.sdg_transit_pct', 'sdg_city.sdg_transit_india_pctile', 'sdg_city.sdg_transit_world_pctile', 'population.population'],
             method: `NASA SEDAC's SDG Indicators 2023 release (CIESIN) computes two UN Sustainable Development Goal 11 indicators for every city in the JRC GHS Urban Centre Database. SDG 11.7.1 is the share of the urban centre's area that is OpenStreetMap open public space, and the share of WorldPop residents within 400 m of it; SDG 11.2.1 is the share of residents within 500 m of a low-capacity stop (bus) or 1 km of a high-capacity one (rail, BRT, ferry). Ranks set each score against the 1 million+ urban centres in India and worldwide. Both rest on OSM mapping, which is patchy in Indian cities, and the urban centre outline is GHSL's, not the municipal boundary.`,
             refs: 'CIESIN 2023, SDG Indicator 11.7.1: Urban Public Space, Availability and Access, doi:10.7927/eavc-4k45; SDG Indicator 11.2.1: Urban Access to Public Transport, doi:10.7927/1a5z-3h71; NASA SEDAC (CC BY 4.0)' },
+        { id: 'workheat', title: 'Days too hot for safe outdoor work', icon: '👷',
+            question: 'How many days a year is it too hot and humid to work outdoors safely in my city?',
+            field: { key: 'work_heat_days', label: 'Days above WBGT 30 °C, 2007-2016', unit: 'days/yr', higherIs: 'worse', ramp: 'heat', domain: [0, 150] },
+            needs: ['work_heat.wh30_early', 'work_heat.wh30_late', 'work_heat.wh32_early', 'work_heat.wh32_late', 'work_heat.wh_heat_share', 'work_heat.wh30_india_pctile', 'population.population'],
+            method: `NASA SEDAC's Global High Resolution Daily Extreme Urban Heat Exposure (UHE-Daily, Tuholske et al. 2021) computes the daily maximum Wet Bulb Globe Temperature from CHIRTS-daily temperature and humidity (~5 km) over more than 10,000 GHSL urban settlements, 1983-2016, and counts days above the ISO occupational heat-stress limits: 30 °C, when heavy work needs enforced rest, and 32 °C, when even light work is unsafe. It splits the rise in person-days of exposure into warming (more hot days for the 1983 population) and population growth; the share here is the warming slope over the total slope for 30 °C. The settlement nearest the city centre (within 25 km, most populous) stands for the city; a city with no row had no such day. Ranks are against India's settlements of a million or more.`,
+            refs: 'Tuholske C. et al. 2021, Global urban population exposure to extreme heat, PNAS 118(41):e2024792118; data: CIESIN, NASA SEDAC, doi:10.7927/fq7g-ny13 (CC BY 4.0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard });
+    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat });
     return { ENTRIES };
 })();
