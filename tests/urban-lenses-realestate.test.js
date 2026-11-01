@@ -1191,7 +1191,6 @@ describe('Real-estate lenses on a hand-made grid', () => {
     });
 
     it('afternoonheat: ECOSTRESS afternoon heat', () => {
-        const half = (a, b) => codes.map((_, i) => (i % 2 ? a : b));
         const f = L.frameFrom(codes, { ...base, 'afternoon_heat.pm_anom_c': codes.map((_, i) => [0, 0, 4][i % 3]), 'afternoon_heat.pm_lst_c': codes.map((_, i) => [44, 44, 52][i % 3]), 'surface_heat.uhi_anomaly_c': codes.map(() => 0) }, { city: 'pune' });
         const r = L._lenses.afternoonheat(f, {});
         expect(r.headline).toMatch(/^On clear pre-monsoon afternoons the ground in the typical resident's block reaches \d+ °C\. .* residents \([\d.]+%\) live in blocks at least 3 °C hotter than that, and .* of them live where the 10:30 morning satellite pass shows nothing unusual/);
