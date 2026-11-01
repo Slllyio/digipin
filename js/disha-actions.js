@@ -365,8 +365,11 @@ const DISHAActions = (() => {
             if (!LS || !UL) throw new Error('lens search unavailable');
             const routed = DI && DI.lensHits ? DI.lensHits(p.query) : [];
             const hits = LS.search(p.query, UL.catalog().filter(l => l.id !== 'siting'), { limit: 8, routed });
-            if (!hits.length) return { label: `No lenses for “${p.query}”`, observation: `findLenses: no lens matches "${p.query}"; try other words or areaInsights.` };
-            return { label: `Found ${hits.length} lenses`, observation: `findLenses "${p.query}":\n${hits.map(h => `- ${h.id}: ${h.title} (${h.question})`).join('\n')}` };
+            const CS = _g('CellStore');
+            const fields = CS && CS.datasets && LS.searchFields ? LS.searchFields(p.query, CS.datasets(), { limit: 5 }) : [];
+            const fieldLines = fields.length ? `\nDataset fields (per-block values; colour the map with them or ask areaInsights):\n${fields.map(f => `- ${f.ds}.${f.key}: ${f.label}`).join('\n')}` : '';
+            if (!hits.length && !fields.length) return { label: `No lenses for “${p.query}”`, observation: `findLenses: no lens or dataset field matches "${p.query}"; try other words or areaInsights.` };
+            return { label: `Found ${hits.length} lenses, ${fields.length} fields`, observation: `findLenses "${p.query}":\n${hits.map(h => `- ${h.id}: ${h.title} (${h.question})`).join('\n')}${fieldLines}` };
         },
 
         async runlens(p) {
