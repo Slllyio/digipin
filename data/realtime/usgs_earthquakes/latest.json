@@ -1,7 +1,91 @@
 {
-  "generated_at_iso": "2026-11-02T02:05:51Z",
-  "count": 19,
+  "generated_at_iso": "2026-11-02T09:28:50Z",
+  "count": 21,
   "records": [
+    {
+      "id": "us7000tuuy",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-02T08:13:14.014000+00:00",
+      "latitude": 1.392,
+      "longitude": 124.6476,
+      "depth_km": 196.646,
+      "place": "19 km WNW of Tomohon, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuuy",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tuu0",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-02T05:19:50.104000+00:00",
+      "latitude": -5.5626,
+      "longitude": 154.088,
+      "depth_km": 87.891,
+      "place": "175 km WNW of Panguna, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuu0",
+      "tsunami": 0,
+      "significance": 370
+    },
+    {
+      "id": "us7000tutv",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-02T04:45:48.110000+00:00",
+      "latitude": 46.6019,
+      "longitude": 149.5786,
+      "depth_km": 10.0,
+      "place": "201 km NE of Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tutv",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tuts",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-02T02:43:47.892000+00:00",
+      "latitude": -35.9577,
+      "longitude": 78.0792,
+      "depth_km": 10.0,
+      "place": "Mid-Indian Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuts",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tute",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-02T02:24:03.097000+00:00",
+      "latitude": -2.9446,
+      "longitude": 146.4573,
+      "depth_km": 10.0,
+      "place": "135 km SW of Lorengau, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tute",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tutf",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-02T02:23:08.566000+00:00",
+      "latitude": 24.322,
+      "longitude": 122.1775,
+      "depth_km": 55.087,
+      "place": "64 km SE of Yilan, Taiwan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tutf",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tuta",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-02T01:54:55.186000+00:00",
+      "latitude": 30.8406,
+      "longitude": 135.1987,
+      "depth_km": 510.072,
+      "place": "288 km SSE of Muroto-misakicho, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuta",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tut4",
       "magnitude": 5.1,
@@ -169,66 +253,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tupl",
       "tsunami": 0,
       "significance": 554
-    },
-    {
-      "id": "us7000tunq",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-01T08:20:07.549000+00:00",
-      "latitude": 24.8805,
-      "longitude": 122.0621,
-      "depth_km": 118.799,
-      "place": "33 km SE of Jiufen, Taiwan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tunq",
-      "tsunami": 0,
-      "significance": 358
-    },
-    {
-      "id": "us7000tung",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-01T07:37:47.343000+00:00",
-      "latitude": -13.9872,
-      "longitude": 165.6642,
-      "depth_km": 10.0,
-      "place": "191 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tung",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tund",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-01T07:00:54.331000+00:00",
-      "latitude": -13.8611,
-      "longitude": 165.6455,
-      "depth_km": 10.0,
-      "place": "201 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tund",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000tun8",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-11-01T06:26:42.287000+00:00",
-      "latitude": -13.8672,
-      "longitude": 165.6167,
-      "depth_km": 10.0,
-      "place": "203 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tun8",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000tumy",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-01T05:31:54.598000+00:00",
-      "latitude": -23.6386,
-      "longitude": -66.6315,
-      "depth_km": 202.07,
-      "place": "71 km NNW of San Antonio de los Cobres, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tumy",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
