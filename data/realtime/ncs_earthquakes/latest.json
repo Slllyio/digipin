@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-11-02T09:28:56Z",
+  "generated_at_iso": "2026-11-02T19:42:52Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-03 00:43:32|27.244,90.876",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-03 00:43:32",
+      "latitude": 27.244,
+      "longitude": 90.876,
+      "depth_km": 5.0,
+      "region": "Bhutan",
+      "location": "105km WSW of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 00:31:29|32.579,93.810",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-03 00:31:29",
+      "latitude": 32.579,
+      "longitude": 93.81,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "513km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 00:03:09|32.660,93.766",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-03 00:03:09",
+      "latitude": 32.66,
+      "longitude": 93.766,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "522km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 22:56:24|33.292,75.893",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-02 22:56:24",
+      "latitude": 33.292,
+      "longitude": 75.893,
+      "depth_km": 5.0,
+      "region": "Kishtwar, Jammu and Kashmir",
+      "location": "95km ENE of Katra, Jammu and Kashmir, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 21:05:21|31.936,93.763",
+      "magnitude": 4.5,
+      "origin_time": "2026-11-02 21:05:21",
+      "latitude": 31.936,
+      "longitude": 93.763,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "446km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 20:15:27|23.302,93.351",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-02 20:15:27",
+      "latitude": 23.302,
+      "longitude": 93.351,
+      "depth_km": 33.0,
+      "region": "Champhai, Mizoram",
+      "location": "17km S of Champhai, Mizoram, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-02 12:34:34|33.412,78.602",
       "magnitude": 2.9,
@@ -1584,72 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tibet",
       "location": "498km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 12:22:24|32.132,93.475",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-23 12:22:24",
-      "latitude": 32.132,
-      "longitude": 93.475,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "476km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 11:18:06|24.933,95.194",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-23 11:18:06",
-      "latitude": 24.933,
-      "longitude": 95.194,
-      "depth_km": 130.0,
-      "region": "Myanmar",
-      "location": "72km E of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 09:01:49|13.368,77.563",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-23 09:01:49",
-      "latitude": 13.368,
-      "longitude": 77.563,
-      "depth_km": 10.0,
-      "region": "Bengaluru Rural, Karnataka",
-      "location": "44km N of Bengaluru, Karnataka, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 08:43:56|32.182,93.357",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-23 08:43:56",
-      "latitude": 32.182,
-      "longitude": 93.357,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "484km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 08:23:47|32.260,93.714",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-23 08:23:47",
-      "latitude": 32.26,
-      "longitude": 93.714,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "481km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 07:46:49|30.541,93.267",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-23 07:46:49",
-      "latitude": 30.541,
-      "longitude": 93.267,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "316km NNW of Basar, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

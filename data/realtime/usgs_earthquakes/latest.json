@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-11-02T09:28:50Z",
-  "count": 21,
+  "generated_at_iso": "2026-11-02T19:42:52Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us7000tuxy",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-11-02T16:49:17.895000+00:00",
+      "latitude": 34.4807,
+      "longitude": 26.4694,
+      "depth_km": 48.525,
+      "place": "81 km SSE of Palekastro, Greece",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuxy",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us7000tuxi",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-02T15:35:12.369000+00:00",
+      "latitude": 32.3376,
+      "longitude": 93.831,
+      "depth_km": 10.0,
+      "place": "193 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuxi",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tuxg",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-02T15:28:13.954000+00:00",
+      "latitude": -10.1699,
+      "longitude": -78.5994,
+      "depth_km": 67.239,
+      "place": "50 km WSW of Huarmey, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuxg",
+      "tsunami": 0,
+      "significance": 401
+    },
+    {
+      "id": "us7000tuwv",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-02T14:05:23.380000+00:00",
+      "latitude": -25.6182,
+      "longitude": 179.6708,
+      "depth_km": 502.364,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuwv",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tuv8",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-02T08:59:22.968000+00:00",
+      "latitude": 34.3232,
+      "longitude": 26.528,
+      "depth_km": 40.168,
+      "place": "100 km SSE of Palekastro, Greece",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuv8",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tuv5",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-02T08:42:47.228000+00:00",
+      "latitude": 19.8007,
+      "longitude": 121.1252,
+      "depth_km": 35.0,
+      "place": "113 km SW of Basco, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuv5",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tuuy",
       "magnitude": 5.1,
@@ -145,114 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000turj",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000tur0",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-01T18:53:57.590000+00:00",
-      "latitude": -35.441,
-      "longitude": 78.4169,
-      "depth_km": 10.0,
-      "place": "Mid-Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tur0",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tuqy",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-01T18:42:57.023000+00:00",
-      "latitude": 19.7626,
-      "longitude": 121.328,
-      "depth_km": 38.488,
-      "place": "101 km SW of Basco, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqy",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tuqx",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-01T18:34:39.200000+00:00",
-      "latitude": -23.8735,
-      "longitude": 69.5217,
-      "depth_km": 10.0,
-      "place": "Mid-Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqx",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000tuqv",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-01T18:30:23.197000+00:00",
-      "latitude": -23.9496,
-      "longitude": 69.5065,
-      "depth_km": 10.0,
-      "place": "Mid-Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqv",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tuqk",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-01T17:11:56.053000+00:00",
-      "latitude": -56.2566,
-      "longitude": -27.1985,
-      "depth_km": 108.234,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqk",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000tuqi",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-01T17:01:18.126000+00:00",
-      "latitude": 23.8055,
-      "longitude": 123.2705,
-      "depth_km": 18.483,
-      "place": "78 km SSE of Yonakuni, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuqi",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tupq",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-01T12:08:30.561000+00:00",
-      "latitude": -13.8667,
-      "longitude": 165.6199,
-      "depth_km": 10.0,
-      "place": "203 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tupq",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tupp",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-01T11:56:51.778000+00:00",
-      "latitude": -14.0776,
-      "longitude": 165.767,
-      "depth_km": 10.0,
-      "place": "176 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tupp",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tupl",
-      "magnitude": 6.0,
-      "origin_time_utc": "2026-11-01T11:47:03.778000+00:00",
-      "latitude": -14.1689,
-      "longitude": 165.8242,
-      "depth_km": 10.0,
-      "place": "165 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tupl",
-      "tsunami": 0,
-      "significance": 554
     }
   ]
 }
