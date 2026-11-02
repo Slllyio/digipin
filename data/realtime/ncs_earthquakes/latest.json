@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-01T22:51:43Z",
+  "generated_at_iso": "2026-11-02T02:05:58Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-02 06:09:21|36.613,70.875",
+      "magnitude": 3.4,
+      "origin_time": "2026-11-02 06:09:21",
+      "latitude": 36.613,
+      "longitude": 70.875,
+      "depth_km": 190.0,
+      "region": "Afghanistan",
+      "location": "61km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 05:30:06|36.828,70.931",
+      "magnitude": 2.7,
+      "origin_time": "2026-11-02 05:30:06",
+      "latitude": 36.828,
+      "longitude": 70.931,
+      "depth_km": 188.0,
+      "region": "Afghanistan",
+      "location": "45km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-02 05:11:45|27.275,88.922",
+      "magnitude": 2.2,
+      "origin_time": "2026-11-02 05:11:45",
+      "latitude": 27.275,
+      "longitude": 88.922,
+      "depth_km": 5.0,
+      "region": "Bhutan",
+      "location": "31km E of Gangtok, Sikkim",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-02 03:52:33|26.589,90.475",
       "magnitude": 2.5,
@@ -1617,39 +1650,6 @@
       "depth_km": 15.0,
       "region": "Tibet",
       "location": "509km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 05:48:43|32.287,93.727",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-23 05:48:43",
-      "latitude": 32.287,
-      "longitude": 93.727,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "484km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 04:56:49|28.919,64.678",
-      "magnitude": 4.9,
-      "origin_time": "2026-10-23 04:56:49",
-      "latitude": 28.919,
-      "longitude": 64.678,
-      "depth_km": 15.0,
-      "region": "Pakistan",
-      "location": "758km SW of Kabul , Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 02:43:21|31.242,77.692",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-23 02:43:21",
-      "latitude": 31.242,
-      "longitude": 77.692,
-      "depth_km": 5.0,
-      "region": "Shimla, Himachal Pradesh",
-      "location": "51km ENE of Shimla, Himachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

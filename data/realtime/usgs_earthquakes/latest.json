@@ -1,13 +1,49 @@
 {
-  "generated_at_iso": "2026-11-01T22:51:42Z",
-  "count": 18,
+  "generated_at_iso": "2026-11-02T02:05:51Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us7000tut4",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-02T01:18:16.369000+00:00",
+      "latitude": -31.2244,
+      "longitude": -177.7236,
+      "depth_km": 10.0,
+      "place": "Kermadec Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tut4",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tusv",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-02T00:53:10.555000+00:00",
+      "latitude": -6.9205,
+      "longitude": 129.9514,
+      "depth_km": 93.548,
+      "place": "Banda Sea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tusv",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tus5",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-01T23:18:05.811000+00:00",
+      "latitude": -22.5661,
+      "longitude": -66.523,
+      "depth_km": 243.598,
+      "place": "86 km WNW of Abra Pampa, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tus5",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000turv",
       "magnitude": 4.6,
-      "origin_time_utc": "2026-11-01T22:22:44.414000+00:00",
-      "latitude": -35.403,
-      "longitude": 78.404,
+      "origin_time_utc": "2026-11-01T22:22:43.980000+00:00",
+      "latitude": -35.4346,
+      "longitude": 78.3627,
       "depth_km": 10.0,
       "place": "Mid-Indian Ridge",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000turv",
@@ -191,30 +227,6 @@
       "depth_km": 202.07,
       "place": "71 km NNW of San Antonio de los Cobres, Argentina",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tumy",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tuly",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-01T01:24:52.448000+00:00",
-      "latitude": -21.698,
-      "longitude": -68.435,
-      "depth_km": 120.437,
-      "place": "55 km SSW of Ollagüe, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuly",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tule",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-31T23:57:55.354000+00:00",
-      "latitude": -13.8748,
-      "longitude": 165.6627,
-      "depth_km": 10.0,
-      "place": "199 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tule",
       "tsunami": 0,
       "significance": 354
     }
