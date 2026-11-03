@@ -1,7 +1,84 @@
 {
-  "generated_at_iso": "2026-11-03T17:02:16Z",
+  "generated_at_iso": "2026-11-03T22:18:45Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-04 03:24:36|39.372,73.296",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-04 03:24:36",
+      "latitude": 39.372,
+      "longitude": 73.296,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "348km NE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-04 03:09:21|39.288,73.461",
+      "magnitude": 4.5,
+      "origin_time": "2026-11-04 03:09:21",
+      "latitude": 39.288,
+      "longitude": 73.461,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "352km NE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-04 03:04:12|39.402,73.441",
+      "magnitude": 5.3,
+      "origin_time": "2026-11-04 03:04:12",
+      "latitude": 39.402,
+      "longitude": 73.441,
+      "depth_km": 55.0,
+      "region": "Tajikistan",
+      "location": "359km NE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 23:45:12|23.343,93.280",
+      "magnitude": 3.7,
+      "origin_time": "2026-11-03 23:45:12",
+      "latitude": 23.343,
+      "longitude": 93.28,
+      "depth_km": 24.0,
+      "region": "Champhai, Mizoram",
+      "location": "13km SSW of Champhai, Mizoram, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 23:26:34|37.150,71.824",
+      "magnitude": 3.3,
+      "origin_time": "2026-11-03 23:26:34",
+      "latitude": 37.15,
+      "longitude": 71.824,
+      "depth_km": 182.0,
+      "region": "Tajikistan",
+      "location": "113km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 23:24:50|33.141,75.705",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-03 23:24:50",
+      "latitude": 33.141,
+      "longitude": 75.705,
+      "depth_km": 5.0,
+      "region": "Doda, Jammu and Kashmir",
+      "location": "73km ENE of Katra, Jammu and Kashmir, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 22:37:51|29.056,60.249",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-03 22:37:51",
+      "latitude": 29.056,
+      "longitude": 60.249,
+      "depth_km": 10.0,
+      "region": "Iran",
+      "location": "635km NNE of Muscat, Oman",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-03 22:14:26|27.411,92.297",
       "magnitude": 3.4,
@@ -1573,83 +1650,6 @@
       "depth_km": 10.0,
       "region": "China",
       "location": "672km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 05:38:12|31.485,93.528",
-      "magnitude": 4.5,
-      "origin_time": "2026-10-24 05:38:12",
-      "latitude": 31.485,
-      "longitude": 93.528,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "405km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 04:54:08|33.127,76.006",
-      "magnitude": 2.4,
-      "origin_time": "2026-10-24 04:54:08",
-      "latitude": 33.127,
-      "longitude": 76.006,
-      "depth_km": 5.0,
-      "region": "Kishtwar, Jammu and Kashmir",
-      "location": "101km E of Katra, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 04:09:08|32.920,93.761",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-24 04:09:08",
-      "latitude": 32.92,
-      "longitude": 93.761,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "550km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 03:39:55|36.324,70.736",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-24 03:39:55",
-      "latitude": 36.324,
-      "longitude": 70.736,
-      "depth_km": 210.0,
-      "region": "Afghanistan",
-      "location": "87km S of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 03:29:42|13.497,77.420",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-24 03:29:42",
-      "latitude": 13.497,
-      "longitude": 77.42,
-      "depth_km": 5.0,
-      "region": "Chikkaballapura, Karnataka",
-      "location": "61km NNW of Bengaluru, Karnataka, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 03:11:43|33.110,76.101",
-      "magnitude": 2.8,
-      "origin_time": "2026-10-24 03:11:43",
-      "latitude": 33.11,
-      "longitude": 76.101,
-      "depth_km": 5.0,
-      "region": "Doda, Jammu and Kashmir",
-      "location": "101km NNW of Dharamshala, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 02:07:47|32.322,93.888",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-24 02:07:47",
-      "latitude": 32.322,
-      "longitude": 93.888,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "483km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

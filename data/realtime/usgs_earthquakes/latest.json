@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-03T17:02:20Z",
-  "count": 9,
+  "generated_at_iso": "2026-11-03T22:18:10Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000tvtj",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-03T21:34:08.654000+00:00",
+      "latitude": 39.3619,
+      "longitude": 73.3023,
+      "depth_km": 10.0,
+      "place": "91 km ESE of Kyzyl-Eshme, Kyrgyzstan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvtj",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "ci41572064",
+      "magnitude": 4.8869503562808,
+      "origin_time_utc": "2026-11-03T18:27:31.190000+00:00",
+      "latitude": 32.4308333333333,
+      "longitude": -115.179666666667,
+      "depth_km": 15.59,
+      "place": "9 km N of Delta, B.C., MX",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci41572064",
+      "tsunami": 0,
+      "significance": 530
+    },
+    {
+      "id": "us7000tvs3",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-03T18:21:13.036000+00:00",
+      "latitude": -35.5195,
+      "longitude": 78.3027,
+      "depth_km": 10.0,
+      "place": "Mid-Indian Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvs3",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000tvie",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-03T16:48:13.110000+00:00",
+      "latitude": 24.1441,
+      "longitude": 141.6725,
+      "depth_km": 139.456,
+      "place": "Volcano Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvie",
+      "tsunami": 0,
+      "significance": 416
+    },
     {
       "id": "us7000tva7",
       "magnitude": 4.8,
@@ -17,10 +65,10 @@
     {
       "id": "us7000tv5i",
       "magnitude": 4.9,
-      "origin_time_utc": "2026-11-03T13:34:06.139000+00:00",
-      "latitude": -58.8399,
-      "longitude": -26.4744,
-      "depth_km": 143.595,
+      "origin_time_utc": "2026-11-03T13:34:06.694000+00:00",
+      "latitude": -58.819,
+      "longitude": -26.3766,
+      "depth_km": 152.036,
       "place": "South Sandwich Islands region",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv5i",
       "tsunami": 0,
@@ -48,7 +96,7 @@
       "place": "24 km NNW of Rioblanco, Colombia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv4i",
       "tsunami": 0,
-      "significance": 506
+      "significance": 510
     },
     {
       "id": "us7000tv3q",
@@ -85,30 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv2p",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000tv03",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-02T20:54:25.928000+00:00",
-      "latitude": -13.8072,
-      "longitude": 165.3938,
-      "depth_km": 10.0,
-      "place": "226 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv03",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tuzd",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-02T19:59:04.529000+00:00",
-      "latitude": 13.795,
-      "longitude": 146.6114,
-      "depth_km": 10.0,
-      "place": "168 km SE of San Jose Village, Northern Mariana Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tuzd",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
