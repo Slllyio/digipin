@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-02T19:42:52Z",
+  "generated_at_iso": "2026-11-03T01:48:49Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-03 06:43:16|28.038,93.115",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-03 06:43:16",
+      "latitude": 28.038,
+      "longitude": 93.115,
+      "depth_km": 10.0,
+      "region": "Kurung Kumey, Arunachal Pradesh",
+      "location": "116km NNW of Itanagar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 05:57:21|31.603,93.514",
+      "magnitude": 4.1,
+      "origin_time": "2026-11-03 05:57:21",
+      "latitude": 31.603,
+      "longitude": 93.514,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "418km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 02:30:17|26.129,95.640",
+      "magnitude": 3.7,
+      "origin_time": "2026-11-03 02:30:17",
+      "latitude": 26.129,
+      "longitude": 95.64,
+      "depth_km": 110.0,
+      "region": "Myanmar",
+      "location": "114km E of Mokokchung, Nagaland, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 02:24:56|32.369,93.831",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-03 02:24:56",
+      "latitude": 32.369,
+      "longitude": 93.831,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "490km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 01:50:14|32.537,93.825",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-03 01:50:14",
+      "latitude": 32.537,
+      "longitude": 93.825,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "508km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-03 00:43:32|27.244,90.876",
       "magnitude": 2.5,
@@ -1595,61 +1650,6 @@
       "depth_km": 100.0,
       "region": "China",
       "location": "565km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 18:58:22|27.285,88.071",
-      "magnitude": 3.6,
-      "origin_time": "2026-10-23 18:58:22",
-      "latitude": 27.285,
-      "longitude": 88.071,
-      "depth_km": 5.0,
-      "region": "Gyalshing, Sikkim",
-      "location": "17km WSW of Pelling, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 17:15:36|32.522,93.975",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-23 17:15:36",
-      "latitude": 32.522,
-      "longitude": 93.975,
-      "depth_km": 150.0,
-      "region": "China",
-      "location": "502km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 16:38:49|32.578,94.186",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-23 16:38:49",
-      "latitude": 32.578,
-      "longitude": 94.186,
-      "depth_km": 80.0,
-      "region": "China",
-      "location": "504km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 16:04:04|25.562,91.234",
-      "magnitude": 3.1,
-      "origin_time": "2026-10-23 16:04:04",
-      "latitude": 25.562,
-      "longitude": 91.234,
-      "depth_km": 10.0,
-      "region": "West Khasi Hills, Meghalaya",
-      "location": "59km WNW of Cherrapunjee, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 14:03:19|32.402,93.675",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-23 14:03:19",
-      "latitude": 32.402,
-      "longitude": 93.675,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "498km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
