@@ -35,6 +35,9 @@ def _load_region(out_dir: Path, region: str):
     return entry, fields, rows
 
 
+MIN_DISTINCT_FRACTION = 0.05
+
+
 def check(out_dir, region: str = "indore_pilot", landmark: dict | None = None) -> dict:
     """Validate the region's tile. Raises SmokeFailure on any problem."""
     out_dir = Path(out_dir)
@@ -57,9 +60,15 @@ def check(out_dir, region: str = "indore_pilot", landmark: dict | None = None) -
                 raise SmokeFailure(f"cell {code} field {f}={v!r} out of [0,100]")
         seen_distinct.add(tuple(values))
 
-    # A silently-empty pbf scores every cell identically — catch it.
+    # A silently-empty pbf scores every cell identically — catch it. An extract
+    # from the wrong Geofabrik zone leaves only a few stray features, so also
+    # require a real spread (built cities sit at 30%+ distinct; empty ~1%).
     if len(seen_distinct) < 2:
         raise SmokeFailure("degenerate grid: every cell has identical scores")
+    if len(rows) >= 300 and len(seen_distinct) < MIN_DISTINCT_FRACTION * len(rows):
+        raise SmokeFailure(
+            f"near-empty grid: {len(seen_distinct)} distinct score vectors over "
+            f"{len(rows)} cells (wrong OSM extract?)")
 
     if landmark:
         code = landmark["code"].replace("-", "")

@@ -77,7 +77,118 @@ const OvertureRelease = (() => {
     /** Release id currently in use. */
     function current() { return _release; }
 
-    return { resolve, base, url, current, latestFromListing, FALLBACK_RELEASE };
+    // ---- Range-read guard -------------------------------------------------
+    // A PMTiles archive is read by HTTP range requests, and the pmtiles
+    // library shares one promise per directory read between every tile that
+    // needs it. A read whose headers arrive but whose body never finishes (a
+    // stalled connection; seen on CI runners) therefore hangs every later
+    // tile of the archive silently: no error, no retry, the source never
+    // reports loaded and the 3D city stays empty. The guard caps each read
+    // and retries it once past the HTTP cache; a second failure is an error
+    // MapLibre reports like any other tile failure.
+    const RANGE_TIMEOUT_MS = 30000;
+    const _rangeStats = { reads: 0, pending: 0, timeouts: 0, retried: 0, recovered: 0, failed: 0, maxMs: 0, bytes: 0 };
+
+    /**
+     * Wrap `lib.FetchSource.prototype.getBytes` (the pmtiles library's HTTP
+     * reader) with a per-read timeout and one retry. Idempotent; returns
+     * true when the guard was installed.
+     */
+    function guardRangeReads(lib, { timeoutMs = RANGE_TIMEOUT_MS } = {}) {
+        const Src = lib && lib.FetchSource;
+        if (!Src || !Src.prototype || typeof Src.prototype.getBytes !== 'function') return false;
+        if (Src.prototype._rangeGuard) return true;
+        const orig = Src.prototype.getBytes;
+        Src.prototype.getBytes = function (offset, length, signal, etag) {
+            const once = () => {
+                _rangeStats.reads++;
+                _rangeStats.pending++;
+                const t0 = Date.now();
+                const ctrl = new AbortController();
+                let timedOut = false;
+                const timer = setTimeout(() => { timedOut = true; ctrl.abort(); }, timeoutMs);
+                const onAbort = () => ctrl.abort();
+                if (signal) {
+                    if (signal.aborted) ctrl.abort();
+                    else signal.addEventListener('abort', onAbort, { once: true });
+                }
+                let p;
+                try { p = Promise.resolve(orig.call(this, offset, length, ctrl.signal, etag)); }
+                catch (e) { p = Promise.reject(e); }
+                return p
+                    .finally(() => {
+                        clearTimeout(timer);
+                        if (signal) signal.removeEventListener('abort', onAbort);
+                        _rangeStats.pending--;
+                        _rangeStats.maxMs = Math.max(_rangeStats.maxMs, Date.now() - t0);
+                    })
+                    .then((r) => { if (r && r.data && r.data.byteLength) _rangeStats.bytes += r.data.byteLength; return r; })
+                    .catch((e) => {
+                        if (!timedOut) throw e;
+                        _rangeStats.timeouts++;
+                        const err = new Error(`PMTiles range read timed out after ${timeoutMs} ms`);
+                        err.timedOut = true;
+                        throw err;
+                    });
+            };
+            return once().catch((e) => {
+                if ((signal && signal.aborted) || !e || !e.timedOut) throw e;
+                _rangeStats.retried++;
+                // The retry bypasses the HTTP cache (pmtiles' own reload flag),
+                // in case a half-cached body is what stalled.
+                this.mustReload = true;
+                return once().then(
+                    (r) => { _rangeStats.recovered++; return r; },
+                    (e2) => { _rangeStats.failed++; throw e2; });
+            });
+        };
+        Src.prototype._rangeGuard = true;
+        return true;
+    }
+
+    /** Counts of guarded reads, timeouts, retries, recoveries and failures. */
+    function rangeStats() { return { ..._rangeStats }; }
+
+    // ---- Protocol accounting --------------------------------------------
+    // The pmtiles protocol handler sits between MapLibre's tile requests and
+    // the range reads above. Counting its calls and settlements separately
+    // tells a read that never came back from a tile that was read and then
+    // lost between decompression and the map's worker.
+    const _protoStats = { calls: 0, pending: 0, resolved: 0, rejected: 0, maxMs: 0, empty: 0 };
+    const _protoLog = [];
+
+    /** Wrap a MapLibre protocol handler (`(request, controller) => Promise`) with call/settlement counts. */
+    function wrapProtocol(fn) {
+        if (typeof fn !== 'function') return fn;
+        return function (request, controller) {
+            _protoStats.calls++;
+            _protoStats.pending++;
+            const t0 = Date.now();
+            let p;
+            try { p = Promise.resolve(fn.call(this, request, controller)); }
+            catch (e) { p = Promise.reject(e); }
+            return p.then(
+                (r) => {
+                    _protoStats.pending--; _protoStats.resolved++;
+                    _protoStats.maxMs = Math.max(_protoStats.maxMs, Date.now() - t0);
+                    if (!r || !r.data || !r.data.byteLength) _protoStats.empty++;
+                    else { _protoLog.push({ u: request && request.url, t: Date.now(), n: r.data.byteLength }); if (_protoLog.length > 600) _protoLog.shift(); }
+                    return r;
+                },
+                (e) => {
+                    _protoStats.pending--; _protoStats.rejected++;
+                    _protoStats.maxMs = Math.max(_protoStats.maxMs, Date.now() - t0);
+                    throw e;
+                });
+        };
+    }
+
+    /** Counts of protocol calls, pending, resolved (and empty), rejected, longest. */
+    function protocolStats() { return { ..._protoStats }; }
+    /** Tiles handed to the map with data, newest last: { u: url, t: ms, n: bytes }. */
+    function protocolLog() { return _protoLog.slice(); }
+
+    return { resolve, base, url, current, latestFromListing, FALLBACK_RELEASE, guardRangeReads, rangeStats, wrapProtocol, protocolStats, protocolLog, RANGE_TIMEOUT_MS };
 })();
 
 if (typeof window !== 'undefined') window.OvertureRelease = OvertureRelease;

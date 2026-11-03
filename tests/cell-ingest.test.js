@@ -77,3 +77,30 @@ describe('CellIngest.ingestRows()', () => {
         expect(() => CI.ingestRows(CI.parseCSV('lat,lng\n1,1'), 'x.csv', 7)).toThrow(/India/);
     });
 });
+
+describe('CellIngest ranking → layer', () => {
+    const results = [
+        { code: '', lat: 22.7196, lng: 75.8577, score: 81.26, area: 'Vijay Nagar' },
+        { code: '', lat: 22.7500, lng: 75.8900, score: 64.04 },
+        { code: 'x', lat: NaN, lng: NaN, score: 10 },
+        null,
+    ];
+    it('rowsFromRanking keeps rank order and drops unplaced rows', () => {
+        const rows = CI.rowsFromRanking(results);
+        expect(rows.map(r => r.rank)).toEqual([1, 2, 3]);
+        expect(rows[0]).toMatchObject({ rank: 1, score: 81.3, area: 'Vijay Nagar', lat: 22.7196, lng: 75.8577 });
+        expect(rows[0].digipin).toBeUndefined();
+        expect(rows[2]).toMatchObject({ digipin: 'x', score: 10 });
+    });
+    it('rankingName avoids dots and long questions', () => {
+        expect(CI.rankingName('Where is it quiet. And safe?')).toBe('Ranking Where is it quiet And safe');
+        expect(CI.rankingName('a'.repeat(80)).length).toBeLessThan(60);
+        expect(CI.rankingName('')).toBe('Ranking result');
+    });
+    it('saveRanking registers a local layer with rank and score fields', () => {
+        const spec = CI.saveRanking(results.slice(0, 2), 'quiet and safe areas');
+        expect(globalThis.CellStore.isLocal(spec.id)).toBe(true);
+        expect(spec.fields.map(f => f.key)).toEqual(expect.arrayContaining(['rank', 'score']));
+        globalThis.CellStore.unregister(spec.id);
+    });
+});

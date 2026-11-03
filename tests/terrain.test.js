@@ -86,13 +86,13 @@ describe('OvertureBuildings renderer choice', () => {
         const ring = [[75.85, 22.71], [75.851, 22.71], [75.851, 22.711], [75.85, 22.71]];
         const fc = OB.twinGeoJSON([{ polygon: ring, height: 10, sel: true }], 3);
         expect(fc.features).toHaveLength(1);
-        expect(fc.features[0].properties).toEqual({ h: 30, sel: true });
+        expect(fc.features[0].properties).toEqual({ h: 30, sel: true, rh: 10 });
         expect(fc.features[0].geometry).toEqual({ type: 'Polygon', coordinates: [ring] });
         expect(OB.twinGeoJSON(null).features).toEqual([]);
     });
 
     it('colours the twin per theme with an amber selection', () => {
-        expect(JSON.stringify(OB.twinPaint(true)['fill-extrusion-color'])).toContain('#f3f5f7');
+        expect(JSON.stringify(OB.twinPaint(true)['fill-extrusion-color'])).toContain('#fbfaf8');
         expect(JSON.stringify(OB.twinPaint(false)['fill-extrusion-color'])).toContain('#5cf0ff');
         expect(OB.twinPaint(false)['fill-extrusion-height']).toEqual(['get', 'h']);
     });

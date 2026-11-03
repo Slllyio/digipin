@@ -40,8 +40,8 @@ grid** and keep the 4×4 m DigiPin code as the addressing scheme:
 1. Pick Indore. Generate the analysis grid (level-8 DigiPin cells over the city
    bbox). **✅ Done** — `pipeline/_lib/grid.py` (`cells_for_bbox`,
    `count_cells_for_bbox`) enumerates DIGIPIN cells exactly via integer index
-   ranges. Sanity: the Indore pilot bbox is 2,209 cells at level 6 (~244 m) /
-   33,489 at level 7 (~61 m) — confirming level 6–7 as the practical analysis
+   ranges. Sanity: the Indore pilot bbox is 2,209 cells at level 6 (~978 m) /
+   33,489 at level 7 (~245 m) — confirming level 6–7 as the practical analysis
    resolution.
 2. For each cell, run the scoring logic server-side against a **bulk Overpass
    extract** (one `.osm.pbf` for MP via Geofabrik, queried locally with

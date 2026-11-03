@@ -126,6 +126,15 @@ const Panel = (() => {
         titleEl = document.getElementById('panel-title-text');
     }
 
+    /** DIGIPIN level / ancestor breadcrumb / cell-store rows (js/cell-hierarchy.js). */
+    function _hierHTML(cell) {
+        return (typeof CellHierarchy !== 'undefined') ? CellHierarchy.html(cell.code) : '';
+    }
+
+    function _wireHier(cell) {
+        if (typeof CellHierarchy !== 'undefined') CellHierarchy.wire(contentEl, cell.code);
+    }
+
     /** Open the panel for a cell, show its loading state, and move focus into it. */
     function show(cell) {
         currentCell = cell;
@@ -139,6 +148,11 @@ const Panel = (() => {
         panelEl.classList.add('open');
         if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.bringToFront(panelEl);
         contentEl.innerHTML = buildLoadingHTML(cell);
+        // The cell-store profile is local data, so it can paint before the
+        // live fetch finishes; update() re-attaches it after the rebuild.
+        if (typeof CellProfile !== 'undefined') CellProfile.attachTo(contentEl, cell);
+        if (typeof InsightsPanel !== 'undefined') InsightsPanel.attachTo(contentEl, cell);
+        _wireHier(cell);
         if (!panelEl.hasAttribute('tabindex')) panelEl.setAttribute('tabindex', '-1');
         try { panelEl.focus({ preventScroll: true }); } catch { /* older browsers */ }
     }
@@ -151,6 +165,7 @@ const Panel = (() => {
         if (typeof FloodInundation !== 'undefined') FloodInundation.detach();
         contentEl.innerHTML = buildFullHTML(cell, data);
         currentData = data;
+        _wireHier(cell);
 
         // Answer-first Property Intelligence card (verdict + intent toggle).
         // It folds in the Growth Forecast as its "Trajectory" sub-section, so the
@@ -159,6 +174,11 @@ const Panel = (() => {
         if (typeof RealEstateWidget !== 'undefined') {
             RealEstateWidget.attachTo(contentEl, data, cell);
         }
+
+        // Every cell-store dataset for this cell (js/cell-profile.js).
+        if (typeof CellProfile !== 'undefined') CellProfile.attachTo(contentEl, cell);
+        // What stands out in the cell's neighbourhood (js/insights-panel.js).
+        if (typeof InsightsPanel !== 'undefined') InsightsPanel.attachTo(contentEl, cell);
 
         if (typeof HeatWidget !== 'undefined') {
             HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);
@@ -175,6 +195,12 @@ const Panel = (() => {
         if (typeof FloodAnimation !== 'undefined') {
             FloodAnimation.attachTo(contentEl, data?.realtime?.flood || null, cell);
         }
+
+        // Bharatlas containment — fills in pincode + admin chain from
+        // pre-loaded PMTiles. Retried a few times because tile loading
+        // is async; without the retry the first cell-click after page
+        // load sometimes gets empty results.
+        _attachBharatlasContainment(cell);
 
         const dishaBtn = document.getElementById('ask-disha-btn');
         if (dishaBtn) {
@@ -197,6 +223,25 @@ const Panel = (() => {
             briefBtn.addEventListener('click', () => {
                 if (currentData && typeof SiteBrief !== 'undefined') {
                     SiteBrief.open(currentData, currentCell);
+                }
+            });
+        }
+
+        const prBtn = document.getElementById('open-property-report-btn');
+        if (prBtn) {
+            prBtn.addEventListener('click', async () => {
+                const c = currentCell && currentCell.center;
+                const city = c && typeof UrbanInsights !== 'undefined' && typeof CellStore !== 'undefined' ? UrbanInsights.cityAt(CellStore, c.lat, c.lng) : null;
+                const toast = (msg, kind) => { if (typeof App !== 'undefined') App.showToast('Property report', msg, kind); };
+                if (!city) { toast('This spot is outside the 13 cities with real-estate data.', 'info'); return; }
+                prBtn.disabled = true;
+                try {
+                    const m = await PropertyReport.build(city, c.lat, c.lng, CellStore);
+                    if (!PropertyReport.open(m)) toast('Allow pop-ups to open the report.', 'warning');
+                } catch (e) {
+                    toast(e.message || 'The report could not be built.', 'warning');
+                } finally {
+                    prBtn.disabled = false;
                 }
             });
         }
@@ -293,6 +338,7 @@ const Panel = (() => {
                     <button class="copy-btn" onclick="Panel.copyCode('${esc(cell.code)}')">&#128203;</button>
                 </div>
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
+                ${_hierHTML(cell)}
             </div>
             <div class="loading-section" role="status" aria-live="polite" aria-label="Loading cell data">
                 <div class="spinner"></div>
@@ -390,7 +436,9 @@ const Panel = (() => {
                     <button class="action-btn" id="btn-report" title="Generate PDF Report">&#128196; Report</button>
                 </div>
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
+                ${_hierHTML(cell)}
                 ${addr.fullAddress ? `<div class="address">${esc(addr.area || addr.city)}, ${esc(addr.district)}, ${esc(addr.state)} ${addr.pincode ? '- ' + esc(addr.pincode) : ''}</div>` : ''}
+                <div class="bharatlas-containment" id="bharatlas-containment-${cell.code.replace(/[^A-Za-z0-9]/g,'')}" data-lat="${cell.center.lat}" data-lng="${cell.center.lng}"></div>
             </div>`;
 
         html += buildHazardsHTML(data);
@@ -518,6 +566,14 @@ const Panel = (() => {
         if (data.scores) {
             html += `<button class="open-dialog-btn" id="open-site-brief-btn">
                 <span class="dialog-btn-icon">&#128203;</span> Site Brief
+                <span class="dialog-btn-arrow">&#8599;</span>
+            </button>`;
+        }
+
+        // Property report — real-estate due diligence for this block (js/property-report.js)
+        if (typeof PropertyReport !== 'undefined') {
+            html += `<button class="open-dialog-btn" id="open-property-report-btn">
+                <span class="dialog-btn-icon">&#127968;</span> Property Report
                 <span class="dialog-btn-arrow">&#8599;</span>
             </button>`;
         }
@@ -665,6 +721,41 @@ const Panel = (() => {
     function getCurrentCell() { return currentCell; }
     /** Return the data currently displayed in the panel, or undefined. */
     function getCurrentData() { return currentData; }
+
+    /**
+     * Populate the .bharatlas-containment div with the polygon-level
+     * containment chain (pincode + state + district + sub-district).
+     * Retries up to ~3s because PMTiles for the visible viewport may
+     * still be loading the first time a cell is clicked.
+     */
+    function _attachBharatlasContainment(cell) {
+        if (typeof Bharatlas === 'undefined') return;
+        const slug = cell.code.replace(/[^A-Za-z0-9]/g, '');
+        const el = document.getElementById('bharatlas-containment-' + slug);
+        if (!el) return;
+        let attempt = 0;
+        const maxAttempts = 12;   // 12 × 250ms = 3s budget
+        const tryLookup = () => {
+            const r = Bharatlas.lookup(cell.center.lat, cell.center.lng);
+            if (!r) return;
+            const items = [];
+            const pin   = r.datagov_pincodes?.primary;
+            const tehs  = r.lgd_subdistricts?.primary;
+            const dist  = r.lgd_districts?.primary;
+            const state = r.lgd_states?.primary;
+            if (pin)   items.push(`<span class="bh-chip"><span class="bh-lbl">PIN</span>${esc(pin)}</span>`);
+            if (tehs)  items.push(`<span class="bh-chip"><span class="bh-lbl">Tehsil</span>${esc(tehs)}</span>`);
+            if (dist)  items.push(`<span class="bh-chip"><span class="bh-lbl">District</span>${esc(dist)}</span>`);
+            if (state) items.push(`<span class="bh-chip"><span class="bh-lbl">State</span>${esc(state)}</span>`);
+            if (items.length > 0) {
+                el.innerHTML = `<div class="bh-row">${items.join('')}</div><div class="bh-source">via <a href="https://bharatlas.com" target="_blank" rel="noopener noreferrer">bharatlas</a> · LGD · data.gov.in</div>`;
+                return;   // success
+            }
+            attempt++;
+            if (attempt < maxAttempts) setTimeout(tryLookup, 250);
+        };
+        tryLookup();
+    }
 
     return { init, show, update, showError, close, switchTab, copyCode, getCurrentCell, getCurrentData };
 })();

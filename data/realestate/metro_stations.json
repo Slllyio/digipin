@@ -1,0 +1,7334 @@
+{
+ "source": "Wikidata (CC0): metro stations in India, P625/P1619/P5817",
+ "fetched": "2026-10-22",
+ "stations": [
+  {
+   "id": "Q104612856",
+   "name": "IIM Metro Station",
+   "lat": 22.451914,
+   "lng": 88.301557,
+   "open": null,
+   "state": "proposed"
+  },
+  {
+   "id": "Q104828788",
+   "name": "Silk Institute metro station",
+   "lat": 12.86177,
+   "lng": 77.52999,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q104828801",
+   "name": "Thalaghattapura metro station",
+   "lat": 12.871424,
+   "lng": 77.538363,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q104828812",
+   "name": "Vajarahalli metro station",
+   "lat": 12.877539,
+   "lng": 77.544745,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q104828819",
+   "name": "Doddakallasandra metro station",
+   "lat": 12.884686,
+   "lng": 77.552751,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q104828836",
+   "name": "Konanakunte Cross metro station",
+   "lat": 12.889,
+   "lng": 77.562641,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q104856728",
+   "name": "Wimco Nagar metro station",
+   "lat": 13.17929,
+   "lng": 80.30733,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q105584475",
+   "name": "Kaladipet metro station",
+   "lat": 13.15067,
+   "lng": 80.29939,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q105584479",
+   "name": "New Washermanpet metro station",
+   "lat": 13.13452,
+   "lng": 80.293,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q105584483",
+   "name": "Tondiarpet metro station",
+   "lat": 13.12453,
+   "lng": 80.28886,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q105605207",
+   "name": "Tiruvottriyur Theradi metro station",
+   "lat": 13.16022,
+   "lng": 80.30245,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q105605215",
+   "name": "Tollgate metro station",
+   "lat": 13.14314,
+   "lng": 80.29633,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q105676245",
+   "name": "Sir Theagaraya College metro station",
+   "lat": 13.11575,
+   "lng": 80.28474,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q105759658",
+   "name": "Tiruvottriyur metro station",
+   "lat": 13.1718,
+   "lng": 80.30527,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q107555792",
+   "name": "Dhansa Bus Stand metro station",
+   "lat": 28.61191,
+   "lng": 76.97848,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108336508",
+   "name": "Pantharapalya - Nayandahalli metro station",
+   "lat": 12.94167,
+   "lng": 77.52512,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108336517",
+   "name": "Pattanagere metro station",
+   "lat": 12.924415,
+   "lng": 77.498256,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108336548",
+   "name": "Rajarajeshwari Nagar metro station",
+   "lat": 12.936727,
+   "lng": 77.519582,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108352723",
+   "name": "Rabari Colony",
+   "lat": 23.005413,
+   "lng": 72.635592,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108352724",
+   "name": "Apparel Park",
+   "lat": 23.01063,
+   "lng": 72.618186,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108352727",
+   "name": "Amraiwadi",
+   "lat": 23.007812,
+   "lng": 72.628369,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108352729",
+   "name": "Vastral",
+   "lat": 23.003492,
+   "lng": 72.647694,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108352730",
+   "name": "Nirant Cross Roads",
+   "lat": 22.999899,
+   "lng": 72.658509,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108352732",
+   "name": "Vastral Gam",
+   "lat": 22.997131,
+   "lng": 72.667451,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108364322",
+   "name": "Jnanabharathi metro station",
+   "lat": 12.935556,
+   "lng": 77.512019,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108364370",
+   "name": "Kengeri Bus Terminal metro station",
+   "lat": 12.914898,
+   "lng": 77.487593,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108532167",
+   "name": "Kengeri metro station",
+   "lat": 12.907954,
+   "lng": 77.476512,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108874431",
+   "name": "Road No.5 Jubilee Hills metro station",
+   "lat": 17.43005,
+   "lng": 78.4232,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108874543",
+   "name": "JBS Parade Ground metro station",
+   "lat": 17.44875,
+   "lng": 78.49648,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108874559",
+   "name": "Sultan Bazaar metro station",
+   "lat": 17.38443,
+   "lng": 78.48403,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108874730",
+   "name": "Secunderabad West metro station",
+   "lat": 17.4338,
+   "lng": 78.49954,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108874753",
+   "name": "RTC X Roads metro station",
+   "lat": 17.40705,
+   "lng": 78.49681,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108874757",
+   "name": "Chikkadpally metro station",
+   "lat": 17.40036,
+   "lng": 78.4949,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q108874763",
+   "name": "Narayanaguda metro station",
+   "lat": 17.39436,
+   "lng": 78.48996,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q109524252",
+   "name": "Ritwik Ghatak metro station",
+   "lat": 22.5331,
+   "lng": 88.3965,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q109968614",
+   "name": "Beliaghata metro station",
+   "lat": 22.56183,
+   "lng": 88.40838,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110269544",
+   "name": "Royapettah metro station",
+   "lat": 13.0544,
+   "lng": 80.2641,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q110300579",
+   "name": "IIT Kanpur metro station",
+   "lat": 26.50918,
+   "lng": 80.24823,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110300581",
+   "name": "Kalyanpur metro station",
+   "lat": 26.50321,
+   "lng": 80.25264,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110300582",
+   "name": "SPM Hospital metro station",
+   "lat": 26.49891,
+   "lng": 80.2589,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110300583",
+   "name": "Vishwavidyalaya metro station (Kanpur)",
+   "lat": 26.49551,
+   "lng": 80.270737,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110300584",
+   "name": "Gurudev Chauraha metro station",
+   "lat": 26.49149,
+   "lng": 80.28451,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110300585",
+   "name": "Geeta Nagar metro station",
+   "lat": 26.48701,
+   "lng": 80.29216,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110300586",
+   "name": "Rawatpur metro station",
+   "lat": 26.48288,
+   "lng": 80.30009,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110300587",
+   "name": "LLR Hospital metro station",
+   "lat": 26.47927,
+   "lng": 80.31159,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110300588",
+   "name": "Moti Jheel metro station",
+   "lat": 26.47906,
+   "lng": 80.31855,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110324106",
+   "name": "Poonamallee Bypass metro station",
+   "lat": 13.0479,
+   "lng": 80.08215,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q110324121",
+   "name": "Madhavaram Depot metro station",
+   "lat": 13.1568,
+   "lng": 80.2374,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q110588986",
+   "name": "Wimco Nagar Depot metro station",
+   "lat": 13.18341,
+   "lng": 80.30854,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197718",
+   "name": "Vanaz metro station",
+   "lat": 18.507161,
+   "lng": 73.805238,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197732",
+   "name": "Anand Nagar metro station",
+   "lat": 18.509562,
+   "lng": 73.814041,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197733",
+   "name": "Ideal Colony metro station",
+   "lat": 18.509041,
+   "lng": 73.822042,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197734",
+   "name": "Nal Stop metro station",
+   "lat": 18.507313,
+   "lng": 73.828676,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197735",
+   "name": "Garware College metro station",
+   "lat": 18.511991,
+   "lng": 73.838023,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197736",
+   "name": "PCMC Bhavan metro station",
+   "lat": 18.626933,
+   "lng": 73.805497,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197737",
+   "name": "Sant Tukaram Nagar metro station",
+   "lat": 18.614559,
+   "lng": 73.815639,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197738",
+   "name": "Nashik Phata metro station",
+   "lat": 18.607337,
+   "lng": 73.822314,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197739",
+   "name": "Kasarwadi metro station",
+   "lat": 18.599738,
+   "lng": 73.827286,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q111197740",
+   "name": "Phugewadi metro station",
+   "lat": 18.591146,
+   "lng": 73.831227,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683269",
+   "name": "Thirumayilai metro station",
+   "lat": 13.0368,
+   "lng": 80.2676,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q112683391",
+   "name": "Hopefarm Channasandra metro station",
+   "lat": 12.98793,
+   "lng": 77.75409,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683398",
+   "name": "Nallurhalli metro station",
+   "lat": 12.976528,
+   "lng": 77.724763,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683401",
+   "name": "Kadugodi Tree Park metro station",
+   "lat": 12.98565,
+   "lng": 77.7469,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683402",
+   "name": "Pattandur Agrahara metro station",
+   "lat": 12.987613,
+   "lng": 77.738211,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683408",
+   "name": "Kundalahalli metro station",
+   "lat": 12.977461,
+   "lng": 77.715761,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683412",
+   "name": "Garudacharapalya metro station",
+   "lat": 12.99356,
+   "lng": 77.70376,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683413",
+   "name": "Sitharama Palya metro station",
+   "lat": 12.98092,
+   "lng": 77.70887,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683421",
+   "name": "Hoodi Junction metro station",
+   "lat": 12.98873,
+   "lng": 77.71127,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683422",
+   "name": "Whitefield metro station",
+   "lat": 12.99507,
+   "lng": 77.75777,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683430",
+   "name": "Mahadevapura metro station",
+   "lat": 12.99678,
+   "lng": 77.69217,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112683488",
+   "name": "Krishnarajapuram metro station",
+   "lat": 12.99999,
+   "lng": 77.67794,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112745606",
+   "name": "Sri Sathya Sai Hospital metro station",
+   "lat": 12.98102,
+   "lng": 77.72762,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112747483",
+   "name": "Benniganahalli",
+   "lat": 12.99653,
+   "lng": 77.66846,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q112787125",
+   "name": "IICC - Dwarka Sector 25 metro station",
+   "lat": 28.55212,
+   "lng": 77.04347,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11288582",
+   "name": "Welcome metro station",
+   "lat": 28.67205,
+   "lng": 77.277934,
+   "open": 2002,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11288933",
+   "name": "Uttam Nagar East metro station",
+   "lat": 28.624786,
+   "lng": 77.065207,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11288937",
+   "name": "Uttam Nagar West metro station",
+   "lat": 28.621728,
+   "lng": 77.055698,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11295526",
+   "name": "Kanhaiya Nagar metro station",
+   "lat": 28.682437,
+   "lng": 77.164761,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11306954",
+   "name": "Shadipur metro station",
+   "lat": 28.651655,
+   "lng": 77.158249,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11307061",
+   "name": "Sikanderpur metro station, Gurugram",
+   "lat": 28.481389,
+   "lng": 77.093056,
+   "open": 2013,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11307659",
+   "name": "Shastri Nagar metro station",
+   "lat": 28.670134,
+   "lng": 77.181785,
+   "open": 2003,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11307901",
+   "name": "Shastri Park metro station",
+   "lat": 28.668204,
+   "lng": 77.250098,
+   "open": 2002,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11307902",
+   "name": "Shahdara metro station",
+   "lat": 28.673476,
+   "lng": 77.289923,
+   "open": 2002,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11308729",
+   "name": "Shivaji Stadium metro station",
+   "lat": 28.62877,
+   "lng": 77.211412,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11309886",
+   "name": "Janakpuri East metro station",
+   "lat": 28.633013,
+   "lng": 77.086593,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11313479",
+   "name": "Sultanpur metro station",
+   "lat": 28.499189,
+   "lng": 77.161389,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11316094",
+   "name": "Tagore Garden metro station",
+   "lat": 28.643688,
+   "lng": 77.112914,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11318978",
+   "name": "Tilak Nagar metro station",
+   "lat": 28.636645,
+   "lng": 77.096364,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11325617",
+   "name": "Noida Sector 15 metro station",
+   "lat": 28.585156,
+   "lng": 77.31158,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11351030",
+   "name": "Rohini metro station",
+   "lat": 28.707659,
+   "lng": 77.125901,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q11352050",
+   "name": "Vidhan Sabha metro station",
+   "lat": 28.687858,
+   "lng": 77.221779,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q113997246",
+   "name": "Vadakkekkotta Metro Station",
+   "lat": 9.95282,
+   "lng": 76.33949,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q113997249",
+   "name": "SN Junction",
+   "lat": 9.95476,
+   "lng": 76.34619,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400460",
+   "name": "Kankaria East metro station",
+   "lat": 23.015694,
+   "lng": 72.606534,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400466",
+   "name": "Kalupur Railway Station metro station",
+   "lat": 23.0247,
+   "lng": 72.60314,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400475",
+   "name": "Gheekanta metro station",
+   "lat": 23.02879,
+   "lng": 72.58677,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400478",
+   "name": "Shahpur metro station",
+   "lat": 23.03922,
+   "lng": 72.58108,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400480",
+   "name": "Old High Court metro station",
+   "lat": 23.03759,
+   "lng": 72.56699,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400481",
+   "name": "Commerce Six Road metro station",
+   "lat": 23.0407,
+   "lng": 72.55307,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400482",
+   "name": "Gujarat University metro station",
+   "lat": 23.04493,
+   "lng": 72.54351,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400483",
+   "name": "Gurukul Road metro station",
+   "lat": 23.04593,
+   "lng": 72.53484,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400487",
+   "name": "Doordarshan Kendra metro station",
+   "lat": 23.04823,
+   "lng": 72.52451,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114400494",
+   "name": "Thaltej metro station",
+   "lat": 23.04982,
+   "lng": 72.51604,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114426854",
+   "name": "SP Stadium metro station",
+   "lat": 23.03989,
+   "lng": 72.56164,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427225",
+   "name": "AEC",
+   "lat": 23.07509,
+   "lng": 72.59331,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427226",
+   "name": "APMC",
+   "lat": 22.99781,
+   "lng": 72.53712,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427227",
+   "name": "Gandhigram",
+   "lat": 23.02661,
+   "lng": 72.56885,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427228",
+   "name": "Jivraj Park",
+   "lat": 23.00554,
+   "lng": 72.53349,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427229",
+   "name": "Motera Stadium",
+   "lat": 23.09677,
+   "lng": 72.59671,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427230",
+   "name": "Paldi",
+   "lat": 23.01855,
+   "lng": 72.56234,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427231",
+   "name": "Rajiv Nagar",
+   "lat": 23.00981,
+   "lng": 72.53674,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427232",
+   "name": "Ranip",
+   "lat": 23.06773,
+   "lng": 72.57415,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427233",
+   "name": "Sabarmati",
+   "lat": 23.08571,
+   "lng": 72.59226,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427234",
+   "name": "Sabarmati Railway Station",
+   "lat": 23.06974,
+   "lng": 72.58762,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427235",
+   "name": "Shreyas",
+   "lat": 23.01368,
+   "lng": 72.54922,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427236",
+   "name": "Usmanpura",
+   "lat": 23.04594,
+   "lng": 72.56498,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427237",
+   "name": "Vadaj",
+   "lat": 23.0677,
+   "lng": 72.5659,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q114427238",
+   "name": "Vijay Nagar",
+   "lat": 23.05646,
+   "lng": 72.56237,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q115517006",
+   "name": "Nabadiganta metro station",
+   "lat": 22.580705,
+   "lng": 88.438902,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q116188743",
+   "name": "Valnai metro station",
+   "lat": 19.196934,
+   "lng": 72.834285,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116196854",
+   "name": "Dahisar metro station (East)",
+   "lat": 19.25171,
+   "lng": 72.86733,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266921",
+   "name": "Anand Nagar",
+   "lat": 19.25718,
+   "lng": 72.86633,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266991",
+   "name": "Kandarpada",
+   "lat": 19.25658,
+   "lng": 72.85054,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266992",
+   "name": "Mandapeshwar",
+   "lat": 19.24957,
+   "lng": 72.84573,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266993",
+   "name": "Eksar metro station",
+   "lat": 19.24039,
+   "lng": 72.84345,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266994",
+   "name": "Borivali West",
+   "lat": 19.23136,
+   "lng": 72.84086,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266995",
+   "name": "Pahadi Eksar",
+   "lat": 19.22282,
+   "lng": 72.84094,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266996",
+   "name": "Kandivali West",
+   "lat": 19.21425,
+   "lng": 72.83746,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266997",
+   "name": "Dahanukarwadi",
+   "lat": 19.20652,
+   "lng": 72.83474,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116266999",
+   "name": "Malad West",
+   "lat": 19.1853,
+   "lng": 72.8358,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116267000",
+   "name": "Lower Malad",
+   "lat": 19.17313,
+   "lng": 72.83642,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116267001",
+   "name": "Pahadi Goregaon",
+   "lat": 19.16237,
+   "lng": 72.83482,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116267001",
+   "name": "Pahadi Goregaon",
+   "lat": 19.16246,
+   "lng": 72.83489,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116267002",
+   "name": "Goregaon West",
+   "lat": 19.15308,
+   "lng": 72.83578,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116267003",
+   "name": "Oshiwara",
+   "lat": 19.14601,
+   "lng": 72.83396,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116267004",
+   "name": "Lower Oshiwara",
+   "lat": 19.14071,
+   "lng": 72.83162,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116267041",
+   "name": "Andheri West",
+   "lat": 19.12914,
+   "lng": 72.83142,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271872",
+   "name": "Ovaripada",
+   "lat": 19.24314,
+   "lng": 72.86417,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271873",
+   "name": "Rashtriya Udyan",
+   "lat": 19.23481,
+   "lng": 72.86311,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271875",
+   "name": "Devipada",
+   "lat": 19.22404,
+   "lng": 72.86432,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271876",
+   "name": "Magathane",
+   "lat": 19.21681,
+   "lng": 72.86689,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271877",
+   "name": "Poisar",
+   "lat": 19.20352,
+   "lng": 72.86308,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271878",
+   "name": "Akurli",
+   "lat": 19.19814,
+   "lng": 72.86057,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271879",
+   "name": "Kurar",
+   "lat": 19.1873,
+   "lng": 72.85844,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271880",
+   "name": "Dindoshi",
+   "lat": 19.1798,
+   "lng": 72.85824,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271881",
+   "name": "Aarey",
+   "lat": 19.16942,
+   "lng": 72.85876,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271882",
+   "name": "Goregaon East",
+   "lat": 19.1524,
+   "lng": 72.8564,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271883",
+   "name": "Jogeshwari (East)",
+   "lat": 19.14297,
+   "lng": 72.85507,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271884",
+   "name": "Mogra",
+   "lat": 19.12845,
+   "lng": 72.85531,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116271885",
+   "name": "Gundavali",
+   "lat": 19.11453,
+   "lng": 72.85518,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q116966154",
+   "name": "Challaghatta metro station",
+   "lat": 12.89742,
+   "lng": 77.46124,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q120142665",
+   "name": "Bommasandra metro station",
+   "lat": 12.81933,
+   "lng": 77.68834,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q120644005",
+   "name": "Biocon Hebbagodi metro station",
+   "lat": 12.82909,
+   "lng": 77.68133,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q120776105",
+   "name": "Electronic City metro station",
+   "lat": 12.84649,
+   "lng": 77.67112,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121139876",
+   "name": "Civil Court metro station",
+   "lat": 18.526909,
+   "lng": 73.858006,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121139922",
+   "name": "Shivaji Nagar metro station",
+   "lat": 18.532716,
+   "lng": 73.849544,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121140108",
+   "name": "Bopodi metro station",
+   "lat": 18.569728,
+   "lng": 73.838144,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121140110",
+   "name": "Dapodi metro station",
+   "lat": 18.583772,
+   "lng": 73.833835,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121161769",
+   "name": "Ruby Hall Clinic metro station",
+   "lat": 18.532704,
+   "lng": 73.877844,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121161986",
+   "name": "Pune Railway Station metro station",
+   "lat": 18.529689,
+   "lng": 73.872563,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121162379",
+   "name": "Mangalwar Peth metro station",
+   "lat": 18.530022,
+   "lng": 73.865231,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121162817",
+   "name": "PMC Bhavan metro station",
+   "lat": 18.522746,
+   "lng": 73.853488,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121163222",
+   "name": "Chhatrapati Sambhaji Udyan metro station",
+   "lat": 18.520117,
+   "lng": 73.847595,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q121163782",
+   "name": "Deccan Gymkhana metro station",
+   "lat": 18.516332,
+   "lng": 73.844489,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122143705",
+   "name": "Madavara metro station",
+   "lat": 13.057421,
+   "lng": 77.472806,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122143708",
+   "name": "Chikkabidarakallu metro station",
+   "lat": 13.051944,
+   "lng": 77.486389,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122143726",
+   "name": "Manjunathanagara metro station",
+   "lat": 13.050278,
+   "lng": 77.494444,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181875",
+   "name": "Singasandra metro station",
+   "lat": 12.88069,
+   "lng": 77.64498,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181880",
+   "name": "Hongasandra metro station",
+   "lat": 12.90165,
+   "lng": 77.63208,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181881",
+   "name": "Kudlu Gate metro station",
+   "lat": 12.88992,
+   "lng": 77.63929,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181884",
+   "name": "Hosa Road metro station",
+   "lat": 12.87078,
+   "lng": 77.65248,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181887",
+   "name": "Huskur Road metro station",
+   "lat": 12.83901,
+   "lng": 77.67754,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181888",
+   "name": "Beratena Agrahara metro station",
+   "lat": 12.86385,
+   "lng": 77.65798,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181896",
+   "name": "Bommanahalli metro station",
+   "lat": 12.91066,
+   "lng": 77.62657,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181897",
+   "name": "Konappana Agrahara metro station",
+   "lat": 12.85648,
+   "lng": 77.66361,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181902",
+   "name": "BTM Layout metro station",
+   "lat": 12.91656,
+   "lng": 77.60825,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181925",
+   "name": "Central Silk Board metro station",
+   "lat": 12.91652,
+   "lng": 77.62056,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122181941",
+   "name": "Jayadeva Hospital metro station",
+   "lat": 12.91673,
+   "lng": 77.60009,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q122199400",
+   "name": "Ragigudda metro station",
+   "lat": 12.91711,
+   "lng": 77.58837,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471592",
+   "name": "Belapur Terminal (CBD Belapur)",
+   "lat": 19.0206,
+   "lng": 73.04026,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471593",
+   "name": "RBI Colony (Kharghar)",
+   "lat": 19.02299,
+   "lng": 73.04795,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471594",
+   "name": "Belpada (Kharghar)",
+   "lat": 19.02528,
+   "lng": 73.05494,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471595",
+   "name": "Utsav Chowk (Kharghar)",
+   "lat": 19.03258,
+   "lng": 73.05895,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471596",
+   "name": "Kendriya Vihar (Kharghar)",
+   "lat": 19.03768,
+   "lng": 73.06407,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471597",
+   "name": "Kharghar Village (Kharghar)",
+   "lat": 19.04311,
+   "lng": 73.07431,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471598",
+   "name": "Central Park (Kharghar)",
+   "lat": 19.05366,
+   "lng": 73.076,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471600",
+   "name": "Pethpada (Kharghar)",
+   "lat": 19.06382,
+   "lng": 73.07738,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471601",
+   "name": "Amandoot (Kharghar)",
+   "lat": 19.07368,
+   "lng": 73.08186,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471604",
+   "name": "Pethali-Taloja",
+   "lat": 19.07459,
+   "lng": 73.09069,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123471605",
+   "name": "Pendhar(Taloja)",
+   "lat": 19.07224,
+   "lng": 73.0978,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q123717338",
+   "name": "KIAL Terminals metro station",
+   "lat": 13.19809,
+   "lng": 77.71245,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123846553",
+   "name": "Kasturinagara metro station",
+   "lat": 13.00485,
+   "lng": 77.66318,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123858017",
+   "name": "HRBR Layout metro station",
+   "lat": 13.02254,
+   "lng": 77.64739,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123858020",
+   "name": "Horamavu metro station",
+   "lat": 13.01702,
+   "lng": 77.66035,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914069",
+   "name": "ISRO metro station",
+   "lat": 12.969,
+   "lng": 77.70115,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914071",
+   "name": "Bellandur metro station",
+   "lat": 12.92799,
+   "lng": 77.68077,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914073",
+   "name": "Doddanekundi metro station",
+   "lat": 12.97563,
+   "lng": 77.69712,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914075",
+   "name": "Kadubeesanahalli metro station",
+   "lat": 12.93225,
+   "lng": 77.68761,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914077",
+   "name": "HSR Layout metro station",
+   "lat": 12.91649,
+   "lng": 77.63304,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914078",
+   "name": "Marathahalli metro station",
+   "lat": 12.95824,
+   "lng": 77.70127,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914080",
+   "name": "Agara metro station",
+   "lat": 12.92053,
+   "lng": 77.64359,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914081",
+   "name": "DRDO Sports Complex metro station",
+   "lat": 12.98589,
+   "lng": 77.69083,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914083",
+   "name": "Kalena Agrahara metro station",
+   "lat": 12.87158,
+   "lng": 77.59363,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914085",
+   "name": "IIMB metro station",
+   "lat": 12.89541,
+   "lng": 77.59954,
+   "open": null,
+   "state": "proposed"
+  },
+  {
+   "id": "Q123914086",
+   "name": "Hulimavu metro station",
+   "lat": 12.88108,
+   "lng": 77.59579,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914090",
+   "name": "Kalyan Nagar metro station",
+   "lat": 13.02626,
+   "lng": 77.6378,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914096",
+   "name": "Sarasvathi Nagara metro station",
+   "lat": 12.99375,
+   "lng": 77.68559,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914102",
+   "name": "Tavarekere metro station",
+   "lat": 12.92942,
+   "lng": 77.60049,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914103",
+   "name": "JP Nagar 4th Phase metro station",
+   "lat": 12.90957,
+   "lng": 77.60023,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123914158",
+   "name": "Nagawara metro station",
+   "lat": 13.04051,
+   "lng": 77.62466,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123965149",
+   "name": "Kodigehalli metro station",
+   "lat": 13.05702,
+   "lng": 77.59386,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123965164",
+   "name": "Bagalur Cross metro station",
+   "lat": 13.12061,
+   "lng": 77.61056,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123965171",
+   "name": "Doddajala metro station",
+   "lat": 13.1886,
+   "lng": 77.64487,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123965174",
+   "name": "Jakkur Cross metro station",
+   "lat": 13.07038,
+   "lng": 77.59347,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123965179",
+   "name": "Kodibeesanahalli metro station",
+   "lat": 12.94504,
+   "lng": 77.6981,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q123965185",
+   "name": "Yelahanka metro station",
+   "lat": 13.1021,
+   "lng": 77.60035,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q124097533",
+   "name": "Chikkajala metro station",
+   "lat": 13.16929,
+   "lng": 77.63179,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q12419759",
+   "name": "Kirti Nagar metro station",
+   "lat": 28.6551,
+   "lng": 77.151473,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124333661",
+   "name": "Moin-ul-Haq Stadium metro station",
+   "lat": 25.607778,
+   "lng": 85.167778,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q124333671",
+   "name": "Patliputra Bus Terminal metro station",
+   "lat": 25.576308,
+   "lng": 85.189801,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124333681",
+   "name": "Patna Junction Metro Station",
+   "lat": 25.602781,
+   "lng": 85.1375,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q124613724",
+   "name": "Airport City metro station",
+   "lat": 13.19833,
+   "lng": 77.68717,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q124714280",
+   "name": "HBR Layout metro station",
+   "lat": 13.03383,
+   "lng": 77.62934,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q124749455",
+   "name": "Meerut South RRTS station",
+   "lat": 28.90388,
+   "lng": 77.63203,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124759251",
+   "name": "Tripunithura Metro Terminal",
+   "lat": 9.950413,
+   "lng": 76.35173,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124759438",
+   "name": "Mankameshwar Mandir metro station",
+   "lat": 27.178097,
+   "lng": 78.017414,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124759439",
+   "name": "Dr. Ambedkar Chowk",
+   "lat": 27.175022,
+   "lng": 78.022081,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124759440",
+   "name": "Taj Mahal metro station",
+   "lat": 27.168326,
+   "lng": 78.035683,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124759441",
+   "name": "Fatehabad Road metro station",
+   "lat": 27.160174,
+   "lng": 78.042526,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124759442",
+   "name": "Basai",
+   "lat": 27.157718,
+   "lng": 78.050629,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124759443",
+   "name": "Taj East Gate",
+   "lat": 27.158295,
+   "lng": 78.057906,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124762850",
+   "name": "Bund Garden metro station",
+   "lat": 18.540554,
+   "lng": 73.88343,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124793263",
+   "name": "Ramwadi metro station",
+   "lat": 18.557231,
+   "lng": 73.9087,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124793268",
+   "name": "Yerwada metro station",
+   "lat": 18.545419,
+   "lng": 73.886721,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q124793273",
+   "name": "Kalyani Nagar metro station",
+   "lat": 18.544484,
+   "lng": 73.905763,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q12523622",
+   "name": "Vaishali metro station",
+   "lat": 28.649947,
+   "lng": 77.339711,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q125242076",
+   "name": "Dairy Circle metro station",
+   "lat": 12.94045,
+   "lng": 77.60235,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q12525001",
+   "name": "Yamuna Bank metro station",
+   "lat": 28.62328,
+   "lng": 77.26793,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q125292393",
+   "name": "National Military School metro station",
+   "lat": 12.96443,
+   "lng": 77.60704,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q125292396",
+   "name": "Shivaji Nagar metro station",
+   "lat": 12.98358,
+   "lng": 77.60306,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q125292398",
+   "name": "Cantonment Railway Station metro station",
+   "lat": 12.99142,
+   "lng": 77.60606,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q125292399",
+   "name": "Pottery Town metro station",
+   "lat": 13.00049,
+   "lng": 77.60934,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q125292401",
+   "name": "Tannery Road metro station",
+   "lat": 13.00899,
+   "lng": 77.613491,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q125292403",
+   "name": "Venkateshpura metro station",
+   "lat": 13.01757,
+   "lng": 77.61789,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q125292405",
+   "name": "Kadugundanahalli metro station",
+   "lat": 13.02984,
+   "lng": 77.62066,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q126202985",
+   "name": "Ibbaluru metro station",
+   "lat": 12.921349,
+   "lng": 77.662842,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q126202986",
+   "name": "Veerannapalya metro station",
+   "lat": 13.041212,
+   "lng": 77.616231,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q126202987",
+   "name": "Kempapura metro station",
+   "lat": 13.043697,
+   "lng": 77.604706,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q126209138",
+   "name": "Hebbala metro station",
+   "lat": 13.044287,
+   "lng": 77.592666,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q126209378",
+   "name": "Lakkasandra metro station",
+   "lat": 12.949401,
+   "lng": 77.603047,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q130354851",
+   "name": "Mahatma Mandir",
+   "lat": 23.233902,
+   "lng": 72.633855,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354852",
+   "name": "Sector-24",
+   "lat": 23.238557,
+   "lng": 72.641473,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354853",
+   "name": "Sector-16",
+   "lat": 23.233904,
+   "lng": 72.650163,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354854",
+   "name": "Juna Sachivalaya",
+   "lat": 23.228922,
+   "lng": 72.659465,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354855",
+   "name": "Akshardham",
+   "lat": 23.223656,
+   "lng": 72.664164,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354856",
+   "name": "Sachivalaya Metro Station",
+   "lat": 23.214988,
+   "lng": 72.658731,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354857",
+   "name": "Sector-10A Metro Station",
+   "lat": 23.21113,
+   "lng": 72.650959,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354858",
+   "name": "Sector-1",
+   "lat": 23.205314,
+   "lng": 72.643399,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354859",
+   "name": "Infocity",
+   "lat": 23.192094,
+   "lng": 72.639709,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354860",
+   "name": "Dholakuva Circle",
+   "lat": 23.185921,
+   "lng": 72.643337,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354861",
+   "name": "Randesan",
+   "lat": 23.179092,
+   "lng": 72.647272,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354862",
+   "name": "Raysan",
+   "lat": 23.166411,
+   "lng": 72.648404,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354863",
+   "name": "GNLU",
+   "lat": 23.154515,
+   "lng": 72.647438,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354864",
+   "name": "Koba Gam",
+   "lat": 23.147618,
+   "lng": 72.643884,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354865",
+   "name": "Juna Koba",
+   "lat": 23.141985,
+   "lng": 72.6386,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354866",
+   "name": "Koba Circle",
+   "lat": 23.132261,
+   "lng": 72.63104,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354867",
+   "name": "Narmada Canal",
+   "lat": 23.125158,
+   "lng": 72.622097,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354868",
+   "name": "Tapovan Circle",
+   "lat": 23.120129,
+   "lng": 72.615797,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354869",
+   "name": "Vishwakarma College",
+   "lat": 23.114199,
+   "lng": 72.608386,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354870",
+   "name": "Koteshwar Road",
+   "lat": 23.103117,
+   "lng": 72.602134,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354871",
+   "name": "PDPU",
+   "lat": 23.154862,
+   "lng": 72.661268,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130354872",
+   "name": "GIFT City",
+   "lat": 23.153402,
+   "lng": 72.685547,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130366700",
+   "name": "Nalban metro station",
+   "lat": 22.573222,
+   "lng": 88.421153,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q130381226",
+   "name": "Kasba Peth metro station",
+   "lat": 18.521221,
+   "lng": 73.859546,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130381236",
+   "name": "Mandai metro station",
+   "lat": 18.512997,
+   "lng": 73.856931,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130381241",
+   "name": "Swargate metro station",
+   "lat": 18.499626,
+   "lng": 73.857742,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461525",
+   "name": "Aarey JVLR",
+   "lat": 19.131223,
+   "lng": 72.883864,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461526",
+   "name": "Bandra Colony",
+   "lat": 19.069967,
+   "lng": 72.849344,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461527",
+   "name": "Bandra-Kurla Complex",
+   "lat": 19.060655,
+   "lng": 72.854666,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461528",
+   "name": "CSMI-Airport - T1",
+   "lat": 19.093903,
+   "lng": 72.853571,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461529",
+   "name": "CSMI-Airport - T2",
+   "lat": 19.102348,
+   "lng": 72.874439,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461530",
+   "name": "MIDC-Andheri",
+   "lat": 19.117359,
+   "lng": 72.873613,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461531",
+   "name": "Sahar Road",
+   "lat": 19.102207,
+   "lng": 72.865201,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461532",
+   "name": "Santacruz",
+   "lat": 19.079344,
+   "lng": 72.84707,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461533",
+   "name": "SEEPZ",
+   "lat": 19.126002,
+   "lng": 72.873731,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461613",
+   "name": "Acharya Atrey Chowk",
+   "lat": 18.997824,
+   "lng": 72.817704,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461614",
+   "name": "Dadar",
+   "lat": 19.023619,
+   "lng": 72.839227,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461615",
+   "name": "Dharavi",
+   "lat": 19.046258,
+   "lng": 72.849742,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461616",
+   "name": "Shitladevi Temple",
+   "lat": 19.038464,
+   "lng": 72.84196,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461617",
+   "name": "Siddhivinayak Temple Metro Station",
+   "lat": 19.015883,
+   "lng": 72.830923,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461618",
+   "name": "Worli",
+   "lat": 19.008605,
+   "lng": 72.819271,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461620",
+   "name": "Chhatrapati Shivaji Maharaj Terminus",
+   "lat": 18.940827,
+   "lng": 72.831837,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461621",
+   "name": "Churchgate",
+   "lat": 18.931484,
+   "lng": 72.826948,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461622",
+   "name": "Cuffe Parade",
+   "lat": 18.913568,
+   "lng": 72.820717,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461623",
+   "name": "Girgaon",
+   "lat": 18.952103,
+   "lng": 72.822195,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461624",
+   "name": "Grant Road",
+   "lat": 18.963157,
+   "lng": 72.818037,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461626",
+   "name": "Hutatma Chowk",
+   "lat": 18.934182,
+   "lng": 72.83251,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461628",
+   "name": "Kalbadevi",
+   "lat": 18.946334,
+   "lng": 72.8272,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461629",
+   "name": "Mahalaxmi",
+   "lat": 18.979489,
+   "lng": 72.825408,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461631",
+   "name": "Jagannath Shankar Sheth Metro metro station",
+   "lat": 18.969992,
+   "lng": 72.821189,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461632",
+   "name": "Science Centre metro station",
+   "lat": 18.990921,
+   "lng": 72.821363,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q130461633",
+   "name": "Vidhan Bhavan",
+   "lat": 18.924781,
+   "lng": 72.825486,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q131309538",
+   "name": "Krishna Park Extension metro station",
+   "lat": 28.647771,
+   "lng": 77.084394,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q131374961",
+   "name": "Shatabdi Nagar RRTS station",
+   "lat": 28.94761,
+   "lng": 77.67359,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q131418464",
+   "name": "Thaltej Gam metro station",
+   "lat": 23.050206,
+   "lng": 72.507012,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q131437466",
+   "name": "Langford Town metro station",
+   "lat": 12.957136,
+   "lng": 77.606149,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134043107",
+   "name": "Porur Bypass metro station",
+   "lat": 13.03628,
+   "lng": 80.15017,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134043115",
+   "name": "Thelliyaragaram metro station",
+   "lat": 13.03691,
+   "lng": 80.14173,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134044448",
+   "name": "Kutchery Road metro station",
+   "lat": 13.03451,
+   "lng": 80.27276,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134044463",
+   "name": "Alwarpet metro station",
+   "lat": 13.0381,
+   "lng": 80.2599,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134044480",
+   "name": "Bharathidasan Road metro station",
+   "lat": 13.0354,
+   "lng": 80.2547,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134044489",
+   "name": "Boat Club metro station",
+   "lat": 13.0291,
+   "lng": 80.2481,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134044498",
+   "name": "Panagal Park metro station",
+   "lat": 13.04076,
+   "lng": 80.23336,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134044507",
+   "name": "Kodambakkam metro station",
+   "lat": 13.05251,
+   "lng": 80.23121,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134238655",
+   "name": "Sholinganallur metro station",
+   "lat": 12.9012,
+   "lng": 80.22794,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134238773",
+   "name": "Porur metro station",
+   "lat": 13.03587,
+   "lng": 80.15683,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134376216",
+   "name": "Madhavaram Milk Colony metro station",
+   "lat": 13.1497,
+   "lng": 80.2415,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q134412413",
+   "name": "Poonamallee Bus Stand metro station",
+   "lat": 13.0509,
+   "lng": 80.0947,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134412416",
+   "name": "Poonamallee Government Hospital metro station",
+   "lat": 13.04978,
+   "lng": 80.10218,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134412417",
+   "name": "Karayanchavadi metro station",
+   "lat": 13.04676,
+   "lng": 80.11111,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134412418",
+   "name": "Kumananchavadi metro station",
+   "lat": 13.04476,
+   "lng": 80.11866,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134412420",
+   "name": "Kattupakkam metro station",
+   "lat": 13.04241,
+   "lng": 80.12456,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134412421",
+   "name": "Iyappanthangal metro station",
+   "lat": 13.03811,
+   "lng": 80.13535,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134652753",
+   "name": "Chunniganj metro station",
+   "lat": 26.477062,
+   "lng": 80.337095,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134652761",
+   "name": "Naveen Market metro station",
+   "lat": 26.474096,
+   "lng": 80.345464,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134652771",
+   "name": "Bada Chauraha metro station",
+   "lat": 26.472742,
+   "lng": 80.352416,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134692731",
+   "name": "Nayaganj metro station",
+   "lat": 26.464164,
+   "lng": 80.359551,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134692732",
+   "name": "Kanpur Central metro station",
+   "lat": 26.453887,
+   "lng": 80.351804,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725694",
+   "name": "Devi Ahilya Bai Holkar Terminal",
+   "lat": 22.73897,
+   "lng": 75.797499,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725695",
+   "name": "Maharani Lakshmi Bai Station",
+   "lat": 22.745334,
+   "lng": 75.800922,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725696",
+   "name": "Rani Avanti Bai Lodhi Station",
+   "lat": 22.75408,
+   "lng": 75.804248,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725697",
+   "name": "Rani Durgavati Station",
+   "lat": 22.763132,
+   "lng": 75.811146,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725698",
+   "name": "Veerangana Jhalkari Bai Station",
+   "lat": 22.771798,
+   "lng": 75.818914,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725699",
+   "name": "Super Corridor 2",
+   "lat": 22.778175,
+   "lng": 75.825748,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725700",
+   "name": "Super Corridor 1",
+   "lat": 22.786631,
+   "lng": 75.8371,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725701",
+   "name": "Bhawarshala Square",
+   "lat": 22.78992,
+   "lng": 75.846155,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725702",
+   "name": "MR 10 Road",
+   "lat": 22.782886,
+   "lng": 75.854309,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725703",
+   "name": "ISBT/MR 10 Flyover",
+   "lat": 22.769524,
+   "lng": 75.864168,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725704",
+   "name": "Chandragupta Square",
+   "lat": 22.764823,
+   "lng": 75.869876,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725705",
+   "name": "Hira Nagar",
+   "lat": 22.759668,
+   "lng": 75.87568,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725706",
+   "name": "Bapat Square",
+   "lat": 22.754483,
+   "lng": 75.880229,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725707",
+   "name": "Meghdoot Garden",
+   "lat": 22.752683,
+   "lng": 75.888448,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725708",
+   "name": "Vijay Nagar Square",
+   "lat": 22.751327,
+   "lng": 75.894295,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q134725709",
+   "name": "Radisson Square",
+   "lat": 22.747399,
+   "lng": 75.903232,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q135003335",
+   "name": "Porur Junction metro station",
+   "lat": 13.03587,
+   "lng": 80.15683,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q135412302",
+   "name": "Zero Mile metro station",
+   "lat": 25.585672,
+   "lng": 85.186752,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q135412326",
+   "name": "Malahi Pakri metro station",
+   "lat": 25.593828,
+   "lng": 85.157833,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q135412342",
+   "name": "Bhootnath metro station",
+   "lat": 25.585472,
+   "lng": 85.173579,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q135412343",
+   "name": "Khemnichak metro station",
+   "lat": 25.584564,
+   "lng": 85.158892,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q136231700",
+   "name": "Eco Park metro station",
+   "lat": 22.611192,
+   "lng": 88.467231,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q136825319",
+   "name": "Meerut Central metro station",
+   "lat": 28.97288,
+   "lng": 77.690603,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q137511104",
+   "name": "Subhash Nagar",
+   "lat": 23.247828,
+   "lng": 77.429924,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q137511106",
+   "name": "Kendriya Vidyalaya",
+   "lat": 23.240286,
+   "lng": 77.431608,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q137511107",
+   "name": "Board Office Chauraha",
+   "lat": 23.232567,
+   "lng": 77.431576,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q137511109",
+   "name": "MP Nagar",
+   "lat": 23.227734,
+   "lng": 77.435162,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q137511110",
+   "name": "Rani Kamalapati Railway Station",
+   "lat": 23.221271,
+   "lng": 77.43837,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q137511112",
+   "name": "DRM Office",
+   "lat": 23.216168,
+   "lng": 77.443378,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q137511113",
+   "name": "Alkapuri",
+   "lat": 23.216485,
+   "lng": 77.451034,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q137511115",
+   "name": "AIIMS",
+   "lat": 23.209914,
+   "lng": 77.456006,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138498901",
+   "name": "Modipuram RRTS station",
+   "lat": 29.072326,
+   "lng": 77.708842,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138498937",
+   "name": "Begumpul RRTS station",
+   "lat": 28.99672,
+   "lng": 77.70571,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138498988",
+   "name": "Bhaisali metro station",
+   "lat": 28.988057,
+   "lng": 77.700344,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138498991",
+   "name": "Brahmapuri metro station",
+   "lat": 28.960316,
+   "lng": 77.684798,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138498995",
+   "name": "Rithani metro station",
+   "lat": 28.93205,
+   "lng": 77.66057,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138498996",
+   "name": "Partapur metro station",
+   "lat": 28.92202,
+   "lng": 77.650573,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138499043",
+   "name": "MES Colony metro station",
+   "lat": 29.015985,
+   "lng": 77.70462,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138499048",
+   "name": "Daurli metro station",
+   "lat": 29.04077,
+   "lng": 77.70686,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138499055",
+   "name": "Meerut North metro station",
+   "lat": 29.05343,
+   "lng": 77.70799,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138573160",
+   "name": "Prashant Vihar metro station",
+   "lat": 28.71306,
+   "lng": 77.13879,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138573161",
+   "name": "Deepali Chowk metro station",
+   "lat": 28.69823,
+   "lng": 77.11896,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138573868",
+   "name": "Haiderpur Village metro station",
+   "lat": 28.72503,
+   "lng": 77.14226,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138605788",
+   "name": "Bhalaswa metro station",
+   "lat": 28.736967,
+   "lng": 77.168076,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138646309",
+   "name": "Burari metro station",
+   "lat": 28.72996,
+   "lng": 77.19955,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138646313",
+   "name": "Jharoda Majra metro station",
+   "lat": 28.72497,
+   "lng": 77.21372,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138646322",
+   "name": "Jagatpur - Wazirabad metro station",
+   "lat": 28.721133,
+   "lng": 77.224005,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138646325",
+   "name": "Soorghat metro station",
+   "lat": 28.710218,
+   "lng": 77.22746,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138646331",
+   "name": "Khajuri Khas metro station",
+   "lat": 28.705226,
+   "lng": 77.254457,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138646333",
+   "name": "Nanaksar Sonia Vihar metro station",
+   "lat": 28.708722,
+   "lng": 77.242494,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138646338",
+   "name": "Bhajanpura metro station",
+   "lat": 28.703603,
+   "lng": 77.262643,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138646341",
+   "name": "Yamuna Vihar metro station",
+   "lat": 28.702361,
+   "lng": 77.277317,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q138755324",
+   "name": "Modipuram Depot metro station",
+   "lat": 29.08483,
+   "lng": 77.70254,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q139034594",
+   "name": "Pandurang Wadi metro station",
+   "lat": 19.259781,
+   "lng": 72.872513,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q139034656",
+   "name": "Miragaon metro station",
+   "lat": 19.27096,
+   "lng": 72.880608,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q139034676",
+   "name": "Kashigaon metro station",
+   "lat": 19.277696,
+   "lng": 72.880222,
+   "open": 2026,
+   "state": "in_use"
+  },
+  {
+   "id": "Q140773906",
+   "name": "Khadki metro station",
+   "lat": 18.562108,
+   "lng": 73.841531,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q141763763",
+   "name": "Alapakkam metro station",
+   "lat": 13.038181,
+   "lng": 80.16359,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q141763938",
+   "name": "Karambakkam metro station",
+   "lat": 13.039565,
+   "lng": 80.170238,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q141800323",
+   "name": "Valasaravakkam metro station",
+   "lat": 13.042217,
+   "lng": 80.180389,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q141801052",
+   "name": "Mugalivakkam metro station",
+   "lat": 13.032113,
+   "lng": 80.163797,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q141801694",
+   "name": "Alwarthirunagar metro station",
+   "lat": 13.046288,
+   "lng": 80.18869,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q14942939",
+   "name": "Noapara metro station",
+   "lat": 22.639722,
+   "lng": 88.393889,
+   "open": 2013,
+   "state": "in_use"
+  },
+  {
+   "id": "Q15041932",
+   "name": "Kalighat metro station",
+   "lat": 22.516652,
+   "lng": 88.346003,
+   "open": 1986,
+   "state": "in_use"
+  },
+  {
+   "id": "Q16850982",
+   "name": "Janpath metro station",
+   "lat": 28.625059,
+   "lng": 77.219184,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q16904094",
+   "name": "Yeshwanthpur metro station",
+   "lat": 13.0232,
+   "lng": 77.5499,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q16981954",
+   "name": "Ghatkopar metro station",
+   "lat": 19.08666,
+   "lng": 72.90799,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q16999711",
+   "name": "Phase 3 metro station",
+   "lat": 28.493663,
+   "lng": 77.093519,
+   "open": 2013,
+   "state": "in_use"
+  },
+  {
+   "id": "Q16999809",
+   "name": "Belvedere Towers metro station",
+   "lat": 28.4918,
+   "lng": 77.0882,
+   "open": 2013,
+   "state": "in_use"
+  },
+  {
+   "id": "Q16999832",
+   "name": "Phase 2 metro station",
+   "lat": 28.4876,
+   "lng": 77.0928,
+   "open": 2013,
+   "state": "in_use"
+  },
+  {
+   "id": "Q16999885",
+   "name": "Moulsari Avenue metro station",
+   "lat": 28.500819,
+   "lng": 77.094585,
+   "open": 2013,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17026075",
+   "name": "Cyber City metro station",
+   "lat": 28.498034,
+   "lng": 77.089253,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17049199",
+   "name": "Alambagh metro station",
+   "lat": 26.813889,
+   "lng": 80.902222,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17049249",
+   "name": "Amausi metro station",
+   "lat": 26.771351,
+   "lng": 80.878665,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17049480",
+   "name": "Badshahnagar metro station",
+   "lat": 26.870668,
+   "lng": 80.961045,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17052168",
+   "name": "Durgapuri metro station",
+   "lat": 26.831945,
+   "lng": 80.915139,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17054729",
+   "name": "Hazratganj metro station",
+   "lat": 26.849715,
+   "lng": 80.941953,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17055586",
+   "name": "Hussain Ganj metro station",
+   "lat": 26.8391,
+   "lng": 80.9345,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17055892",
+   "name": "Dilli Haat - INA metro station",
+   "lat": 28.575224,
+   "lng": 77.207311,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17056424",
+   "name": "Indira Nagar metro station",
+   "lat": 26.872733,
+   "lng": 80.990857,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17058330",
+   "name": "IT Chauraha metro station",
+   "lat": 26.870997,
+   "lng": 80.945497,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17058781",
+   "name": "Jasola Apollo metro station",
+   "lat": 28.53813,
+   "lng": 77.283258,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17064439",
+   "name": "KD Singh Babu Stadium metro station",
+   "lat": 26.854048,
+   "lng": 80.93676,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17067477",
+   "name": "Kailash Colony metro station",
+   "lat": 28.555388,
+   "lng": 77.241954,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17067907",
+   "name": "Krishna Nagar metro station",
+   "lat": 26.794444,
+   "lng": 80.891667,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17068244",
+   "name": "Kuvempu Road metro station",
+   "lat": 12.998502,
+   "lng": 77.556947,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17068737",
+   "name": "Lekhraj Market metro station",
+   "lat": 26.87084,
+   "lng": 80.973605,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17070265",
+   "name": "Lucknow University metro station",
+   "lat": 26.865501,
+   "lng": 80.939534,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17070948",
+   "name": "Mahalakshmi metro station",
+   "lat": 13.008337,
+   "lng": 77.548834,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17072467",
+   "name": "Mawaiya metro station",
+   "lat": 26.825278,
+   "lng": 80.909722,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17074640",
+   "name": "St. Thomas Mount metro station",
+   "lat": 12.99504,
+   "lng": 80.19837,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17075643",
+   "name": "Munshi Pulia metro station",
+   "lat": 26.887931,
+   "lng": 80.99583,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17075798",
+   "name": "Vadapalani metro station",
+   "lat": 13.050734,
+   "lng": 80.212072,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17082550",
+   "name": "Peenya Industry",
+   "lat": 13.036477,
+   "lng": 77.525567,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17082567",
+   "name": "Peenya metro station",
+   "lat": 13.032987,
+   "lng": 77.533469,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17085511",
+   "name": "Rajajinagar metro station",
+   "lat": 13.000345,
+   "lng": 77.549748,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17086022",
+   "name": "Ramsagar Mishra Nagar metro station",
+   "lat": 26.872237,
+   "lng": 80.982353,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17088024",
+   "name": "Sachivalaya metro station",
+   "lat": 26.842509,
+   "lng": 80.941497,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17088462",
+   "name": "Sampige Road metro station",
+   "lat": 12.990545,
+   "lng": 77.570805,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17088478",
+   "name": "Sandal Soap Factory",
+   "lat": 13.014793,
+   "lng": 77.554021,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17090390",
+   "name": "Singaar Nagar metro station",
+   "lat": 26.803056,
+   "lng": 80.896111,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17100145",
+   "name": "Srirampura metro station",
+   "lat": 12.996526,
+   "lng": 77.563356,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17100227",
+   "name": "Goraguntepalya",
+   "lat": 13.028481,
+   "lng": 77.540862,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17123999",
+   "name": "Transport Nagar metro station",
+   "lat": 26.778056,
+   "lng": 80.882778,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17264777",
+   "name": "Versova metro station",
+   "lat": 19.1303,
+   "lng": 72.8213,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17512034",
+   "name": "Andheri metro station",
+   "lat": 19.120791,
+   "lng": 72.848132,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17512769",
+   "name": "D.N. Nagar metro station",
+   "lat": 19.12829,
+   "lng": 72.83019,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17513235",
+   "name": "Asalpha metro station",
+   "lat": 19.092544,
+   "lng": 72.901887,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17514369",
+   "name": "Azad Nagar metro station",
+   "lat": 19.12693,
+   "lng": 72.837655,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q17515440",
+   "name": "Chakala metro station",
+   "lat": 19.112045,
+   "lng": 72.867696,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18109449",
+   "name": "Airport Road metro station",
+   "lat": 19.110113,
+   "lng": 72.874117,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18109514",
+   "name": "Alambagh ISBT metro station",
+   "lat": 26.818611,
+   "lng": 80.907222,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18111047",
+   "name": "Charbagh metro station",
+   "lat": 26.832367,
+   "lng": 80.922988,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18126164",
+   "name": "Jagruti Nagar metro station",
+   "lat": 19.092582,
+   "lng": 72.901866,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18127858",
+   "name": "Marol Naka metro station",
+   "lat": 19.108195,
+   "lng": 72.879536,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18353576",
+   "name": "Saki Naka metro station",
+   "lat": 19.103528,
+   "lng": 72.887962,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18357501",
+   "name": "Guindy metro station",
+   "lat": 13.009229,
+   "lng": 80.213199,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18378132",
+   "name": "Ashok Nagar metro station",
+   "lat": 13.035538,
+   "lng": 80.211135,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q18378926",
+   "name": "Western Express Highway metro station",
+   "lat": 19.115787,
+   "lng": 72.856394,
+   "open": 2014,
+   "state": "in_use"
+  },
+  {
+   "id": "Q19580569",
+   "name": "Delhi Gate metro station",
+   "lat": 28.640072,
+   "lng": 77.24038,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q19580817",
+   "name": "ITO metro station",
+   "lat": 28.629371,
+   "lng": 77.24132,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q19580828",
+   "name": "Jama Masjid metro station",
+   "lat": 28.650157,
+   "lng": 77.23758,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q19581000",
+   "name": "Lal Qila metro station",
+   "lat": 28.656657,
+   "lng": 77.236693,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q19882103",
+   "name": "Arumbakkam metro station",
+   "lat": 13.0622,
+   "lng": 80.2117,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q19891416",
+   "name": "Ekkattuthangal metro station",
+   "lat": 13.017128,
+   "lng": 80.205302,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q19893884",
+   "name": "Meenambakkam metro station",
+   "lat": 12.987659,
+   "lng": 80.176502,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q19894462",
+   "name": "Nanganallur Road metro station",
+   "lat": 12.999934,
+   "lng": 80.193973,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20311991",
+   "name": "Badi Chaupar",
+   "lat": 26.92296,
+   "lng": 75.826814,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20574885",
+   "name": "Ernakulam South metro station",
+   "lat": 9.967756,
+   "lng": 76.291278,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20583828",
+   "name": "Vyttila metro station",
+   "lat": 9.9674,
+   "lng": 76.3204,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20717371",
+   "name": "Chhoti Chaupar metro station",
+   "lat": 26.92471,
+   "lng": 75.81845,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20718091",
+   "name": "Palam metro station",
+   "lat": 28.58891,
+   "lng": 77.083076,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20718098",
+   "name": "Paschim Vihar East metro station",
+   "lat": 28.677327,
+   "lng": 77.112436,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20718160",
+   "name": "Thirumangalam metro station",
+   "lat": 13.08526,
+   "lng": 80.20159,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20861591",
+   "name": "Chaudhary Charan Singh International Airport metro station",
+   "lat": 26.766302,
+   "lng": 80.880213,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20861592",
+   "name": "Chickpete metro station",
+   "lat": 12.967548,
+   "lng": 77.574798,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20961861",
+   "name": "Bata Chowk metro station",
+   "lat": 28.386052,
+   "lng": 77.313441,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20967574",
+   "name": "Badkal Mor metro station",
+   "lat": 28.422778,
+   "lng": 77.310278,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20967610",
+   "name": "Escorts Mujesar metro station",
+   "lat": 28.370081,
+   "lng": 77.314954,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20967615",
+   "name": "Old Faridabad metro station",
+   "lat": 28.410833,
+   "lng": 77.311389,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20967661",
+   "name": "Mewla Maharajpur metro station",
+   "lat": 28.448495,
+   "lng": 77.30813,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20967666",
+   "name": "Neelam Chowk Ajronda metro station",
+   "lat": 28.3978,
+   "lng": 77.3124,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20967667",
+   "name": "NHPC Chowk metro station",
+   "lat": 28.45766,
+   "lng": 77.307422,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20967689",
+   "name": "Sarai metro station",
+   "lat": 28.477682,
+   "lng": 77.305003,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q20967695",
+   "name": "Sector 28 metro station",
+   "lat": 28.438325,
+   "lng": 77.309096,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q21539950",
+   "name": "Samaypur Badli metro station",
+   "lat": 28.745043,
+   "lng": 77.137672,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q23838569",
+   "name": "Magadi Road metro station",
+   "lat": 12.975658,
+   "lng": 77.555412,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q23838580",
+   "name": "Mysore Road metro station",
+   "lat": 12.946727,
+   "lng": 77.530074,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q23838583",
+   "name": "Hosahalli metro station",
+   "lat": 12.974303,
+   "lng": 77.545443,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q23838590",
+   "name": "Nagasandra metro station",
+   "lat": 13.048132,
+   "lng": 77.500126,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q24211039",
+   "name": "Sir M. Visveshwaraya metro station",
+   "lat": 12.974281,
+   "lng": 77.583946,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q24807633",
+   "name": "Dabri Mor - Janakpuri South metro station",
+   "lat": 28.615906,
+   "lng": 77.085257,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q24912918",
+   "name": "Krishna Rajendra Market metro station",
+   "lat": 12.956445,
+   "lng": 77.5736,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q24912941",
+   "name": "National College metro station",
+   "lat": 12.950614,
+   "lng": 77.573736,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q259656",
+   "name": "Ramesh Nagar metro station",
+   "lat": 28.652972,
+   "lng": 77.131507,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q26964763",
+   "name": "Rohini Sector 18, 19 metro station",
+   "lat": 28.738318,
+   "lng": 77.139875,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q26964765",
+   "name": "Haiderpur Badli Mor metro station",
+   "lat": 28.729923,
+   "lng": 77.14913,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q27962769",
+   "name": "Sant Surdas (Sihi) metro station",
+   "lat": 28.354673,
+   "lng": 77.316218,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q27962771",
+   "name": "Raja Nahar Singh metro station",
+   "lat": 28.339801,
+   "lng": 77.316446,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28153807",
+   "name": "Yelachenahalli metro station",
+   "lat": 12.895938,
+   "lng": 77.570169,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169401",
+   "name": "Noida Sector 61 metro station",
+   "lat": 28.597631,
+   "lng": 77.372299,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169402",
+   "name": "Noida Sector 52 metro station",
+   "lat": 28.5867,
+   "lng": 77.372839,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169403",
+   "name": "Noida Sector 34 metro station",
+   "lat": 28.580199,
+   "lng": 77.363441,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169938",
+   "name": "Dashrath Puri metro station",
+   "lat": 28.601499,
+   "lng": 77.082441,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169973",
+   "name": "IIT Delhi metro station",
+   "lat": 28.547199,
+   "lng": 77.193817,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169988",
+   "name": "Greater Kailash metro station",
+   "lat": 28.541832,
+   "lng": 77.238247,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169993",
+   "name": "Jamia Millia Islamia metro station",
+   "lat": 28.562883,
+   "lng": 77.286231,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169995",
+   "name": "Jasola Vihar Shaheen Bagh metro station",
+   "lat": 28.545885,
+   "lng": 77.296644,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28169996",
+   "name": "Kalindi Kunj metro station",
+   "lat": 28.542813,
+   "lng": 77.310174,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172566",
+   "name": "Sadar Bazaar Cantonment metro station",
+   "lat": 28.577125,
+   "lng": 77.11119,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172567",
+   "name": "Terminal 1-IGI Airport metro station",
+   "lat": 28.5653,
+   "lng": 77.122381,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172569",
+   "name": "Shankar Vihar metro station",
+   "lat": 28.560775,
+   "lng": 77.140488,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172570",
+   "name": "Vasant Vihar metro station",
+   "lat": 28.557829,
+   "lng": 77.16099,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172590",
+   "name": "Munirka metro station",
+   "lat": 28.557898,
+   "lng": 77.173985,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172592",
+   "name": "R. K. Puram metro station",
+   "lat": 28.550491,
+   "lng": 77.184942,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172601",
+   "name": "Panchsheel Park metro station",
+   "lat": 28.542338,
+   "lng": 77.220507,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172603",
+   "name": "Chirag Delhi metro station",
+   "lat": 28.541183,
+   "lng": 77.231221,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172606",
+   "name": "Nehru Enclave metro station",
+   "lat": 28.545849,
+   "lng": 77.251171,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172607",
+   "name": "Okhla NSIC metro station",
+   "lat": 28.55456,
+   "lng": 77.26473,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172610",
+   "name": "Sukhdev Vihar metro station",
+   "lat": 28.55977,
+   "lng": 77.275133,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172613",
+   "name": "Okhla Vihar metro station",
+   "lat": 28.561285,
+   "lng": 77.291912,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172616",
+   "name": "Okhla Bird Sanctuary metro station",
+   "lat": 28.552864,
+   "lng": 77.321649,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172619",
+   "name": "Majlis Park metro station",
+   "lat": 28.724167,
+   "lng": 77.182,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172632",
+   "name": "Nangli metro station",
+   "lat": 28.617239,
+   "lng": 77.0104,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172634",
+   "name": "Najafgarh metro station",
+   "lat": 28.61255,
+   "lng": 76.986508,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172657",
+   "name": "Shalimar Bagh metro station",
+   "lat": 28.701819,
+   "lng": 77.165191,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172658",
+   "name": "Shakurpur metro station",
+   "lat": 28.685779,
+   "lng": 77.149626,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172660",
+   "name": "South Extension metro station",
+   "lat": 28.568611,
+   "lng": 77.220265,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172662",
+   "name": "Sarojini Nagar metro station",
+   "lat": 28.575807,
+   "lng": 77.198571,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172665",
+   "name": "Sarai Kale Khan - Nizamuddin",
+   "lat": 28.589356,
+   "lng": 77.257128,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172666",
+   "name": "Bhikaji Cama Place metro station",
+   "lat": 28.570211,
+   "lng": 77.187888,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172727",
+   "name": "Shiv Vihar metro station",
+   "lat": 28.721612,
+   "lng": 77.289494,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172729",
+   "name": "Johri Enclave metro station",
+   "lat": 28.713167,
+   "lng": 77.290107,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172730",
+   "name": "Gokulpuri metro station",
+   "lat": 28.7025,
+   "lng": 77.286111,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172732",
+   "name": "Jaffrabad metro station",
+   "lat": 28.682759,
+   "lng": 77.274748,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172733",
+   "name": "East Azad Nagar metro station",
+   "lat": 28.664722,
+   "lng": 77.285,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172734",
+   "name": "Ashram metro station",
+   "lat": 28.572208,
+   "lng": 77.258475,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172735",
+   "name": "ESI - Basaidarapur metro station",
+   "lat": 28.658271,
+   "lng": 77.127391,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172737",
+   "name": "Delhi Cantonment metro station",
+   "lat": 28.60871,
+   "lng": 77.140423,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172738",
+   "name": "Vinobapuri metro station",
+   "lat": 28.565944,
+   "lng": 77.250502,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172740",
+   "name": "Trilokpuri - Sanjay Lake metro station",
+   "lat": 28.613678,
+   "lng": 77.308849,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172745",
+   "name": "Mayapuri metro station",
+   "lat": 28.637099,
+   "lng": 77.129741,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172747",
+   "name": "Naraina Vihar metro station",
+   "lat": 28.624125,
+   "lng": 77.136488,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172749",
+   "name": "Maujpur - Babarpur metro station",
+   "lat": 28.692073,
+   "lng": 77.279585,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28172856",
+   "name": "Karkarduma Court metro station",
+   "lat": 28.653685,
+   "lng": 77.295787,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28178866",
+   "name": "Punjabi Bagh West metro station",
+   "lat": 28.672826,
+   "lng": 77.139256,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28178869",
+   "name": "Krishna Nagar metro station (Delhi)",
+   "lat": 28.657855,
+   "lng": 77.290276,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180399",
+   "name": "Mansarovar metro station",
+   "lat": 26.879444,
+   "lng": 75.75,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180408",
+   "name": "New Aatish Market metro station",
+   "lat": 26.880278,
+   "lng": 75.764722,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180413",
+   "name": "Vivek Vihar metro station",
+   "lat": 26.888889,
+   "lng": 75.768611,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180421",
+   "name": "Shyam Nagar metro station",
+   "lat": 26.896667,
+   "lng": 75.770556,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180425",
+   "name": "Ram Nagar metro station",
+   "lat": 26.901944,
+   "lng": 75.774722,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180430",
+   "name": "Civil Lines metro station",
+   "lat": 26.909722,
+   "lng": 75.781389,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180437",
+   "name": "Railway Station metro station",
+   "lat": 26.918611,
+   "lng": 75.79,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180440",
+   "name": "Sindhi Camp metro station",
+   "lat": 26.9225,
+   "lng": 75.799722,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q28180449",
+   "name": "Chandpole metro station",
+   "lat": 26.926389,
+   "lng": 75.8075,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29025628",
+   "name": "Pandit Shree Ram Sharma metro station",
+   "lat": 28.689242,
+   "lng": 76.951458,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29025630",
+   "name": "Bahadurgarh City metro station",
+   "lat": 28.690724,
+   "lng": 76.935098,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29025631",
+   "name": "Brigadier Hoshiyar Singh metro station",
+   "lat": 28.697339,
+   "lng": 76.919244,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29025782",
+   "name": "Shaheed Nagar metro station",
+   "lat": 28.676632,
+   "lng": 77.333759,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29025799",
+   "name": "Raj Bagh metro station",
+   "lat": 28.677031,
+   "lng": 77.346578,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29025802",
+   "name": "Major Mohit Sharma Rajendra Nagar metro station",
+   "lat": 28.677631,
+   "lng": 77.358265,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29025803",
+   "name": "Shyam Park metro station",
+   "lat": 28.678231,
+   "lng": 77.370902,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29025805",
+   "name": "Mohan Nagar metro station",
+   "lat": 28.67848,
+   "lng": 77.383933,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29467143",
+   "name": "Arthala metro station",
+   "lat": 28.676927,
+   "lng": 77.391773,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29467145",
+   "name": "Hindon River metro station",
+   "lat": 28.673415,
+   "lng": 77.40637,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q29467146",
+   "name": "Shaheed Sthal metro station",
+   "lat": 28.670621,
+   "lng": 77.415453,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30278708",
+   "name": "Sealdah metro station",
+   "lat": 22.566178,
+   "lng": 88.371163,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30591459",
+   "name": "Mundka Industrial Area metro station",
+   "lat": 28.68341,
+   "lng": 77.017363,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30591460",
+   "name": "Ghevra metro station",
+   "lat": 28.685289,
+   "lng": 76.995773,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30591461",
+   "name": "Tikri Kalan metro station",
+   "lat": 28.686854,
+   "lng": 76.977336,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30591462",
+   "name": "Tikri Border metro station",
+   "lat": 28.688033,
+   "lng": 76.964051,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30591952",
+   "name": "Sir M. Vishweshwaraiah Moti Bagh metro station",
+   "lat": 28.578504,
+   "lng": 77.175726,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30623617",
+   "name": "Shenoy Nagar metro station",
+   "lat": 13.07881,
+   "lng": 80.22517,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632539",
+   "name": "Central Park metro station",
+   "lat": 22.59041,
+   "lng": 88.41573,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632540",
+   "name": "Satyajit Ray metro station",
+   "lat": 22.484556,
+   "lng": 88.392694,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632544",
+   "name": "Howrah Maidan metro station",
+   "lat": 22.583378,
+   "lng": 88.333797,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632550",
+   "name": "Mahakaran metro station",
+   "lat": 22.570922,
+   "lng": 88.349936,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632551",
+   "name": "Phoolbagan metro station",
+   "lat": 22.572176,
+   "lng": 88.389278,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632554",
+   "name": "Howrah metro station",
+   "lat": 22.583705,
+   "lng": 88.339697,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632588",
+   "name": "Hemanta Mukhopadhyay metro station",
+   "lat": 22.51486,
+   "lng": 88.40143,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632589",
+   "name": "VIP Bazaar metro station",
+   "lat": 22.525323,
+   "lng": 88.396219,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632590",
+   "name": "Kavi Sukanta metro station",
+   "lat": 22.505732,
+   "lng": 88.40102,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632591",
+   "name": "Barun Sengupta metro station",
+   "lat": 22.550131,
+   "lng": 88.400958,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30632592",
+   "name": "Gour Kishore Ghosh metro station",
+   "lat": 22.56361,
+   "lng": 88.415989,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q30634510",
+   "name": "Joka metro station",
+   "lat": 22.452244,
+   "lng": 88.301751,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30634511",
+   "name": "Thakurpukur metro station",
+   "lat": 22.46436,
+   "lng": 88.30755,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30634513",
+   "name": "Mominpur metro station",
+   "lat": 22.526763,
+   "lng": 88.3239,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q30638909",
+   "name": "Anna Nagar Tower metro station",
+   "lat": 13.084975,
+   "lng": 80.208725,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30638918",
+   "name": "Pachaiyappa's College metro station",
+   "lat": 13.075574,
+   "lng": 80.232315,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30638919",
+   "name": "Anna Nagar East metro station",
+   "lat": 13.084654,
+   "lng": 80.219518,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30638924",
+   "name": "Nehru Park metro station",
+   "lat": 13.078627,
+   "lng": 80.250854,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30638925",
+   "name": "Kilpauk Medical College metro station",
+   "lat": 13.0775,
+   "lng": 80.242778,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30638926",
+   "name": "Egmore metro station",
+   "lat": 13.079059,
+   "lng": 80.261106,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30639073",
+   "name": "Little Mount metro station",
+   "lat": 13.014554,
+   "lng": 80.224019,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30639601",
+   "name": "Victoria metro station",
+   "lat": 22.551344,
+   "lng": 88.341615,
+   "open": null,
+   "state": "proposed"
+  },
+  {
+   "id": "Q30645973",
+   "name": "Kidderpore metro station",
+   "lat": 22.538083,
+   "lng": 88.327533,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q30646922",
+   "name": "Vinod Nagar East metro station",
+   "lat": 28.620039,
+   "lng": 77.305266,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30647029",
+   "name": "Dasarahalli metro station",
+   "lat": 13.043542,
+   "lng": 77.512379,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q30647031",
+   "name": "Jalahalli metro station",
+   "lat": 13.039584,
+   "lng": 77.519838,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q31725714",
+   "name": "Dum Dum Cantonment metro station",
+   "lat": 22.638056,
+   "lng": 88.412333,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q33101535",
+   "name": "Jayanagar metro station",
+   "lat": 12.929456,
+   "lng": 77.580287,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q33101537",
+   "name": "Rashtreeya Vidyalaya Road metro station",
+   "lat": 12.921587,
+   "lng": 77.580261,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q33101538",
+   "name": "Banashankari metro station",
+   "lat": 12.915539,
+   "lng": 77.573629,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q33101539",
+   "name": "Jayaprakash Nagar metro station",
+   "lat": 12.907423,
+   "lng": 77.573179,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q3632416",
+   "name": "Tis Hazari metro station",
+   "lat": 28.667216,
+   "lng": 77.216517,
+   "open": 2002,
+   "state": "in_use"
+  },
+  {
+   "id": "Q3634456",
+   "name": "New Delhi metro station",
+   "lat": 28.642229,
+   "lng": 77.221538,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38379892",
+   "name": "Ambattukavu metro station",
+   "lat": 10.079372,
+   "lng": 76.339004,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38389562",
+   "name": "Companypady metro station",
+   "lat": 10.087293,
+   "lng": 76.34284,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38476609",
+   "name": "Aluva metro station",
+   "lat": 10.109675,
+   "lng": 76.349638,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38476797",
+   "name": "Pulinchodu metro station",
+   "lat": 10.09512,
+   "lng": 76.346661,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38477696",
+   "name": "Muttom metro station",
+   "lat": 10.072575,
+   "lng": 76.333727,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38478898",
+   "name": "Kalamassery metro station",
+   "lat": 10.0584,
+   "lng": 76.321926,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38499541",
+   "name": "Cochin University metro station",
+   "lat": 10.046879,
+   "lng": 76.318377,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38566574",
+   "name": "Pathadipalam metro station",
+   "lat": 10.035948,
+   "lng": 76.314371,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38582577",
+   "name": "Edapally metro station",
+   "lat": 10.025106,
+   "lng": 76.308456,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38584315",
+   "name": "Changampuzha Park metro station",
+   "lat": 10.01488,
+   "lng": 76.302319,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38697682",
+   "name": "Palarivattom metro station",
+   "lat": 10.006432,
+   "lng": 76.304769,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q38739199",
+   "name": "Durgabai Deshmukh South Campus metro station",
+   "lat": 28.589441,
+   "lng": 77.169475,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39045921",
+   "name": "Lalbagh metro station",
+   "lat": 12.946287,
+   "lng": 77.580061,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39045926",
+   "name": "Southend Circle metro station",
+   "lat": 12.938321,
+   "lng": 77.580075,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39046388",
+   "name": "Deepanjali Nagar metro station",
+   "lat": 12.952215,
+   "lng": 77.537101,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39046425",
+   "name": "Attiguppe metro station",
+   "lat": 12.961957,
+   "lng": 77.533582,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39046429",
+   "name": "Vijayanagar metro station",
+   "lat": 12.970916,
+   "lng": 77.537402,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049185",
+   "name": "Noida Electronic City metro station",
+   "lat": 28.627941,
+   "lng": 77.37493,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049201",
+   "name": "Noida Sector 76 metro station",
+   "lat": 28.565329,
+   "lng": 77.379657,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049205",
+   "name": "Noida Sector 81 metro station",
+   "lat": 28.549344,
+   "lng": 77.389997,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049206",
+   "name": "Noida Sector 101 metro station",
+   "lat": 28.556125,
+   "lng": 77.384938,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049211",
+   "name": "Noida Sector 83 metro station",
+   "lat": 28.522267,
+   "lng": 77.396434,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049212",
+   "name": "Noida Sector 137 metro station",
+   "lat": 28.510757,
+   "lng": 77.403665,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049215",
+   "name": "Noida Sector 142 metro station",
+   "lat": 28.498953,
+   "lng": 77.412863,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049217",
+   "name": "Noida Sector 143 metro station",
+   "lat": 28.494262,
+   "lng": 77.422425,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049218",
+   "name": "Noida Sector 147 metro station",
+   "lat": 28.459335,
+   "lng": 77.466091,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049222",
+   "name": "Noida Sector 144 metro station",
+   "lat": 28.486334,
+   "lng": 77.433022,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049224",
+   "name": "Noida Sector 146 metro station",
+   "lat": 28.468764,
+   "lng": 77.455185,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049227",
+   "name": "Knowledge Park II metro station",
+   "lat": 28.457,
+   "lng": 77.500284,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049230",
+   "name": "Pari Chowk metro station",
+   "lat": 28.463327,
+   "lng": 77.508312,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049232",
+   "name": "DELTA 1 metro station",
+   "lat": 28.478334,
+   "lng": 77.525682,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39049233",
+   "name": "Depot metro station",
+   "lat": 28.488802,
+   "lng": 77.543937,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q39070950",
+   "name": "City Railway Station metro station",
+   "lat": 12.975841,
+   "lng": 77.565756,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4207094",
+   "name": "Noida City Centre metro station",
+   "lat": 28.5747,
+   "lng": 77.3561,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4207341",
+   "name": "Dilshad Garden metro station",
+   "lat": 28.675892,
+   "lng": 77.321486,
+   "open": 2008,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4207344",
+   "name": "Kashmere Gate metro station",
+   "lat": 28.667489,
+   "lng": 77.228045,
+   "open": 2002,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4207354",
+   "name": "Ashok Park Main metro station",
+   "lat": 28.671603,
+   "lng": 77.155011,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4207358",
+   "name": "Rithala metro station",
+   "lat": 28.720879,
+   "lng": 77.107029,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4207366",
+   "name": "Inderlok metro station",
+   "lat": 28.673445,
+   "lng": 77.170337,
+   "open": 2003,
+   "state": "in_use"
+  },
+  {
+   "id": "Q42306467",
+   "name": "J. L. N. Stadium metro station",
+   "lat": 10.000554,
+   "lng": 76.299535,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q42308815",
+   "name": "Kaloor metro station",
+   "lat": 9.994484,
+   "lng": 76.291669,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q42308850",
+   "name": "Town Hall metro station",
+   "lat": 9.991247,
+   "lng": 76.288035,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q42328335",
+   "name": "M. G. Road metro station",
+   "lat": 9.983395,
+   "lng": 76.282351,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q42343250",
+   "name": "Maharaja's College metro station",
+   "lat": 9.973487,
+   "lng": 76.285015,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4651928",
+   "name": "AIIMS metro station",
+   "lat": 28.566896,
+   "lng": 77.208043,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4680843",
+   "name": "Adarsh Nagar metro station",
+   "lat": 28.716535,
+   "lng": 77.170452,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4698881",
+   "name": "IGI Airport metro station",
+   "lat": 28.557096,
+   "lng": 77.086738,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4701799",
+   "name": "Akshardham metro station",
+   "lat": 28.617911,
+   "lng": 77.279415,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4708199",
+   "name": "Alandur",
+   "lat": 13.004215,
+   "lng": 80.201549,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4751288",
+   "name": "Anand Vihar metro station",
+   "lat": 28.646886,
+   "lng": 77.315878,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4791528",
+   "name": "Arjan Garh metro station",
+   "lat": 28.480833,
+   "lng": 77.125833,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4832101",
+   "name": "Azadpur metro station",
+   "lat": 28.707273,
+   "lng": 77.179974,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4840629",
+   "name": "Badarpur Border metro station",
+   "lat": 28.49358,
+   "lng": 77.30306,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4848761",
+   "name": "Baiyappanahalli Metro Station",
+   "lat": 12.990665,
+   "lng": 77.65259,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4858265",
+   "name": "Barakhamba Road metro station",
+   "lat": 28.62998,
+   "lng": 77.224526,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q48732079",
+   "name": "Washermanpet metro station",
+   "lat": 13.107067,
+   "lng": 80.280527,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4882396",
+   "name": "Belgachia Metro Station",
+   "lat": 22.605833,
+   "lng": 88.386389,
+   "open": 1984,
+   "state": "in_use"
+  },
+  {
+   "id": "Q4948436",
+   "name": "Botanical Garden metro station",
+   "lat": 28.564208,
+   "lng": 77.334781,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5012859",
+   "name": "CMBT",
+   "lat": 13.06853,
+   "lng": 80.20396,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5061425",
+   "name": "Central metro station",
+   "lat": 22.572469,
+   "lng": 88.358789,
+   "open": 1995,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5061812",
+   "name": "Central Secretariat metro station",
+   "lat": 28.615042,
+   "lng": 77.211785,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5071227",
+   "name": "Chandni Chowk metro station",
+   "lat": 28.657838,
+   "lng": 77.230169,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5071229",
+   "name": "Chandni Chowk metro station",
+   "lat": 22.566796,
+   "lng": 88.354137,
+   "open": 1995,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5088577",
+   "name": "Chawri Bazar metro station",
+   "lat": 28.649564,
+   "lng": 77.226226,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5091428",
+   "name": "Chennai Central",
+   "lat": 13.081428,
+   "lng": 80.272907,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5091440",
+   "name": "Chennai International Airport metro station",
+   "lat": 12.980825,
+   "lng": 80.164209,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5094801",
+   "name": "Chhatarpur metro station",
+   "lat": 28.506552,
+   "lng": 77.174926,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5124512",
+   "name": "Civil Lines metro station (Delhi)",
+   "lat": 28.676921,
+   "lng": 77.224998,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5192189",
+   "name": "Cubbon Park metro station",
+   "lat": 12.980901,
+   "lng": 77.597465,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5253729",
+   "name": "Delhi Aerocity metro station",
+   "lat": 28.54905,
+   "lng": 77.12079,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5269438",
+   "name": "Dhaula Kuan metro station",
+   "lat": 28.591853,
+   "lng": 77.16169,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5313576",
+   "name": "Dum Dum metro station",
+   "lat": 22.621111,
+   "lng": 88.392778,
+   "open": 1984,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317936",
+   "name": "Dwarka-Kakrola metro station",
+   "lat": 28.614966,
+   "lng": 77.022808,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317939",
+   "name": "Dwarka Mor metro station",
+   "lat": 28.619299,
+   "lng": 77.03344,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317944",
+   "name": "Dwarka Sector 10 metro station",
+   "lat": 28.581099,
+   "lng": 77.057422,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317945",
+   "name": "Dwarka Sector 11 metro station",
+   "lat": 28.5865,
+   "lng": 77.049426,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317946",
+   "name": "Dwarka Sector 12 metro station",
+   "lat": 28.592303,
+   "lng": 77.040682,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317947",
+   "name": "Dwarka Sector 13 metro station",
+   "lat": 28.597124,
+   "lng": 77.033374,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317948",
+   "name": "Dwarka Sector 14 metro station",
+   "lat": 28.60226,
+   "lng": 77.025951,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317949",
+   "name": "Dwarka Sector 8 metro station",
+   "lat": 28.56562,
+   "lng": 77.06703,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317950",
+   "name": "Dwarka Sector 21 metro station",
+   "lat": 28.552349,
+   "lng": 77.058065,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5317951",
+   "name": "Dwarka Sector 9 metro station",
+   "lat": 28.574311,
+   "lng": 77.065245,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5399030",
+   "name": "Esplanade metro station",
+   "lat": 22.564444,
+   "lng": 88.351667,
+   "open": 1984,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55074904",
+   "name": "New Airport metro station",
+   "lat": 21.066235,
+   "lng": 79.055869,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55074918",
+   "name": "Khapri metro station",
+   "lat": 21.049335,
+   "lng": 79.048068,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5539214",
+   "name": "Trinity Metro Station",
+   "lat": 12.973,
+   "lng": 77.617,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5539295",
+   "name": "Dr. B. R. Ambedkar metro station, Vidhana Soudha",
+   "lat": 12.97874,
+   "lng": 77.59164,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5539354",
+   "name": "MG Road metro station",
+   "lat": 12.9755,
+   "lng": 77.6068,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5539450",
+   "name": "Swami Vivekananda Road Metro Station",
+   "lat": 12.98591,
+   "lng": 77.645004,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55421833",
+   "name": "IP Extension metro station",
+   "lat": 28.631898,
+   "lng": 77.3109,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55421849",
+   "name": "Vinod Nagar metro station",
+   "lat": 28.624976,
+   "lng": 77.304583,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55421995",
+   "name": "Shree Ram Mandir Mayur Vihar metro station",
+   "lat": 28.605794,
+   "lng": 77.298704,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5556767",
+   "name": "Ghitorni metro station",
+   "lat": 28.493785,
+   "lng": 77.14915,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55602937",
+   "name": "AG-DMS metro station",
+   "lat": 13.044683,
+   "lng": 80.248033,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55624607",
+   "name": "Nandanam metro station",
+   "lat": 13.031651,
+   "lng": 80.241043,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55625348",
+   "name": "Noida Sector 59 metro station",
+   "lat": 28.606493,
+   "lng": 77.372726,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55625349",
+   "name": "Noida Sector 62 metro station",
+   "lat": 28.616995,
+   "lng": 77.37361,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55632346",
+   "name": "Saidapet metro station",
+   "lat": 13.02372,
+   "lng": 80.228209,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55632405",
+   "name": "Salt Lake Sector-V metro station",
+   "lat": 22.581318,
+   "lng": 88.429822,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q55634996",
+   "name": "Teynampet metro station",
+   "lat": 13.037118,
+   "lng": 80.246461,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5564298",
+   "name": "Girish Park Metro Station",
+   "lat": 22.587143,
+   "lng": 88.363083,
+   "open": 1995,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5565052",
+   "name": "Gitanjali Metro Station",
+   "lat": 22.469425,
+   "lng": 88.369922,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5589852",
+   "name": "Govind Puri metro station",
+   "lat": 28.544606,
+   "lng": 77.264286,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5602948",
+   "name": "Green Park metro station",
+   "lat": 28.558038,
+   "lng": 77.207026,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5620352",
+   "name": "Guru Dronacharya metro station",
+   "lat": 28.481944,
+   "lng": 77.1025,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5641098",
+   "name": "Halasuru metro station",
+   "lat": 12.97566,
+   "lng": 77.62628,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q56701857",
+   "name": "Tarnaka metro station",
+   "lat": 17.428293,
+   "lng": 78.528558,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q56701859",
+   "name": "Hitec City metro station",
+   "lat": 17.44901,
+   "lng": 78.38314,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q56701860",
+   "name": "MG Bus Station metro station",
+   "lat": 17.379993,
+   "lng": 78.486129,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q56701862",
+   "name": "Ameerpet metro station",
+   "lat": 17.435688,
+   "lng": 78.444594,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5683002",
+   "name": "Hauz Khas metro station",
+   "lat": 28.543444,
+   "lng": 77.206344,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q58814837",
+   "name": "Synchrony Raidurg metro station",
+   "lat": 17.44219,
+   "lng": 78.3772,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q58814838",
+   "name": "Vasavi LB Nagar metro station",
+   "lat": 17.349699,
+   "lng": 78.547969,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q58814840",
+   "name": "Miyapur metro station",
+   "lat": 17.496526,
+   "lng": 78.373006,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q58814848",
+   "name": "Punjagutta Metro Station",
+   "lat": 17.428522,
+   "lng": 78.451219,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q58814859",
+   "name": "Parade Ground Metro Station",
+   "lat": 17.443237,
+   "lng": 78.497493,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q58814860",
+   "name": "Secunderabad East Metro Station",
+   "lat": 17.435961,
+   "lng": 78.505382,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q58814861",
+   "name": "Habsiguda Metro Station",
+   "lat": 17.420196,
+   "lng": 78.540536,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q58814872",
+   "name": "Victoria Memorial Metro Station",
+   "lat": 17.362103,
+   "lng": 78.543861,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q59155303",
+   "name": "Sitabuldi metro station",
+   "lat": 21.141725,
+   "lng": 79.083708,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q59155432",
+   "name": "Rainbow metro station",
+   "lat": 28.574474,
+   "lng": 77.37827,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q5970668",
+   "name": "IFFCO Chowk metro station Gurugram",
+   "lat": 28.472089,
+   "lng": 77.072554,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6025080",
+   "name": "Indiranagar metro station",
+   "lat": 12.97833,
+   "lng": 77.63865,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6026956",
+   "name": "Indraprastha metro station",
+   "lat": 28.620504,
+   "lng": 77.249991,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q60685637",
+   "name": "NSEZ metro station",
+   "lat": 28.532266,
+   "lng": 77.394806,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q60685643",
+   "name": "Noida Sector 145 metro station",
+   "lat": 28.479014,
+   "lng": 77.442445,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q60685649",
+   "name": "Noida Sector 148 metro station",
+   "lat": 28.448011,
+   "lng": 77.476659,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q60685657",
+   "name": "ALPHA 1 metro station",
+   "lat": 28.470936,
+   "lng": 77.512678,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q60685663",
+   "name": "GNIDA Office metro station",
+   "lat": 28.484658,
+   "lng": 77.536483,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61070914",
+   "name": "Ambedkar Square",
+   "lat": 21.148287,
+   "lng": 79.129422,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367677",
+   "name": "Automative Square",
+   "lat": 21.185793,
+   "lng": 79.11967,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367688",
+   "name": "Nari Road",
+   "lat": 21.179524,
+   "lng": 79.10995,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367714",
+   "name": "Indora Square",
+   "lat": 21.17359,
+   "lng": 79.100589,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367720",
+   "name": "Kadvi Square",
+   "lat": 21.168665,
+   "lng": 79.092368,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367753",
+   "name": "Gaddi Godam Square",
+   "lat": 21.161646,
+   "lng": 79.083698,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367761",
+   "name": "Kasturchand Park",
+   "lat": 21.154239,
+   "lng": 79.081405,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367770",
+   "name": "Zero Mile metro station",
+   "lat": 21.146703,
+   "lng": 79.080916,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367784",
+   "name": "Congress Nagar",
+   "lat": 21.127882,
+   "lng": 79.082513,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367795",
+   "name": "Rahate Colony",
+   "lat": 21.127589,
+   "lng": 79.075698,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367800",
+   "name": "Ajni Square metro station",
+   "lat": 21.118353,
+   "lng": 79.072109,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367810",
+   "name": "Chhatrapati Square metro station",
+   "lat": 21.109281,
+   "lng": 79.069636,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367813",
+   "name": "Jaiprakash Nagar metro station",
+   "lat": 21.103611,
+   "lng": 79.068096,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367824",
+   "name": "Ujjwal Nagar metro station",
+   "lat": 21.096541,
+   "lng": 79.066319,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367834",
+   "name": "Airport metro station",
+   "lat": 21.086253,
+   "lng": 79.063761,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367840",
+   "name": "Airport South metro station",
+   "lat": 21.079023,
+   "lng": 79.060487,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367849",
+   "name": "Eco Park",
+   "lat": 21.030622,
+   "lng": 79.040875,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q61367854",
+   "name": "Metro City",
+   "lat": 21.025015,
+   "lng": 79.039014,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q61367864",
+   "name": "Prajapati Nagar",
+   "lat": 21.150243,
+   "lng": 79.148862,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367872",
+   "name": "Vaishnodevi Square",
+   "lat": 21.14797,
+   "lng": 79.13627,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367880",
+   "name": "Telephone Exchange",
+   "lat": 21.148785,
+   "lng": 79.118138,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367888",
+   "name": "Chitar Oli Square",
+   "lat": 21.149583,
+   "lng": 79.110319,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367893",
+   "name": "Agrasen Square",
+   "lat": 21.151011,
+   "lng": 79.102837,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367905",
+   "name": "Dosar Vaishya Square",
+   "lat": 21.15295,
+   "lng": 79.094864,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367911",
+   "name": "Cotton Market",
+   "lat": 21.14593,
+   "lng": 79.089792,
+   "open": 2023,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367918",
+   "name": "Nagpur Railway Station",
+   "lat": 21.151261,
+   "lng": 79.09037,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367928",
+   "name": "Jhansi Rani Square",
+   "lat": 21.140607,
+   "lng": 79.077605,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367931",
+   "name": "Institute of Engineers",
+   "lat": 21.138205,
+   "lng": 79.069968,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367945",
+   "name": "Shankar Nagar Square",
+   "lat": 21.136124,
+   "lng": 79.061534,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367950",
+   "name": "LAD College Square",
+   "lat": 21.13288,
+   "lng": 79.054796,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367956",
+   "name": "Dharampeth College metro station",
+   "lat": 21.128664,
+   "lng": 79.045867,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367967",
+   "name": "Subhash Nagar",
+   "lat": 21.123259,
+   "lng": 79.041995,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367971",
+   "name": "Rachana Ring Road Junction",
+   "lat": 21.121443,
+   "lng": 79.02919,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367984",
+   "name": "Vasudev Nagar",
+   "lat": 21.118758,
+   "lng": 79.019454,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367989",
+   "name": "Bansi Nagar",
+   "lat": 21.116364,
+   "lng": 79.012917,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61367994",
+   "name": "Lokmanya Nagar metro station",
+   "lat": 21.110727,
+   "lng": 79.001649,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q61445024",
+   "name": "Noida Sector 51 metro station",
+   "lat": 28.585699,
+   "lng": 77.375325,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6150737",
+   "name": "Janakpuri West metro station",
+   "lat": 28.62954,
+   "lng": 77.078243,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6154100",
+   "name": "Jangpura metro station",
+   "lat": 28.58331,
+   "lng": 77.239659,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6164578",
+   "name": "Jatin Das Park metro station",
+   "lat": 22.524262,
+   "lng": 88.346489,
+   "open": 1986,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6165993",
+   "name": "Jawaharlal Nehru Stadium metro station",
+   "lat": 28.590381,
+   "lng": 77.233049,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6190836",
+   "name": "Jhandewalan metro station",
+   "lat": 28.644399,
+   "lng": 77.199812,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6191072",
+   "name": "Jhilmil metro station",
+   "lat": 28.675663,
+   "lng": 77.312488,
+   "open": 2008,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62004719",
+   "name": "Sector 53-54 metro station",
+   "lat": 28.446382,
+   "lng": 77.100431,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62004770",
+   "name": "Sector 42-43 metro station",
+   "lat": 28.457513,
+   "lng": 77.096993,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62005403",
+   "name": "High Court metro station",
+   "lat": 13.087069,
+   "lng": 80.285025,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62005418",
+   "name": "LIC metro station",
+   "lat": 13.064523,
+   "lng": 80.266049,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62005430",
+   "name": "Mannadi metro station",
+   "lat": 13.095166,
+   "lng": 80.28616,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62005539",
+   "name": "Government Estate metro station",
+   "lat": 13.069571,
+   "lng": 80.272851,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62005544",
+   "name": "Thousand Lights metro station",
+   "lat": 13.058356,
+   "lng": 80.258517,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62019524",
+   "name": "Karunamoyee metro station",
+   "lat": 22.586389,
+   "lng": 88.421389,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62024529",
+   "name": "Sector 55-56 metro station",
+   "lat": 28.42338,
+   "lng": 77.105249,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62024530",
+   "name": "Sector 54 Chowk metro station",
+   "lat": 28.432883,
+   "lng": 77.10498,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62024534",
+   "name": "Phase 1 metro station",
+   "lat": 28.471491,
+   "lng": 77.093995,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6276226",
+   "name": "Jor Bagh metro station",
+   "lat": 28.58608,
+   "lng": 77.212037,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q62860405",
+   "name": "Gandhi Bhavan Metro Station",
+   "lat": 17.386079,
+   "lng": 78.473102,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q63092244",
+   "name": "Baranagar metro station",
+   "lat": 22.653089,
+   "lng": 88.380603,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q63092256",
+   "name": "Dakshineswar metro station",
+   "lat": 22.65411,
+   "lng": 88.363794,
+   "open": 2021,
+   "state": "in_use"
+  },
+  {
+   "id": "Q63250572",
+   "name": "Taruni Madhura Nagar Metro Station",
+   "lat": 17.436937,
+   "lng": 78.43914,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q63250628",
+   "name": "Stadium Metro Station",
+   "lat": 17.407433,
+   "lng": 78.554193,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q63256235",
+   "name": "City Center metro station",
+   "lat": 22.587194,
+   "lng": 88.408,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q63256245",
+   "name": "Bengal Chemical metro station",
+   "lat": 22.580055,
+   "lng": 88.401324,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q63346685",
+   "name": "Nampally metro station",
+   "lat": 17.39222,
+   "lng": 78.47016,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q63442600",
+   "name": "Lighthouse metro station",
+   "lat": 13.04187,
+   "lng": 80.27972,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q6353342",
+   "name": "Kalkaji Mandir metro station",
+   "lat": 28.54921,
+   "lng": 77.25904,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6371278",
+   "name": "Karkarduma metro station",
+   "lat": 28.648539,
+   "lng": 77.30556,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6373014",
+   "name": "Karol Bagh metro station",
+   "lat": 28.643877,
+   "lng": 77.188541,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6378945",
+   "name": "Kaushambi metro station",
+   "lat": 28.645523,
+   "lng": 77.324297,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6379214",
+   "name": "Kavi Nazrul metro station",
+   "lat": 22.464244,
+   "lng": 88.380658,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6379216",
+   "name": "Kavi Subhash metro station",
+   "lat": 22.471944,
+   "lng": 88.398056,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6394986",
+   "name": "Keshav Puram metro station",
+   "lat": 28.688903,
+   "lng": 77.161784,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6400082",
+   "name": "Khan Market metro station",
+   "lat": 28.60246,
+   "lng": 77.227883,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q64038090",
+   "name": "Apollo Hospitals Jubilee Hills Check Post metro station",
+   "lat": 17.42819,
+   "lng": 78.41371,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6425927",
+   "name": "Kohat Enclave metro station",
+   "lat": 28.698004,
+   "lng": 77.140835,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6435138",
+   "name": "Koyambedu metro station",
+   "lat": 13.073496,
+   "lng": 80.194867,
+   "open": 2015,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6474492",
+   "name": "Lajpat Nagar metro station",
+   "lat": 28.570566,
+   "lng": 77.23646,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6505213",
+   "name": "Laxmi Nagar metro station",
+   "lat": 28.630596,
+   "lng": 77.277603,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q65090385",
+   "name": "Jyotirindra Nandi metro station",
+   "lat": 22.496056,
+   "lng": 88.398611,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q65090392",
+   "name": "Salt Lake Stadium metro station",
+   "lat": 22.573167,
+   "lng": 88.403111,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q65090394",
+   "name": "Jai Hind metro station",
+   "lat": 22.648694,
+   "lng": 88.437472,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q67154725",
+   "name": "Kadavanthra metro station",
+   "lat": 9.966589,
+   "lng": 76.298258,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6715812",
+   "name": "MG Road metro station",
+   "lat": 28.479556,
+   "lng": 77.079952,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q67170983",
+   "name": "Elamkulam metro station",
+   "lat": 9.96709,
+   "lng": 76.30849,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q67171027",
+   "name": "Thaikoodam metro station",
+   "lat": 9.96,
+   "lng": 76.32368,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q67172500",
+   "name": "Petta Metro Station",
+   "lat": 9.951161,
+   "lng": 76.331004,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6727807",
+   "name": "Madipur metro station",
+   "lat": 28.676361,
+   "lng": 77.119561,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6733119",
+   "name": "Mahanayak Uttam Kumar metro station",
+   "lat": 22.494722,
+   "lng": 88.345,
+   "open": 1986,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6733523",
+   "name": "Mahatma Gandhi Road metro station",
+   "lat": 22.580858,
+   "lng": 88.361401,
+   "open": 1995,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6735340",
+   "name": "Maidan metro station",
+   "lat": 22.549444,
+   "lng": 88.348889,
+   "open": 1984,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6737727",
+   "name": "Majestic metro station",
+   "lat": 12.975689,
+   "lng": 77.57287,
+   "open": 2016,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6745134",
+   "name": "Malviya Nagar metro station",
+   "lat": 28.528686,
+   "lng": 77.203292,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6748047",
+   "name": "Mandi House metro station",
+   "lat": 28.625816,
+   "lng": 77.234724,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6751563",
+   "name": "Mansarovar Park metro station",
+   "lat": 28.675406,
+   "lng": 77.301554,
+   "open": 2008,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6785356",
+   "name": "Masterda Surya Sen metro station",
+   "lat": 22.473521,
+   "lng": 88.360871,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6798106",
+   "name": "Mayur Vihar-I metro station",
+   "lat": 28.604134,
+   "lng": 77.289526,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6798108",
+   "name": "Mayur Vihar Extension metro station",
+   "lat": 28.594211,
+   "lng": 77.294664,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6888294",
+   "name": "Model Town metro station",
+   "lat": 28.702822,
+   "lng": 77.193868,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6893528",
+   "name": "Mohan Estate metro station",
+   "lat": 28.519622,
+   "lng": 77.294627,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6907367",
+   "name": "Moolchand metro station",
+   "lat": 28.563985,
+   "lng": 77.234245,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6917665",
+   "name": "Moti Nagar metro station",
+   "lat": 28.658131,
+   "lng": 77.142563,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6935833",
+   "name": "Mundka metro station",
+   "lat": 28.682442,
+   "lng": 77.030219,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6963528",
+   "name": "Nangloi metro station",
+   "lat": 28.682356,
+   "lng": 77.064675,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6963529",
+   "name": "Nangloi Railway station",
+   "lat": 28.682106,
+   "lng": 77.056083,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6982809",
+   "name": "Nawada metro station",
+   "lat": 28.620222,
+   "lng": 77.045089,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6987901",
+   "name": "Nehru Place metro station",
+   "lat": 28.551403,
+   "lng": 77.251766,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6998599",
+   "name": "Netaji Bhavan metro station",
+   "lat": 22.533333,
+   "lng": 88.346111,
+   "open": 1984,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6998636",
+   "name": "Netaji metro station",
+   "lat": 22.480919,
+   "lng": 88.346067,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q6998648",
+   "name": "Netaji Subhash Place metro station",
+   "lat": 28.695886,
+   "lng": 77.15245,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7005382",
+   "name": "New Ashok Nagar metro station",
+   "lat": 28.58916,
+   "lng": 77.302067,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7040065",
+   "name": "Nirman Vihar metro station",
+   "lat": 28.636531,
+   "lng": 77.286804,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7047598",
+   "name": "Golf Course metro station",
+   "lat": 28.567181,
+   "lng": 77.346029,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7047602",
+   "name": "Noida Sector 16 metro station",
+   "lat": 28.578395,
+   "lng": 77.317635,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7047605",
+   "name": "Noida Sector 18 metro station",
+   "lat": 28.570813,
+   "lng": 77.326116,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7081967",
+   "name": "Harkesh Nagar Okhla metro station",
+   "lat": 28.54292,
+   "lng": 77.27514,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7138060",
+   "name": "Park Street metro station",
+   "lat": 22.555,
+   "lng": 88.350278,
+   "open": 1984,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7141807",
+   "name": "Punjabi Bagh",
+   "lat": 28.672929,
+   "lng": 77.146059,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7141809",
+   "name": "Paschim Vihar West metro station",
+   "lat": 28.678589,
+   "lng": 77.102106,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7144407",
+   "name": "Patel Chowk metro station",
+   "lat": 28.623235,
+   "lng": 77.211785,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7144412",
+   "name": "Patel Nagar metro station",
+   "lat": 28.645049,
+   "lng": 77.169251,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7160416",
+   "name": "Peeragarhi metro station",
+   "lat": 28.679703,
+   "lng": 77.09255,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7198601",
+   "name": "Madhuban Chowk metro station",
+   "lat": 28.703151,
+   "lng": 77.132397,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7237614",
+   "name": "Supreme Court",
+   "lat": 28.62349,
+   "lng": 77.242523,
+   "open": 2006,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7238590",
+   "name": "Pratap Nagar metro station",
+   "lat": 28.666698,
+   "lng": 77.198841,
+   "open": 2003,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7239761",
+   "name": "Preet Vihar metro station",
+   "lat": 28.641466,
+   "lng": 77.295143,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7259157",
+   "name": "Pulbangash metro station",
+   "lat": 28.666251,
+   "lng": 77.206984,
+   "open": 2003,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7273002",
+   "name": "Qutab Minar metro station",
+   "lat": 28.512951,
+   "lng": 77.186319,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7278756",
+   "name": "Rabindra Sadan metro station",
+   "lat": 22.541389,
+   "lng": 88.347222,
+   "open": 1984,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7278757",
+   "name": "Rabindra Sarobar metro station",
+   "lat": 22.507222,
+   "lng": 88.345556,
+   "open": 1986,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7278893",
+   "name": "Lok Kalyan Marg metro station",
+   "lat": 28.597658,
+   "lng": 77.211176,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7285915",
+   "name": "Rajdhani Park metro station",
+   "lat": 28.6822,
+   "lng": 77.043844,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7286033",
+   "name": "Rajendra Place metro station",
+   "lat": 28.642241,
+   "lng": 77.178263,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7286183",
+   "name": "Rajiv Chowk metro station",
+   "lat": 28.632846,
+   "lng": 77.219639,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7286379",
+   "name": "Rajouri Garden metro station",
+   "lat": 28.649004,
+   "lng": 77.122634,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7288800",
+   "name": "Ramakrishna Ashram Marg metro station",
+   "lat": 28.639268,
+   "lng": 77.208502,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7359754",
+   "name": "Dr. Baba Saheb Ambedkar Hospital metro station",
+   "lat": 28.71498,
+   "lng": 77.115387,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7402900",
+   "name": "Saket metro station",
+   "lat": 28.520492,
+   "lng": 77.201535,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7424130",
+   "name": "Sarita Vihar metro station",
+   "lat": 28.528588,
+   "lng": 77.288395,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7426116",
+   "name": "Satguru Ram Singh Marg metro station",
+   "lat": 28.662048,
+   "lng": 77.157644,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7445815",
+   "name": "Seelampur metro station",
+   "lat": 28.669824,
+   "lng": 77.266738,
+   "open": 2002,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7461685",
+   "name": "Shahid Khudiram metro station",
+   "lat": 22.465972,
+   "lng": 88.391667,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7499286",
+   "name": "Shivaji Park metro station",
+   "lat": 28.674944,
+   "lng": 77.130347,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7499796",
+   "name": "Shobhabazar Sutanuti metro station",
+   "lat": 22.596029,
+   "lng": 88.365285,
+   "open": 1995,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7505976",
+   "name": "Shyambazaar metro station",
+   "lat": 22.601313,
+   "lng": 88.372586,
+   "open": 1995,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7631236",
+   "name": "Subhash Nagar metro station",
+   "lat": 28.640431,
+   "lng": 77.104905,
+   "open": 2005,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7645348",
+   "name": "Maharaja Surajmal Stadium metro station",
+   "lat": 28.681792,
+   "lng": 77.073953,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q76741320",
+   "name": "Jessore Road metro station",
+   "lat": 22.639278,
+   "lng": 88.429667,
+   "open": 2025,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7851651",
+   "name": "Tughlakabad Station metro station",
+   "lat": 28.502566,
+   "lng": 77.299398,
+   "open": 2011,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7877392",
+   "name": "Seva Teerth metro station",
+   "lat": 28.61106,
+   "lng": 77.211964,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7877393",
+   "name": "Udyog Nagar metro station",
+   "lat": 28.680994,
+   "lng": 77.080775,
+   "open": 2010,
+   "state": "in_use"
+  },
+  {
+   "id": "Q7936037",
+   "name": "Vishwa Vidyalaya metro station",
+   "lat": 28.694813,
+   "lng": 77.214596,
+   "open": 2004,
+   "state": "in_use"
+  },
+  {
+   "id": "Q795125",
+   "name": "GTB Nagar metro station",
+   "lat": 28.698206,
+   "lng": 77.207011,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q81406369",
+   "name": "Malakpet metro station",
+   "lat": 17.37718,
+   "lng": 78.49393,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q81483949",
+   "name": "New Market metro station",
+   "lat": 17.373007,
+   "lng": 78.502131,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q81640785",
+   "name": "Musarambagh metro station",
+   "lat": 17.371255,
+   "lng": 78.511075,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q81724990",
+   "name": "Dilsukhnagar metro station",
+   "lat": 17.368539,
+   "lng": 78.52507,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q81820840",
+   "name": "Chaitanyapuri metro station",
+   "lat": 17.368288,
+   "lng": 78.535783,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q82064377",
+   "name": "Dr. B. R. Ambedkar Balanagar metro station",
+   "lat": 17.476939,
+   "lng": 78.417812,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q82256850",
+   "name": "Moosapet metro station",
+   "lat": 17.47188,
+   "lng": 78.42612,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q82532536",
+   "name": "Indian Oil Bharat Nagar metro station",
+   "lat": 17.463997,
+   "lng": 78.427869,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q82698806",
+   "name": "Erragadda metro station",
+   "lat": 17.456671,
+   "lng": 78.43292,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83008743",
+   "name": "ESI Hospital metro station (Hyderabad)",
+   "lat": 17.447467,
+   "lng": 78.437269,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83175963",
+   "name": "S.R. Nagar metro station",
+   "lat": 17.44312,
+   "lng": 78.44073,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83283577",
+   "name": "Kukatpally metro station",
+   "lat": 17.485115,
+   "lng": 78.409369,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83377016",
+   "name": "Nagole metro station",
+   "lat": 17.390774,
+   "lng": 78.558687,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83407689",
+   "name": "Uppal metro station",
+   "lat": 17.399969,
+   "lng": 78.559908,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83491622",
+   "name": "NGRI metro station",
+   "lat": 17.41483,
+   "lng": 78.54634,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83554384",
+   "name": "Durgam Cheruvu metro station",
+   "lat": 17.44293,
+   "lng": 78.38758,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83637027",
+   "name": "Madhapur metro station",
+   "lat": 17.437244,
+   "lng": 78.400483,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83718950",
+   "name": "Assembly metro station",
+   "lat": 17.398108,
+   "lng": 78.470797,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83788029",
+   "name": "Mettuguda metro station",
+   "lat": 17.435318,
+   "lng": 78.519192,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83859784",
+   "name": "Osmania Medical College metro station",
+   "lat": 17.38207,
+   "lng": 78.4817,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q83886076",
+   "name": "Khairatabad metro station",
+   "lat": 17.41162,
+   "lng": 78.46087,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84028775",
+   "name": "Peddamma Gudi metro station",
+   "lat": 17.430583,
+   "lng": 78.408556,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84250421",
+   "name": "JNTU College metro station",
+   "lat": 17.498653,
+   "lng": 78.388793,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84301996",
+   "name": "Begumpet metro station",
+   "lat": 17.437844,
+   "lng": 78.456939,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84358120",
+   "name": "Rasoolpura metro station",
+   "lat": 17.443468,
+   "lng": 78.475936,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84499965",
+   "name": "Invesco Prakash Nagar metro station",
+   "lat": 17.444892,
+   "lng": 78.465289,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84554969",
+   "name": "Falaknuma metro station",
+   "lat": 17.33264,
+   "lng": 78.4752,
+   "open": null,
+   "state": "under_construction"
+  },
+  {
+   "id": "Q84567224",
+   "name": "Paradise metro station",
+   "lat": 17.443527,
+   "lng": 78.485096,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84716021",
+   "name": "Sakher Bazar Metro Station",
+   "lat": 22.474924,
+   "lng": 88.309982,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84766563",
+   "name": "Gandhi Hospital metro station",
+   "lat": 17.425425,
+   "lng": 78.501867,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84890478",
+   "name": "Musheerabad metro station",
+   "lat": 17.418754,
+   "lng": 78.499414,
+   "open": 2020,
+   "state": "in_use"
+  },
+  {
+   "id": "Q84996197",
+   "name": "Behala Bazar metro station",
+   "lat": 22.498929,
+   "lng": 88.317354,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q85069094",
+   "name": "Taratala Metro Station",
+   "lat": 22.507765,
+   "lng": 88.32008,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q85214864",
+   "name": "Majerhat metro station",
+   "lat": 22.519177,
+   "lng": 88.323682,
+   "open": 2024,
+   "state": "in_use"
+  },
+  {
+   "id": "Q85273870",
+   "name": "Behala Chowrasta metro station",
+   "lat": 22.487544,
+   "lng": 88.313339,
+   "open": 2022,
+   "state": "in_use"
+  },
+  {
+   "id": "Q85518572",
+   "name": "Yusufguda metro station",
+   "lat": 17.435096,
+   "lng": 78.426919,
+   "open": 2019,
+   "state": "in_use"
+  },
+  {
+   "id": "Q85770033",
+   "name": "Irrum Manzil metro station",
+   "lat": 17.42023,
+   "lng": 78.45635,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q85773083",
+   "name": "KPHB Colony metro station",
+   "lat": 17.49378,
+   "lng": 78.401795,
+   "open": 2017,
+   "state": "in_use"
+  },
+  {
+   "id": "Q85846368",
+   "name": "NMDC Lakdi-ka-pul metro station",
+   "lat": 17.403808,
+   "lng": 78.464697,
+   "open": 2018,
+   "state": "in_use"
+  },
+  {
+   "id": "Q862598",
+   "name": "Jahangirpuri metro station",
+   "lat": 28.725828,
+   "lng": 77.162787,
+   "open": 2009,
+   "state": "in_use"
+  },
+  {
+   "id": "Q888667",
+   "name": "Millennium City Centre metro station",
+   "lat": 28.459269,
+   "lng": 77.072419,
+   "open": 2010,
+   "state": "in_use"
+  }
+ ]
+}

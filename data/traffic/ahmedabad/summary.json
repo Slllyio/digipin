@@ -1,0 +1,1048 @@
+{
+  "region": "ahmedabad",
+  "total_segments": 5351,
+  "graph_nodes": 6147,
+  "graph_edges": 5126,
+  "bridge_count": 4228,
+  "los_distribution": {
+    "A": 4783,
+    "F": 248,
+    "C": 84,
+    "D": 47,
+    "B": 164,
+    "E": 25
+  },
+  "top_bottlenecks": [
+    {
+      "osm_id": 1245448762,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016707,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97709,
+      "lng": 72.60455
+    },
+    {
+      "osm_id": 1472146105,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016693,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97834,
+      "lng": 72.6088
+    },
+    {
+      "osm_id": 1472146104,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016679,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97875,
+      "lng": 72.61072
+    },
+    {
+      "osm_id": 29372926,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016665,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.9788,
+      "lng": 72.61096
+    },
+    {
+      "osm_id": 29372925,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016651,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97881,
+      "lng": 72.61099
+    },
+    {
+      "osm_id": 1245448761,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016637,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97898,
+      "lng": 72.61194
+    },
+    {
+      "osm_id": 29372972,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016623,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97981,
+      "lng": 72.61525
+    },
+    {
+      "osm_id": 326733276,
+      "name": "Jashoda Nagar Railway Bridge",
+      "highway": "primary",
+      "betweenness": 0.016609,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98154,
+      "lng": 72.6194
+    },
+    {
+      "osm_id": 326733275,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016595,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.9829,
+      "lng": 72.62253
+    },
+    {
+      "osm_id": 169417090,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016581,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98329,
+      "lng": 72.62313
+    },
+    {
+      "osm_id": 29373078,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016567,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98484,
+      "lng": 72.62496
+    },
+    {
+      "osm_id": 1232602637,
+      "name": "NH8",
+      "highway": "primary",
+      "betweenness": 0.016553,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.99138,
+      "lng": 72.63167
+    },
+    {
+      "osm_id": 1042195509,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.015019,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 23.00021,
+      "lng": 72.59782
+    },
+    {
+      "osm_id": 326677924,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.015012,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 23.00313,
+      "lng": 72.59815
+    },
+    {
+      "osm_id": 172916850,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.014996,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 23.00511,
+      "lng": 72.59738
+    },
+    {
+      "osm_id": 1258092475,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.014966,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 23.00677,
+      "lng": 72.59624
+    },
+    {
+      "osm_id": 172922070,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.014937,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 23.00615,
+      "lng": 72.59476
+    },
+    {
+      "osm_id": 1258468074,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.014898,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 23.01386,
+      "lng": 72.59131
+    },
+    {
+      "osm_id": 172922073,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.014857,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 23.0088,
+      "lng": 72.5917
+    },
+    {
+      "osm_id": 1258468076,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.014361,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 23.01406,
+      "lng": 72.59149
+    }
+  ],
+  "critical_links": [
+    {
+      "osm_id": 29372925,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016651,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97881,
+      "lng": 72.61099
+    },
+    {
+      "osm_id": 29372926,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016665,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.9788,
+      "lng": 72.61096
+    },
+    {
+      "osm_id": 29372972,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016623,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97981,
+      "lng": 72.61525
+    },
+    {
+      "osm_id": 29373078,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016567,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98484,
+      "lng": 72.62496
+    },
+    {
+      "osm_id": 169417090,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016581,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98329,
+      "lng": 72.62313
+    },
+    {
+      "osm_id": 172772639,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.012482,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98507,
+      "lng": 72.65111
+    },
+    {
+      "osm_id": 172772656,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.012863,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.9902,
+      "lng": 72.63831
+    },
+    {
+      "osm_id": 231000389,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.012841,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.9896,
+      "lng": 72.64053
+    },
+    {
+      "osm_id": 231000420,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.012819,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98937,
+      "lng": 72.64123
+    },
+    {
+      "osm_id": 326728714,
+      "name": "",
+      "highway": "secondary_link",
+      "betweenness": 0.012884,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.99089,
+      "lng": 72.63504
+    },
+    {
+      "osm_id": 326733275,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016595,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.9829,
+      "lng": 72.62253
+    },
+    {
+      "osm_id": 326733276,
+      "name": "Jashoda Nagar Railway Bridge",
+      "highway": "primary",
+      "betweenness": 0.016609,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98154,
+      "lng": 72.6194
+    },
+    {
+      "osm_id": 424713811,
+      "name": "Sardar Patel Ring Road",
+      "highway": "tertiary",
+      "betweenness": 0.012392,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 23.00343,
+      "lng": 72.66724
+    },
+    {
+      "osm_id": 1138298358,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.012797,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.98909,
+      "lng": 72.64246
+    },
+    {
+      "osm_id": 1232602637,
+      "name": "NH8",
+      "highway": "primary",
+      "betweenness": 0.016553,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.99138,
+      "lng": 72.63167
+    },
+    {
+      "osm_id": 1232602638,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.012906,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.99291,
+      "lng": 72.6329
+    },
+    {
+      "osm_id": 1245448761,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016637,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97898,
+      "lng": 72.61194
+    },
+    {
+      "osm_id": 1245448762,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016707,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97709,
+      "lng": 72.60455
+    },
+    {
+      "osm_id": 1472146104,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016679,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97875,
+      "lng": 72.61072
+    },
+    {
+      "osm_id": 1472146105,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.016693,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 22.97834,
+      "lng": 72.6088
+    }
+  ],
+  "demand_model": {
+    "zones": 498,
+    "origins": 464,
+    "peak_pcu_total_trips": 238390,
+    "roads_los_e_f": 1005,
+    "roads_los_d": 290,
+    "roads_total": 5338,
+    "roads_los_e_f_by_period": {
+      "am": 986,
+      "pm": 945,
+      "mid": 84
+    },
+    "hourly": {
+      "share_pct": [
+        0.6,
+        0.4,
+        0.3,
+        0.3,
+        0.5,
+        1.1,
+        2.4,
+        4.4,
+        7.0,
+        9.0,
+        7.6,
+        5.6,
+        5.0,
+        4.8,
+        4.6,
+        4.8,
+        5.4,
+        7.0,
+        8.8,
+        7.8,
+        5.6,
+        3.6,
+        2.2,
+        1.2
+      ],
+      "mix": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0.8,
+          0,
+          0.2
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0.8,
+          0.2
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "periods": [
+        "am",
+        "pm",
+        "mid"
+      ],
+      "period_share": {
+        "am": 0.09,
+        "pm": 0.08800000000000001,
+        "mid": 0.048
+      },
+      "bpr": [
+        0.15,
+        4
+      ],
+      "max_slowdown": 4.0,
+      "los_bands": [
+        0.35,
+        0.55,
+        0.75,
+        0.9,
+        1.0
+      ]
+    },
+    "assumptions": {
+      "trips_per_capita": 0.9,
+      "pcu_per_trip": 0.37,
+      "peak_share": 0.09,
+      "beta_per_min": 0.1,
+      "mid_beta_per_min": 0.15
+    }
+  },
+  "road_flood": {
+    "very_high": 8.4,
+    "high": 619.0,
+    "river_flood": 938.1,
+    "total": 2099.3,
+    "pct_very_high": 0.4,
+    "pct_high_or_worse": 29.9
+  },
+  "noise_air": {
+    "residents_total": 7954301,
+    "residents_near_modelled_roads": 7450667,
+    "residents_lden_ge_53": 7006178,
+    "residents_lden_ge_65": 2999472,
+    "nox_t_day": 9.36,
+    "co2_t_day": 2287.9,
+    "nox_vs_s5p_no2_spearman_l5": 0.72,
+    "l5_cells_compared": 42,
+    "assumptions": {
+      "veh_per_pcu": 1.4,
+      "heavy_pct": 5.0,
+      "share_18h": 0.968,
+      "ef_g_per_vkm": {
+        "nox": 0.45,
+        "pm25": 0.025,
+        "co2": 110.0
+      },
+      "reach_m": 300.0,
+      "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
+    }
+  },
+  "emergency_access": {
+    "hospitals": 1455,
+    "pct_within_10_night": 99.7,
+    "pct_within_10_am": 99.4,
+    "pct_within_10_pm": 99.4,
+    "pct_over_20_peak": 0.0,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 16,
+    "rail_stations": 20,
+    "pct_within_10_walk_metro": 6.4,
+    "pct_within_10_walk_any": 12.4,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 8,
+    "chargers_by_source": {
+      "overture": 8
+    },
+    "parking": 35,
+    "fuel": 171,
+    "chargers_per_lakh": 0.1,
+    "pct_vkm_within_2km": 17.3,
+    "pct_pop_within_2km": 16.0
+  },
+  "cycling": {
+    "lowstress_km": 5450,
+    "cycleway_km": 24.7,
+    "highstress_km": 1266,
+    "islands": 3865,
+    "islands_over_5_km2": 16,
+    "largest_island_km2": 28.7,
+    "pct_residents_small_island": 41.6,
+    "pct_residents_no_lowstress_street": 0.8,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 1197,
+    "pct_main_km_on_long_gaps": 15.1,
+    "median_gap_m": 311,
+    "crosswalks_mapped": 26,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 2593,
+      "logistics": 235,
+      "wholesale": 138
+    },
+    "truck_trips_day": 14020,
+    "gateway_nodes": 392,
+    "road_km_500_trucks_day": 11.8,
+    "busiest_truck_roads": [
+      {
+        "name": "Drive-in Road",
+        "trucks_day": 12994
+      },
+      {
+        "name": "NH8",
+        "trucks_day": 11202
+      },
+      {
+        "name": "Khokhra Road",
+        "trucks_day": 8402
+      },
+      {
+        "name": "100 Ft. Road",
+        "trucks_day": 6526
+      },
+      {
+        "name": "Khokhra Junction",
+        "trucks_day": 5290
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 497,
+    "pop_mean_jobs_car_pct": 96.3,
+    "pop_mean_jobs_transit_pct": 11.5,
+    "stations": 36,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 2037,
+    "stops_with_heat_data": 2037,
+    "pct_hot_bare": 82.7,
+    "pct_riders_at_hot_bare": 83.9,
+    "median_stop_lst_c": 44.0,
+    "top_stops": [
+      {
+        "digipin": "3KLKC2P",
+        "name": "",
+        "lon": 72.55916,
+        "lat": 23.01459,
+        "residents_5min": 58177,
+        "lst_c": 42.7,
+        "canopy_pct": 8.4,
+        "priority": 410334
+      },
+      {
+        "digipin": "3KLKC59",
+        "name": "",
+        "lon": 72.55737,
+        "lat": 23.01347,
+        "residents_5min": 57409,
+        "lst_c": 42.4,
+        "canopy_pct": 7.8,
+        "priority": 391690
+      },
+      {
+        "digipin": "3KLK9T5",
+        "name": "Rambaug Post office",
+        "lon": 72.60136,
+        "lat": 22.99891,
+        "residents_5min": 45104,
+        "lst_c": 43.8,
+        "canopy_pct": 5.1,
+        "priority": 376673
+      },
+      {
+        "digipin": "3KLK9T5",
+        "name": "",
+        "lon": 72.60164,
+        "lat": 22.99863,
+        "residents_5min": 45104,
+        "lst_c": 43.8,
+        "canopy_pct": 5.1,
+        "priority": 376673
+      },
+      {
+        "digipin": "3KLK9T4",
+        "name": "Rambaug",
+        "lon": 72.60067,
+        "lat": 22.99992,
+        "residents_5min": 40722,
+        "lst_c": 44.2,
+        "canopy_pct": 1.3,
+        "priority": 369772
+      },
+      {
+        "digipin": "3KLK9T4",
+        "name": "",
+        "lon": 72.60024,
+        "lat": 23.00048,
+        "residents_5min": 40722,
+        "lst_c": 44.2,
+        "canopy_pct": 1.3,
+        "priority": 369772
+      },
+      {
+        "digipin": "3KLK25P",
+        "name": "Popular Wheelers",
+        "lon": 72.59441,
+        "lat": 22.97014,
+        "residents_5min": 24268,
+        "lst_c": 50.2,
+        "canopy_pct": 0.3,
+        "priority": 367767
+      },
+      {
+        "digipin": "3KLJMT4",
+        "name": "Navrangpura AMTS Bus Stand",
+        "lon": 72.56424,
+        "lat": 23.03553,
+        "residents_5min": 50775,
+        "lst_c": 42.9,
+        "canopy_pct": 10.2,
+        "priority": 360208
+      },
+      {
+        "digipin": "3KLKC2T",
+        "name": "",
+        "lon": 72.55955,
+        "lat": 23.01404,
+        "residents_5min": 52904,
+        "lst_c": 42.2,
+        "canopy_pct": 7.5,
+        "priority": 352341
+      },
+      {
+        "digipin": "3KLKC58",
+        "name": "",
+        "lon": 72.56098,
+        "lat": 23.01272,
+        "residents_5min": 51754,
+        "lst_c": 42.4,
+        "canopy_pct": 8.7,
+        "priority": 349660
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "osm": 109,
+      "gtfs": 1872,
+      "overture": 56
+    }
+  },
+  "parking": {
+    "cells": 5036,
+    "demand_ecs": 367937,
+    "lots_mapped": 35,
+    "official_lot_spaces": 0,
+    "pct_demand_in_overflow": 30.7,
+    "overflow_ecs": 63305,
+    "hotspots": [
+      {
+        "digipin": "3KLK2FT",
+        "demand_ecs": 548,
+        "supply_ecs": 77,
+        "pressure": 7.14
+      },
+      {
+        "digipin": "3KLK2F6",
+        "demand_ecs": 562,
+        "supply_ecs": 91,
+        "pressure": 6.17
+      },
+      {
+        "digipin": "3KLK2CK",
+        "demand_ecs": 496,
+        "supply_ecs": 45,
+        "pressure": 10.97
+      },
+      {
+        "digipin": "3KLK2FP",
+        "demand_ecs": 540,
+        "supply_ecs": 107,
+        "pressure": 5.05
+      },
+      {
+        "digipin": "3KLK2F2",
+        "demand_ecs": 555,
+        "supply_ecs": 130,
+        "pressure": 4.27
+      },
+      {
+        "digipin": "3KLK2J9",
+        "demand_ecs": 498,
+        "supply_ecs": 94,
+        "pressure": 5.32
+      },
+      {
+        "digipin": "3KL34F3",
+        "demand_ecs": 462,
+        "supply_ecs": 69,
+        "pressure": 6.66
+      },
+      {
+        "digipin": "3KLK2F9",
+        "demand_ecs": 489,
+        "supply_ecs": 97,
+        "pressure": 5.02
+      },
+      {
+        "digipin": "3KLK494",
+        "demand_ecs": 393,
+        "supply_ecs": 17,
+        "pressure": 22.59
+      },
+      {
+        "digipin": "3KLK76M",
+        "demand_ecs": 431,
+        "supply_ecs": 63,
+        "pressure": 6.87
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 464,
+    "pop_mean_trip_km": 7.95,
+    "co2_kg_resident_day": 0.258,
+    "co2_kt_year": 748.5,
+    "inner_fifth_trip_km": 7.08,
+    "outer_fifth_trip_km": 9.49,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
+  }
+}

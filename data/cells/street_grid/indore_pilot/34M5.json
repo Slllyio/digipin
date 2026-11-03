@@ -1,0 +1,1 @@
+{"version":1,"dataset":"street_grid","region":"indore_pilot","level":7,"fields":["intersections","dead_ends"],"cells":["34M5PPC","34M5TMF","34M5TMJ"],"columns":{"intersections":[1,1,null],"dead_ends":[null,null,1]}}

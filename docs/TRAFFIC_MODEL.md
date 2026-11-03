@@ -59,6 +59,473 @@ neighbourhood) — `coverage_access` (4+ nearby stops ≈ 100). This is an hones
 timetable frequency; headway/route fields stay null and the widget labels it
 "(OSM coverage)". Swap in a real GTFS feed later for true frequency.
 
+#### Bus frequency from open timetables (`gtfs_cells.py`)
+
+Where a city's bus timetable is open GTFS, `pipeline/traffic/gtfs_cells.py`
+bins it to cell dataset `bus_service` (L7): stops, routes, weekday
+departures, departures per hour 07:00–10:00 and the minutes between buses at
+each cell's busiest stop in that window. Bengaluru uses the community BMTC
+feed scraped from the Namma BMTC app (github.com/Vonter/bmtc-gtfs, ODbL;
+routes without live tracking are missing). Delhi's Open Transit Data feed
+needs a registered key and is skipped until one is configured (or pass
+`--gtfs <zip>`). The **Public transport access** lens then adds residents
+within 500 m of a stop with a bus every 10 minutes or better at peak.
+
+    python -m pipeline.traffic.gtfs_cells --region bengaluru   # ~45 MB download, seconds to bin
+
+### 5. Demand-driven traffic load through the day (`demand_model.py`)
+
+Betweenness treats every pair of junctions as equally likely to swap
+traffic. The demand model puts people behind the flows with a four-step
+model built only from data already in the repo:
+
+| step | how | assumption |
+|---|---|---|
+| Generation | residents per ~1 km DIGIPIN L6 zone (GHSL, cell store) | 0.9 motorised trips / person / day |
+| Attraction | GHSL non-residential built surface + 25% of residential + 400 m² per OSM amenity | jobs and activity floor space |
+| Distribution | singly-constrained gravity, exp(−0.10 · minutes) | mean trip ≈ 10–15 min (5–7 km) |
+| Vehicles | 0.37 PCU per trip (2W 40%, car 15%, auto 15%, bus 30%; IRC 106 PCUs) | one Indian mode mix |
+| Peak | 9% of the day in the morning peak hour (IRC SP 41: 8–10%) | homes → destinations |
+| Assignment | incremental (40/30/20/10%) all-or-nothing on the arterial graph, BPR t = t₀(1 + 0.15 (V/C)⁴) between increments | free-flow speeds and IRC 106 per-direction capacities by OSM class |
+
+The graph is the arterial OSM network in `road_los.geojson`, split at shared
+vertices with dangling ends snapped (≤ 25 m) onto the road they meet. Each
+road gets `pcu_peak` (busier direction, PCU/h; demand, so it can exceed
+capacity), `vc_peak`, `los_peak`, `speed_peak` (km/h after BPR) and
+`pcu_daily`; reported speeds floor at a quarter of free flow (BPR runs away past V/C ≈ 2); the per-city `summary.json` gains a `demand_model` block. The cell
+store gets `traffic_load` (L7): busiest-road V/C, LOS and demand, vehicle-km
+weighted speed and delay, and daily vehicle-km per cell. The **Traffic** map
+layer colours roads by the peak LOS, widens them with traffic and animates the
+busiest; the **Traffic load** lens counts residents within 250 m of an
+arterial at LOS E/F.
+
+#### Through the day
+
+Three trip patterns are distributed once on free-flow times and assigned
+separately (each with its own BPR feedback):
+
+| pattern | matrix | volume |
+|---|---|---|
+| `am` 09:00 commute | homes → jobs/activity (β 0.10) | 9.0% of the day |
+| `pm` 18:00 trip home | the morning matrix transposed | 8.8% |
+| `mid` 13:00 errands | homes ↔ activity, shorter trips (β 0.15), half each way | 4.8% |
+
+`HOURLY_SHARE` gives each hour's share of daily traffic (a typical Indian
+arterial profile: sharp 09:00 peak, broad 18:00 peak, midday plateau, quiet
+night; sums to 100) and `HOURLY_MIX` which pattern(s) each hour carries
+(06–11 morning, 16–21 evening, the rest errands, blended on the shoulders).
+A road's V/C at hour *h* is Σₖ mixₖ(h) · V/Cₖ · share(h)/shareₖ, so each
+pattern is reproduced exactly at its own hour. Roads gain `vc_am`, `vc_pm`,
+`vc_mid`, `ffs` (free-flow km/h) and `peak_period`; the `pcu_peak`/`vc_peak`
+/`los_peak`/`speed_peak` fields are now the worse of the two peaks and
+`pcu_daily` sums all 24 hours. `traffic_load` gains `am_vc`, `pm_vc`, `mid_vc`
+and `peak_period` (Morning/Evening). `summary.json` carries the profile under
+`demand_model.hourly`, which the map reads. The **Traffic** layer's legend has
+a clock: drag to any hour or press ▶ to play the day; roads re-colour with
+paint expressions (no reload), also in the pitched 3D view. DISHA can do the
+same with `[ACTION] trafficHour hour:18` (or `peak`, `play`).
+
+Between peak hours the hourly V/C is a linear blend of the assigned patterns,
+not a fresh assignment, so off-peak route choice is approximated.
+
+#### Road what-if (`js/road-whatif.js`)
+
+The Traffic legend's **What if…** button opens a panel: close a road, widen
+one (+50% capacity, about one more lane each way) or click two junctions to
+build a new 4-lane link, pick the 09:00 or 18:00 peak and press Run. A Web
+Worker re-routes the commute with the pipeline's method (incremental
+all-or-nothing + BPR) twice, before and after the edit (the "before" run is
+cached per city and peak), and the map shows roads whose V/C rose (reds) or
+fell (blues). The panel reports the change in vehicle-hours and average trip
+time, roads that get busier or quieter, roads that tip into LOS E/F, people
+living within 250 m of a road that gets worse, and trips cut off when a
+closure leaves homes with no arterial route.
+
+Input is `data/traffic/<region>/whatif_model.json` (written by `run`, or
+alone with `--whatif-only`, a few seconds per city): the split arterial graph,
+the home → work matrix with each origin's top 40 destinations kept exactly
+and the rest pooled per ~4 km DIGIPIN L5 parent (correlation with the
+pipeline's own 09:00 V/C ≈ 0.89 in Indore and Delhi), and residents per L7
+cell near the network. Indore takes ~2 s per scenario, Delhi ~13 s for the
+first run in the browser. Destinations stay fixed, so this is the effect in
+the first weeks after a change, before people move jobs or homes.
+
+What it does not know: signals, lane counts, one-way rules, local streets,
+parking, buses' own routes, or today's events. Treat it as where commuting
+demand meets thin capacity, then check against counts or a live feed (TomTom,
+HERE or Mappls, which need a key).
+
+    python -m pipeline.traffic.demand_model --region all     # ~3 min Delhi (three patterns)
+
+### 6. Road noise and exhaust (`noise_air.py`)
+
+From the demand model's daily volumes (`pcu_daily`, ×1.4 vehicles per PCU
+for a two-wheeler-heavy mix, 5% heavy vehicles, 83% of the day between 06:00
+and 24:00) each home cell (L7 centre) gets the CRTN L10(18h) of every modelled
+road within 300 m, energy-summed and converted to Lden
+(0.90·L10 + 3.77, Abbott & Nelson 2002). Exhaust is vehicle-km in the cell ×
+fleet-average factors (NOx 0.45 g, exhaust PM2.5 0.025 g, CO₂ 110 g per
+vehicle-km). Output: cell dataset `traffic_noise` (`lden_db`, `l10_18h_db`,
+`nox_kg_day`, `pm25_exhaust_g_day`, `co2_t_day`) and a `noise_air` block in
+`summary.json`. The **Road noise** lens counts residents at or above WHO's
+53 dB Lden road guideline and at 65 dB, with the poorest-fifth share.
+
+Sanity check: modelled NOx per ~4 km cell (L5) against Sentinel-5P NO₂ has a
+Spearman rank correlation of 0.82 in Delhi, 0.87 Bhopal, 0.81 Jaipur, 0.77
+Kolkata, 0.69 Indore, 0.65 Bengaluru, and is weak where ports, power plants
+or the sea dominate the column (Mumbai 0.22, Chennai 0.33). Arterials only,
+no barriers or building shielding: the noise figures describe the
+road-facing side of homes near main roads.
+
+    python -m pipeline.traffic.noise_air --region all        # seconds per city
+
+### 7. Hospital access by time of day (`emergency_access.py`)
+
+Hospitals and schools come from Overture Maps places (release 2026-10-21.0,
+confidence ≥ 0.6, read straight from the public S3 parquet with DuckDB and
+cached as `data/vectors/overture_facilities_<region>.geojson`). Each hospital
+snaps to its nearest arterial node; one multi-source Dijkstra on the reversed
+road graph gives every node its drive time to the nearest hospital. Link
+times are free flow for 03:00 and BPR at the link's modelled `vc_am` /
+`vc_pm` for 09:00 and 18:00 (capped at 4× free-flow time). Home cells add a
+walk-speed access leg (15 km/h × 1.3 detour) to and from the road. Output:
+cell dataset `emergency_access` (`hospital_min_night`, `hospital_min_am`,
+`hospital_min_pm`, `rush_delay_min`, `hospitals`, `schools`) and an
+`emergency_access` block in `summary.json`.
+
+The **Hospital at rush hour** lens reports residents within 10 minutes at
+3 am and at the worse peak, those more than 20 minutes away, people 60+ who
+lose 10-minute reach in traffic, and schools at 65+ dB Lden or within 250 m
+of an arterial at LOS E/F. First run: Delhi 91% within 10 min at night vs
+83% at 09:00; Kolkata 98% vs 87%; Bengaluru 99% vs 96%. Overture's hospital
+category includes nursing homes and small clinics, and there is no ambulance
+priority, so this is general-traffic reach to any hospital-tagged place.
+
+    python -m pipeline.traffic.emergency_access --region all            # cached places
+    python -m pipeline.traffic.emergency_access --region delhi --refresh  # re-query Overture
+
+### 8. Metro and rail station catchments (`rail_stations.py`)
+
+Station points are Overture Maps places tagged `train_station` /
+`metro_station` (names filtered: Overture also tags cafés, depots and
+railway quarters) plus OpenStreetMap `station` points. Each is classed by the
+nearest Overture rail track within 250 m: subway, light rail, monorail or tram
+is **metro**, standard or narrow gauge is **rail**, with "metro" / "railway"
+in the name breaking ties; nothing within 250 m drops the point. Entrances of
+one station (same name within 750 m, or anything within 250 m) merge.
+Output: `data/vectors/rail_stations_<region>.geojson`, cell dataset
+`rail_access` (`metro_walk_min`, `rail_walk_min`, `metro_stations`,
+`rail_stations`; walk = straight line × 1.3 at 4.8 km/h) and a `rail_access`
+block in `summary.json`.
+
+The **Metro catchments** lens reports residents within a 10-minute walk of a
+metro station and of any station, the poorest fifth's share, and the three
+best new station sites, chosen greedily by the residents each would add that
+are not already within 10 minutes (no track alignment or cost).
+`UrbanLenses.stationWhatIf(frame, lat, lng)` scores one site; DISHA answers
+"what if a new metro station opened here?" for the selected cell and "where
+should the next metro station go?" for the city. First run: Mumbai 30% within
+10 min of metro (51% counting the locals), Delhi 26% (30%), Kolkata 21%,
+Chennai 20%, Bengaluru 14%. Overture misses some newer stations (Ahmedabad
+has 16 of about 32 mapped), so read the smaller systems as lower bounds.
+
+    python -m pipeline.traffic.rail_stations --region all --refresh   # ~30 s per city
+
+### 9. EV charging gaps (`ev_charging.py`)
+
+Known public chargers merge (within 60 m) from OpenStreetMap
+`amenity=charging_station` (Overpass; works on CI runners, skipped where it is
+blocked), Open Charge Map (when `OCM_API_KEY` is set) and Overture Maps
+`ev_charging_station` places; Overture `parking` and fuel-station places are
+kept as low-cost host sites. Output: `data/vectors/ev_places_<region>.geojson`,
+cell dataset `ev_charging` (`charger_km`, `chargers`, `parking`, `fuel`) and an
+`ev_charging` block in `summary.json`.
+
+The **EV charging gaps** lens reports residents within 2 km and 3 km (the
+grid spacing in India's 2024 charging guidelines) of a known charger and the
+share of arterial vehicle-km within 2 km. The **EV charging hub** siting
+preset now weights arterial vehicle-km within 1 km (3), distance to the
+nearest known charger (2), parking and fuel forecourts within 500 m (2),
+residents per km² (1) and night lights (1). Open data lists only a fraction
+of India's chargers (Overture: Delhi 44, Pune 85, Kolkata 0), so distances
+are upper bounds until the OSM/Open Charge Map sources are added on CI.
+
+    python -m pipeline.traffic.ev_charging --region all --refresh
+
+### 10. Buildings on the traffic clock (`js/traffic-buildings.js`)
+
+"Colour 3D buildings by the clock" in the Traffic legend (or DISHA
+`[ACTION] trafficHour hour:18 buildings:on`) builds a runtime cell dataset
+`traffic_clock` from `traffic_load` for the clock's hour: each L7 cell takes
+the worst road V/C in it (via `TrafficOverlay.vcAt`), or ¾ of the worst in a
+neighbouring cell, and BuildingData colours every Overture building by its
+cell. Moving the slider or playing the day repaints the buildings as the
+roads beside them fill and empty.
+
+### 11. Monsoon what-if (`road_flood.py` + the What-if panel)
+
+`road_flood.py` samples every arterial each ~100 m against the
+`waterlogging` and `water` cell datasets and writes `wlog` (highest
+waterlogging index along the road), `wlog_hi` (% of samples in High-or-worse
+cells) and `fl100` (some stretch in the 1-in-100-year river flood at ≥ 0.3 m)
+onto road_los.geojson, plus a `road_flood` block in summary.json. It runs
+after demand_model. The What-if panel's three rain buttons (and DISHA: "what
+happens to traffic in Mumbai when it rains heavily?") cut capacity by the
+highest index along each road and re-route the commute:
+
+| Level | wlog ≥ 65 | 60–65 | 55–60 | river floodplain |
+|---|---|---|---|---|
+| Heavy shower | × 0.5 | × 0.75 | – | – |
+| Severe waterlogging | closed | × 0.5 | × 0.75 | – |
+| River flood (1-in-100) | closed | × 0.5 | × 0.75 | × 0.25 |
+
+Closures can disconnect homes whose only modelled arterial floods; the
+headline then reports the vehicle trips cut off. Pumps, drains and the timing
+of a storm are not modelled, so read it as which corridors carry the
+diverted traffic, not as a forecast.
+
+### 12. Shaded walks (Urban lens `shade`)
+
+One multi-source Dijkstra per target type (stations from `rail_access`,
+schools from `emergency_access`) over the `osm_walk` cell links, out to
+1.6 km (~20 minutes). Each home takes the route to its nearest target; the
+route's shade is the mean Meta/WRI tree canopy of the cells it crosses and
+its heat the mean daytime LST. Residents are then pushed down the tree to
+count whose route passes each cell; planting priority = that count × the
+cell's missing canopy, and the top five cells (≥ 750 m apart) are listed.
+Delhi: 63% of residents within 20 minutes of a station walk there under less
+than 10% tree cover; 72% for the walk to school.
+
+### 13. Bus gaps on busy corridors (Urban lens `busgap`)
+
+Busy corridors are arterials in the top fifth of modelled peak-hour PCU; a
+home within 250 m of one is beside it. It counts as served with a bus every
+10 minutes or better within 400 m (GTFS, 07–10 h; Bengaluru today), any
+mapped OSM bus stop within 400 m where there is no timetable, or a
+rail/metro/BRT station within 800 m. The five heaviest unserved corridor
+cells (≥ 1.5 km apart) are listed as candidates for new or more frequent
+routes. Bengaluru: 4.9% of the 55.6 lakh people beside busy arterials lack a
+frequent bus; Delhi (stops only): 17.3% have no stop at all.
+
+### 14. Road danger on the school walk (Urban lens `roadsafety`)
+
+Every child (residents × WorldPop under-15 share) walks the OSM walking
+network to the nearest Overture school, out to 1.6 km. A road cell is
+dangerous when its modelled arterial reaches 40+ km/h at free flow (peak
+speed × (1 + peak delay)) and carries 600+ PCU in the peak hour. The map
+shows the worst pedestrian fatality risk along each child's route if struck
+at that speed (Rosén & Sander 2009 logistic: 1.5% at 30 km/h, 3.6% at 40,
+18% at 60); crossing priority is children walking through × that risk, and
+the top five cells (≥ 750 m apart) are listed for signalised crossings and
+30 km/h school zones. There are no crossings, footbridges or crash records in
+open data, so this ranks exposure, not crashes. Children whose walk crosses a
+fast, busy arterial: Mumbai 34.5%, Bengaluru 28.8%, Kolkata 27%, Delhi 13.2%;
+schools within 250 m of one: Mumbai 59%, Bengaluru 38%, Delhi 24%.
+
+### 15. Mobility scorecard across the cities (`UrbanLenses.scorecard`)
+
+Built from the lens league (`data/lenses/league.json`, `node
+scripts/build_lens_league.js`), which now also carries `monsoon`: the share of
+modelled arterial km in High-or-worse waterlogging cells (road_flood). Each
+measure scores 0–100 between the worst and best of the 13 cities, direction-
+aware; four pillars average their measures (Access: metro, SDG 11.2.1
+transit, bus gaps, hospital at rush hour; Traffic flow: jammed arterials,
+monsoon roads; Safety & health: school-walk danger, road noise; Walking & cycling:
+15-minute essentials, shaded walks, junction density, low-stress cycling to school) and the overall score
+averages the pillars. EV charging is left out because open charger data is
+too partial to rank on. Scores are relative to these 13 cities, so small
+towns (Guna) score well on flow simply by having little traffic. It shows in
+the Lenses panel and answers "mobility scorecard" / "which city has the best
+public transport" in DISHA. October 2026: Hyderabad 67, Bhopal 65, Pune 62 …
+Mumbai 48, Kolkata 44, Ahmedabad 30.
+
+### 16. Low-stress cycling (`pipeline/traffic/cycling.py`, lens `cycling`)
+
+Every Overture Maps road segment is split at its connectors and classed by
+Level of Traffic Stress (Mekuria, Furth & Nixon 2012) from its class:
+motorway–secondary are high stress, tertiary too where the demand model puts
+600+ PCU on it at peak; residential, service, unclassified, living streets,
+tracks, paths and cycle tracks are low stress. A union-find joins low-stress
+pieces into islands that never pass through a junction touched by a main road
+(no signal or crossing data). Cell dataset `cycling` (L7): lowstress_km,
+cycleway_km, highstress_km, island (1 = largest), island_km2, island_pop,
+crossing_gain (residents of smaller islands a safe crossing at the best
+junction in the cell would join to the biggest one). The lens tests whether a
+school (and, separately, a station) lies in the same island within 2.5 km.
+Residents boxed into under 1 km² of quiet streets: Mumbai 60%, Pune 37%,
+Indore 29%, Delhi 11%. Mapped cycle tracks are almost absent (Delhi 78 km).
+
+### 17. Night walk to the station (lens `nightwalk`)
+
+Residents walk the OSM walking tree to the nearest metro or rail station
+(1.6 km). A cell on the route is dark under 20 nW/cm²/sr of VIIRS radiance
+(the dimmest ~5–10% of populated cells) and deserted when it has no mapped
+shop or eatery and under 2,000 residents/km². The map shows the dimmest
+radiance on each walk; lighting priority is walkers through each dark cell.
+At ~500 m resolution station areas read as lit almost everywhere (Delhi 2.8%
+pass a dark or deserted stretch; Indore 11.7%, Guna 32%), so this is a screen
+for street audits, not a substitute.
+
+### 18. Pedestrian crossing gaps (`pipeline/traffic/crossings.py`, lens `crossing`)
+
+Main roads (Overture trunk, primary, secondary, and tertiary roads at 600+ PCU
+peak; motorways excluded) are chained through every connector that no other
+road, lane or path meets; a junction or mapped crosswalk ends the chain, and
+its length is the gap a pedestrian walks along before crossing. Gaps over
+500 m (IRC 103 asks for 80–250 m in busy areas) are flagged. Cell dataset
+`crossings` (L7): max_gap_m, gap_km, main_km, crosswalks. The lens counts
+residents within 250 m of a main road facing a 500 m+ gap and ranks new
+crossing sites by residents nearby × gap × peak traffic. Junctions count as
+crossings even without a signal, so gaps are a lower bound. Share of
+main-road residents facing a 500 m+ gap: Lucknow 36%, Delhi 29%, Jaipur 28%,
+Kolkata 16%.
+
+### 19. Mode-shift what-if (`RoadWhatIf.modeShift`)
+
+A share of car trips leaves the road and the peak is re-assigned with the
+same incremental BPR as the road what-if. "Near stations" shifts only trips
+whose origin and destination zones both have a metro or rail station within
+1 km (data/vectors/rail_stations_<city>.geojson); "all trips" shifts every
+pair. Panel buttons: 10% or 20% near stations, 10% of all trips; DISHA:
+"what if 20% of car trips moved to the metro". Delhi, 20% near stations at
+09:00: 733 of 3,129 zones served, 63,623 fewer vehicles in the peak hour,
+11.7% less driving time; 4,520 roads get quieter, 621 busier as the
+remaining drivers re-route onto main roads that freed up.
+
+### 20. Freight and truck routes (`pipeline/traffic/freight.py`, lens `freight`)
+
+Truck-trip generators are Overture places in logistics (freight, courier,
+storage, warehouses), wholesale and industry categories, cached in
+data/vectors/freight_places_<city>.geojson. Each gets indicative truck trips
+a day (12 / 6 / 4) routed on the fastest free-flow arterial path to the
+nearest national-highway (motorway/trunk) node: a multi-source Dijkstra on
+the reversed road_los graph with predecessors, accumulated per link. Cell
+dataset `freight` (L7): logistics, wholesale, industry, trucks_day,
+truck_nox_kg_day (5 g/km). The lens counts residents and schools within
+250 m of a road with 100+ modelled trucks a day and lists freight clusters.
+Residents beside truck routes: Ahmedabad 24%, Mumbai 17%, Kolkata 14%,
+Delhi 10%. No truck counts or entry-time rules, so routes are indicative.
+
+### 21. Exhaust on the walk to school (lens `cleanwalk`)
+
+Exposure per cell is the traffic NOx the demand model emits in it
+(noise_air.py), relative to the city's busiest tenth of road cells (capped at
+2×). Residents walk the OSM walking network to the nearest school twice: by
+the shortest route, and by a route whose step cost is 1 + 3 × exposure
+(`walkTree(fr, isTarget, km, weight)`, length capped at 1.2 × 1.6 km). Dose
+is length × exposure along the route (`routeDose`). "Heavy" is a route
+average at half the busiest-tenth level or more; "worth it" is 30%+ less dose
+for at most 20% more walking. Delhi: 8.8% walk along heavy exhaust, 12% could
+cut it by 30%+ (median saving 61% for the exposed); Indore 35%, Ahmedabad 29%.
+
+### 22. Jobs within 45 minutes (`pipeline/traffic/job_access.py`, lens `jobaccess`)
+
+Cumulative-opportunity accessibility (Hansen 1959) over the demand model's
+~1 km zones: the share of the city's jobs and activities (the same activity
+floor space the model sends commuters to) reachable within 45 minutes. Car is
+walk-speed access to the nearest arterial plus the 9 am congested arterial
+times; train is a walk of up to 20 min to the nearest metro or rail station,
+a 5-minute wait, 33 km/h over the straight line × 1.25, and a walk out (or
+walking all the way). Every station is assumed connected and buses are left
+out. Dataset `job_access` (L6): jobs_car_pct, jobs_transit_pct,
+transit_car_ratio. Population-weighted, train vs car: Mumbai 22.6% vs 42%,
+Kolkata 23.6% vs 40.8%, Chennai 20.9% vs 80.2%, Bengaluru 9.3% vs 56.9%,
+Delhi 7.6% vs 9.6% (Delhi is large and slow at 9 am, so neither mode reaches
+much of it).
+
+### 23. Heat and shade at bus stops (`pipeline/traffic/bus_stop_heat.py`, lens `busheat`)
+
+Stops are OpenStreetMap highway=bus_stop (Overpass, CI only), open GTFS
+stops (Bengaluru BMTC) and Overture Maps bus stations, merged within 30 m and
+cached in data/vectors/bus_stops_<r>.geojson. Each stop takes its L7 cell's
+Landsat summer daytime surface temperature and tree canopy; residents in the
+cell and its eight neighbours stand in for the people waiting there. Hot and
+bare: 40+ °C with under 10% canopy. Priority = residents × (LST − 35 °C) ×
+(1 − canopy). Dataset `bus_stop_heat` (L7): stops, hot_bare_stops,
+stop_lst_c, stop_canopy_pct, shelter_priority. Share of stops hot and bare:
+Jaipur 91%, Ahmedabad 87%, Chennai 75%, Delhi 36%, Bengaluru 19% (3,805 GTFS
+stops), Kolkata 2%. Outside Bengaluru the sandbox only had Overture's partial
+stop list (Delhi 624); the CI bake adds OpenStreetMap stops.
+
+### 24. Parking pressure (`pipeline/traffic/parking.py`, lens `parking`)
+
+Demand per L7 cell is the demand model's trip attraction: half of the city's
+0.9 motorised trips per resident end away from home, shared by attraction,
+turned into cars (15% at 1.6 people) and two-wheelers (40% at 1.2, 0.25 of a
+car bay) and 60% of them parked at once late in the morning. Supply is usable
+kerb on local and secondary streets (both sides, 5.5 m bays, 40% usable) plus
+Overture parking lots at 40 spaces. Dataset `parking` (L7): demand_ecs,
+supply_ecs, lots, pressure. Share of parking demand on overflowing streets:
+Mumbai 50%, Ahmedabad 31%, Kolkata 30%, Delhi 21%, Bengaluru 6%. Indicative:
+no surveys or occupancy counts.
+
+### 25. Metro last mile (lens `feeder`)
+
+Residents 10–30 minutes on foot from the nearest metro station (any rail
+station where a city has no metro) are in feeder range. They count as served
+when a mapped bus stop (bus_stop_heat, osm_transit or GTFS stops) is within
+about 400 m. Feeder stop sites are picked greedily, 1.5 km apart, by unserved
+residents within 800 m. Bengaluru, with the full BMTC stop list: 6% of
+feeder-range residents have no stop nearby. Other cities read 30–90% only
+because their open stop lists are partial until the CI bake adds
+OpenStreetMap stops; treat them as upper bounds.
+
+### 26. Commute length and carbon (`pipeline/traffic/commute_carbon.py`, lens `commute`)
+
+The morning gravity matrix on free-flow arterial times, with trips inside
+the ~1 km home zone kept (4 min, 0.6 km), gives each zone a trip-weighted
+mean distance (straight line × 1.3). CO2 per resident per day = 0.9 trips ×
+distance × 0.036 kg per person-km (two-wheeler 40%, car 15%, auto 15%, bus
+30%, tailpipe factors ÷ occupancy). Dataset `commute_carbon` (L6): trip_km,
+co2_kg_day, co2_t_year. Population-weighted mean trip: Delhi 12.2 km
+(15.1 km for the worst-placed fifth), Bengaluru 10.9, Mumbai 10.3, Bhopal 7.1.
+One mode mix per city, so the map shows the cost of distance only.
+
+### 27. Cost of congestion (lens `jamcost`)
+
+Each road cell's daily PCU-km is spread over the 24 hours with HOURLY_SHARE;
+hour h runs at V/C = peak V/C × share_h / 9 %, and its delay is the BPR
+factor (1 + 0.15·(V/C)⁴, capped at 4) minus one at the cell's free-flow speed
+(peak speed × (1 + delay %)). Person-hours use 2.7 people per PCU; cost is
+₹100 per person-hour plus 0.4 L of fuel per PCU-hour at ₹100, over 300
+working days. Delhi: 87 lakh person-hours a day, 39 min per motorised
+traveller, about ₹30,000 crore a year; Mumbai 26 min; Bengaluru 16 min.
+Arterials only (no side streets or signal delay), so it is a floor.
+
+### 28. Transit-oriented development (lens `tod`)
+
+Station areas are built-up cells (10%+ built) within a 10-minute walk of a
+metro station. Floor area ratio ≈ GHSL built volume per m² ÷ 3 m a storey.
+Low-rise is FAR under 1; the target is FAR 4 (2017 National TOD Policy
+suggests 3–5 in station influence zones). Delhi station areas: FAR about 1.67
+vs 1.16 elsewhere, 20% low-rise; Mumbai 2.05 vs 1.64, 14%; Bengaluru 1.62 vs
+1.07, 21%. Parks, heritage, airport and defence land are not masked.
+
+### 29. Bus-lane what-if (`RoadWhatIf.busLane`)
+
+`busLane({road, pct, period})` matches a named arterial, keeps two thirds of
+its capacity for general traffic (one lane of three each way goes to buses)
+and moves pct% (default 10) of car trips whose both ends lie within 0.8 km
+of the corridor onto the bus, then re-routes the commute. DISHA: "what if we
+add a bus lane on Outer Ring Road". Bengaluru Outer Ring Road at 15%: 1,058
+fewer vehicles in the 09:00 hour, but driving time city-wide rises 3.1%
+because the remaining traffic loses a lane; even at 40% it stays 2.5% worse,
+since few trips both start and end along the corridor. The gain is for bus
+riders: `busRiderGain` prices the general-traffic delay (BPR on each
+segment's V/C) a bus escapes on a 5 km ride at 60% of free-flow speed. On
+Outer Ring Road at 09:00 that is about 10.8 minutes per ride, for about 2,900
+new riders in the peak hour (shifted PCU × 2.7) plus existing riders.
+
+### 30. School-run traffic (lens `schoolrun`)
+
+Each mapped school (Overture places) takes the busiest modelled arterial
+within about 150 m in the 09:00 hour as its gate road; V/C 0.9+ is jammed.
+Children are residents within 800 m × WorldPop's district child share,
+counted once where catchments overlap. Top jammed schools by children nearby
+are school-street candidates. Schools beside a jammed road at 9 am: Mumbai
+35%, Bengaluru 19%, Delhi 12%. No school-trip purpose or side streets in the
+model, so lane-level drop-off queues are not seen.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

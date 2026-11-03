@@ -1,0 +1,159 @@
+{
+  "status": "fail",
+  "generated_at": "2026-10-21T07:30:42+00:00",
+  "source_count": 8,
+  "sources": {
+    "gdacs_disasters": {
+      "status": "fail",
+      "rows": 155,
+      "generated_at": "2026-10-05T19:47:25Z",
+      "required_env": []
+    },
+    "imd_cityforecast": {
+      "status": "warn",
+      "rows": 0,
+      "generated_at": "2026-10-19T06:51:14Z",
+      "required_env": [
+        "IMD_API_KEY",
+        "IMD_API_TOKEN"
+      ]
+    },
+    "imd_nowcast": {
+      "status": "warn",
+      "rows": 0,
+      "generated_at": "2026-10-20T07:32:35Z",
+      "required_env": [
+        "IMD_API_KEY",
+        "IMD_API_TOKEN"
+      ]
+    },
+    "imd_warnings": {
+      "status": "warn",
+      "rows": 0,
+      "generated_at": "2026-10-20T12:59:30Z",
+      "required_env": [
+        "IMD_API_KEY",
+        "IMD_API_TOKEN"
+      ]
+    },
+    "ncs_earthquakes": {
+      "status": "fail",
+      "rows": 150,
+      "generated_at": "2026-08-23T21:45:05Z",
+      "required_env": []
+    },
+    "ndma_sachet": {
+      "status": "fail",
+      "rows": 99,
+      "generated_at": "2026-10-10T15:30:38Z",
+      "required_env": []
+    },
+    "openaq_india": {
+      "status": "warn",
+      "rows": 0,
+      "generated_at": "2026-10-20T17:54:03Z",
+      "required_env": [
+        "OPENAQ_API_KEY"
+      ]
+    },
+    "usgs_earthquakes": {
+      "status": "warn",
+      "rows": 30,
+      "generated_at": "2026-10-20T02:05:52Z",
+      "required_env": []
+    }
+  },
+  "findings": [
+    {
+      "source": "gdacs_disasters",
+      "check": "freshness",
+      "severity": "fail",
+      "message": "last refreshed 15d ago (2026-10-05 19:47Z); the feed looks dead",
+      "hint": "check the scraper's last run log; the upstream URL or format may have changed"
+    },
+    {
+      "source": "ncs_earthquakes",
+      "check": "freshness",
+      "severity": "fail",
+      "message": "last refreshed 58d ago (2026-08-23 21:45Z); the feed looks dead",
+      "hint": "check the scraper's last run log; the upstream URL or format may have changed"
+    },
+    {
+      "source": "ndma_sachet",
+      "check": "freshness",
+      "severity": "fail",
+      "message": "last refreshed 10d ago (2026-10-10 15:30Z); the feed looks dead",
+      "hint": "check the scraper's last run log; the upstream URL or format may have changed"
+    },
+    {
+      "source": "triage brief (indore_pilot)",
+      "check": "freshness",
+      "severity": "fail",
+      "message": "last refreshed 91d ago (2026-07-21 19:05Z); the feed looks dead",
+      "hint": "its scheduled workflow is not running; scheduled workflows only run from the default branch"
+    },
+    {
+      "source": "imd_cityforecast",
+      "check": "freshness",
+      "severity": "warn",
+      "message": "last refreshed 2d ago, older than the 24h window",
+      "hint": "recent scrape runs are failing or the upstream is down"
+    },
+    {
+      "source": "imd_cityforecast",
+      "check": "volume",
+      "severity": "warn",
+      "message": "snapshot is empty",
+      "hint": "needs IMD_API_KEY, IMD_API_TOKEN; check the Actions secrets and that the key is still valid"
+    },
+    {
+      "source": "imd_nowcast",
+      "check": "freshness",
+      "severity": "warn",
+      "message": "last refreshed 23h ago, older than the 6h window",
+      "hint": "recent scrape runs are failing or the upstream is down"
+    },
+    {
+      "source": "imd_nowcast",
+      "check": "volume",
+      "severity": "warn",
+      "message": "snapshot is empty",
+      "hint": "needs IMD_API_KEY, IMD_API_TOKEN; check the Actions secrets and that the key is still valid"
+    },
+    {
+      "source": "imd_warnings",
+      "check": "freshness",
+      "severity": "warn",
+      "message": "last refreshed 18h ago, older than the 6h window",
+      "hint": "recent scrape runs are failing or the upstream is down"
+    },
+    {
+      "source": "imd_warnings",
+      "check": "volume",
+      "severity": "warn",
+      "message": "snapshot is empty",
+      "hint": "needs IMD_API_KEY, IMD_API_TOKEN; check the Actions secrets and that the key is still valid"
+    },
+    {
+      "source": "openaq_india",
+      "check": "freshness",
+      "severity": "warn",
+      "message": "last refreshed 13h ago, older than the 6h window",
+      "hint": "recent scrape runs are failing or the upstream is down"
+    },
+    {
+      "source": "openaq_india",
+      "check": "volume",
+      "severity": "warn",
+      "message": "snapshot is empty",
+      "hint": "needs OPENAQ_API_KEY; check the Actions secrets and that the key is still valid"
+    },
+    {
+      "source": "usgs_earthquakes",
+      "check": "freshness",
+      "severity": "warn",
+      "message": "last refreshed 29h ago, older than the 6h window",
+      "hint": "recent scrape runs are failing or the upstream is down"
+    }
+  ]
+}

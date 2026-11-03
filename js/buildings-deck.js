@@ -31,12 +31,79 @@ const DeckBuildings = (() => {
     let _enabled = false;
     let _focus = null;          // {lat,lng} of the focused DIGIPIN cell
     let _data = [];             // harvested deck polygon records
+    // Draw-cost record for the perf spec: how much geometry each refresh hands
+    // deck.gl and how long the harvest + layer build held the main thread.
+    let _refreshes = 0, _lastRefreshMs = 0, _maxRefreshMs = 0, _drawMode = 'off', _drawData = [], _peakData = [];
     let _moveBound = false;
     let _grid = null;           // { levels:[…], cells: Map<dashless DIGIPIN, metres> }, when loaded
-    let _gridLoad = null;       // in-flight/finished ensureHeights() promise
-    // Baked per-region height grids (scripts/build_building_heights.py). Add a
-    // region's file here once it has been baked.
-    const HEIGHT_GRIDS = ['data/heights/indore_pilot_heights_digipin.json'];
+    const _gridLoads = new Map();   // grid url -> in-flight/finished loadHeights() promise
+    let _index = null;          // in-flight/finished fetch of the grid index
+    // Per-region height grids baked by scripts/build_building_heights.py, which
+    // also writes this index ([{ region, bbox:[w,s,e,n], file }]). Only the grid
+    // covering the viewed city is fetched; the big metros run to several MB each.
+    const HEIGHT_INDEX = 'data/heights/index.json';
+
+    /** The baked-heights index ([{ region, bbox, file }]), fetched once and shared
+     *  with any other module that needs it (city overview) so boot does not
+     *  request it twice. Resolves to [] when missing. */
+    // A stalled link (no bytes, no error) would otherwise leave a grid "loading"
+    // forever: no row, no Retry, estimates with no explanation. Grids are a few
+    // MB, so give them longer than the index.
+    const INDEX_TIMEOUT_MS = 10000;
+    const GRID_TIMEOUT_MS = 120000;   // Delhi's grid is 5 MB: ~25 s on slow 3G, and CI's software renderer stalls the body read behind 3-7 s frames (a 45 s cap tripped there)
+
+    function heightIndex() {
+        if (!_index) {
+            // A 404 means no grids are baked (final for this build); a failed
+            // or 5xx fetch is forgotten so the next call asks again.
+            _index = fetch(HEIGHT_INDEX, { cache: 'no-cache', signal: AbortSignal.timeout(INDEX_TIMEOUT_MS) })
+                .then(r => { if (r.ok) return r.json(); if (r.status !== 404) _index = null; return []; })
+                .catch(() => { _index = null; return []; });
+        }
+        return _index;
+    }
+
+    // Grids whose last fetch failed for a reason other than 404 (url -> status
+    // or 'network'). While any is listed the user sees one DataStatus row: the
+    // 3D city is drawing estimated heights, and Retry refetches just those.
+    const HEIGHTS_KEY = 'heights';
+    const _failedGrids = new Map();
+
+    function _reportHeights() {
+        if (typeof DataStatus === 'undefined') return;
+        if (!_failedGrids.size) { DataStatus.clear(HEIGHTS_KEY); return; }
+        DataStatus.set(HEIGHTS_KEY, {
+            kind: 'warning',
+            text: '3D building heights did not load — buildings show estimated heights until they do.',
+            action: { label: 'Retry', busy: 'Loading…', run: retryHeights },
+        });
+    }
+
+    /** Forget every grid, failure and the index (tests; a republished index). */
+    function resetHeights() {
+        _index = null;
+        _gridLoads.clear();
+        _gridDocs.clear();
+        _failedGrids.clear();
+        _grid = null;
+        _gridGen++;
+        _reportHeights();
+    }
+
+    /**
+     * Refetch every grid whose last load failed (not only the ones under the
+     * current view: a grid the camera has since left would otherwise keep the
+     * row up), plus whatever the view needs now. True when nothing is failed
+     * afterwards, which is what lets the row clear.
+     */
+    async function retryHeights() {
+        const urls = [..._failedGrids.keys()];
+        await Promise.all(urls.map(u => {
+            if (!_gridLoads.has(u)) _gridLoads.set(u, loadHeights(u));
+            return _gridLoads.get(u);
+        }).concat([ensureHeights()]));
+        return _failedGrids.size === 0;
+    }
 
     /**
      * Load a baked DIGIPIN height grid ({ level, cells: { code: metres } })
@@ -45,23 +112,85 @@ const DeckBuildings = (() => {
      * survives Overture releases re-issuing ids. Safe to call with a missing
      * file — a 404 just leaves the footprint estimate in place.
      */
+    // Baked grids kept in memory, most recent last. One Delhi-size grid is a
+    // few hundred thousand Map entries; merging every visited city into one
+    // grid forever made a city sweep leak. Three covers a city plus neighbours.
+    const MAX_GRIDS = 3;
+    const _gridDocs = new Map();    // grid url -> parsed doc
+
+    // Merges run one after another and in slices (mergeHeightGridSliced), so a
+    // Delhi-size grid (350k cells) no longer holds the main thread for most of
+    // a second while footprint tiles wait to be announced; a reset in between
+    // (generation bump) makes a merge in flight drop its result.
+    let _mergeChain = Promise.resolve();
+    let _gridGen = 0;
+    function _queueMerge(doc, rebuilt) {
+        const gen = _gridGen;
+        _mergeChain = _mergeChain.then(async () => {
+            let g;
+            if (rebuilt) { g = null; for (const d of _gridDocs.values()) g = await mergeHeightGridSliced(g, d); }
+            else g = await mergeHeightGridSliced(_grid, doc);
+            if (gen === _gridGen) _grid = g;
+        }).catch((e) => console.warn('DeckBuildings: height grid merge failed:', e));
+        return _mergeChain;
+    }
+
     async function loadHeights(url) {
         try {
-            const res = await fetch(url, { cache: 'force-cache' });
-            if (!res.ok) return false;
-            _grid = mergeHeightGrid(_grid, await res.json());
+            const res = await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(GRID_TIMEOUT_MS) });
+            if (!res.ok) {
+                // 404: not baked for this city, the estimate stays (nothing to
+                // retry). Anything else is a link that failed: forget the load
+                // so the next ensureHeights() asks again, and say so.
+                if (res.status !== 404) { _failedGrids.set(url, res.status); _gridLoads.delete(url); _reportHeights(); }
+                return false;
+            }
+            const doc = await res.json();
+            _failedGrids.delete(url);
+            _reportHeights();
+            _gridDocs.delete(url);
+            _gridDocs.set(url, doc);
+            let rebuilt = false;
+            while (_gridDocs.size > MAX_GRIDS) {
+                const old = _gridDocs.keys().next().value;
+                _gridDocs.delete(old);
+                _gridLoads.delete(old);      // reloadable later (force-cache makes it cheap)
+                rebuilt = true;
+            }
+            await _queueMerge(doc, rebuilt);
             if (_enabled) refresh();
             return true;
         } catch (e) {
             console.warn('DeckBuildings.loadHeights failed:', e);
+            _failedGrids.set(url, e && e.name === 'TimeoutError' ? 'timeout' : 'network');
+            _gridLoads.delete(url);
+            _reportHeights();
             return false;
         }
     }
 
-    /** Load every baked height grid once; resolves when done (missing files are skipped). */
-    function ensureHeights() {
-        if (!_gridLoad) _gridLoad = Promise.all(HEIGHT_GRIDS.map(loadHeights));
-        return _gridLoad;
+    /** Grid files from the index whose bbox contains {lat,lng}. Pure. */
+    function gridsFor(index, pt) {
+        if (!Array.isArray(index) || !pt || !isFinite(pt.lat) || !isFinite(pt.lng)) return [];
+        return index.filter(g => Array.isArray(g.bbox) && g.file
+            && pt.lng >= g.bbox[0] && pt.lat >= g.bbox[1] && pt.lng <= g.bbox[2] && pt.lat <= g.bbox[3])
+            .map(g => g.file);
+    }
+
+    /**
+     * Load the baked grid(s) covering `pt` (default: the focused cell, else the
+     * map centre) once each; resolves when done. Missing files are skipped.
+     */
+    async function ensureHeights(pt) {
+        if (!pt) {
+            pt = _focus;
+            if (!pt && _map && _map.getCenter) { const c = _map.getCenter(); pt = { lat: c.lat, lng: c.lng }; }
+        }
+        const files = gridsFor(await heightIndex(), pt);
+        return Promise.all(files.map(f => {
+            if (!_gridLoads.has(f)) _gridLoads.set(f, loadHeights(f));
+            return _gridLoads.get(f);
+        }));
     }
 
     /** True when deck.gl (with the pieces we use) is loaded. */
@@ -110,9 +239,32 @@ const DeckBuildings = (() => {
     function mergeHeightGrid(grid, doc) {
         if (!doc || !doc.cells || !Number.isInteger(doc.level)) return grid;
         const out = grid || { levels: [], cells: new Map() };
-        for (const [code, h] of Object.entries(doc.cells)) out.cells.set(code, h);
-        if (!out.levels.includes(doc.level)) out.levels = [...out.levels, doc.level].sort((x, y) => y - x);
+        const cells = doc.cells;
+        for (const code in cells) out.cells.set(code, cells[code]);
+        _addLevel(out, doc.level);
         return out;
+    }
+    /**
+     * mergeHeightGrid in slices of `slice` cells with the main thread released
+     * between them (a city grid runs to 350k cells, most of a second in one
+     * go). The level is announced only once every cell is in, so lookups never
+     * see a half-merged level. Resolves to the lookup.
+     */
+    const MERGE_SLICE = 25000;
+    async function mergeHeightGridSliced(grid, doc, slice = MERGE_SLICE) {
+        if (!doc || !doc.cells || !Number.isInteger(doc.level)) return grid;
+        const out = grid || { levels: [], cells: new Map() };
+        const cells = doc.cells, keys = Object.keys(cells);
+        for (let i = 0; i < keys.length; i += slice) {
+            if (i) await new Promise((r) => setTimeout(r, 0));
+            const end = Math.min(keys.length, i + slice);
+            for (let j = i; j < end; j++) out.cells.set(keys[j], cells[keys[j]]);
+        }
+        _addLevel(out, doc.level);
+        return out;
+    }
+    function _addLevel(out, level) {
+        if (!out.levels.includes(level)) out.levels = [...out.levels, level].sort((x, y) => y - x);
     }
     /** Baked height (m) of the DIGIPIN cell containing a point, finest level first, or null. Pure. */
     function cellHeight(grid, lat, lng) {
@@ -174,7 +326,8 @@ const DeckBuildings = (() => {
                 const height = cellH != null
                     ? Math.max(3, cellH * (0.85 + 0.3 * _hash01(key)))
                     : estimateHeight(props, _ringAreaM2(outer, cy), key);
-                out.push({ polygon: outer, height, sel });
+                const hsrc = explicit ? 'overture' : cellH != null ? 'baked' : 'estimate';
+                out.push({ polygon: outer, height, sel, hsrc, cls: props.class || null });
             }
         }
         return out;
@@ -243,12 +396,54 @@ const DeckBuildings = (() => {
     /** Re-harvest the rendered buildings and push fresh layers to the overlay. */
     function refresh() {
         if (!_enabled || !_map || !_overlay) return;
+        const t0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         let feats = [];
         try { feats = _map.queryRenderedFeatures({ layers: [SRC_LAYER_ID] }) || []; }
         catch { /* layer not rendered yet */ }
         _data = featuresToPolygons(feats, _focus, HIGHLIGHT_RADIUS_M);
         _overlay.setProps({ layers: _layers() });
+        noteDraw('deck', _data, ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - t0);
     }
+
+    /**
+     * Record one draw of building geometry: `mode` is 'deck' (this overlay)
+     * or 'twin' (OvertureBuildings' MapLibre extrusion source, which harvests
+     * through featuresToPolygons too), `data` the polygon records, `ms` the
+     * harvest + build time. renderStats() reports the last one.
+     */
+    function noteDraw(mode, data, ms) {
+        _drawMode = mode || 'off';
+        _drawData = Array.isArray(data) ? data : [];
+        // A harvest between tiles can be empty; the fullest draw of the window
+        // is what the view cost, so keep it beside the last one.
+        if (_drawData.length > _peakData.length) _peakData = _drawData;
+        _lastRefreshMs = Math.max(0, Number(ms) || 0);
+        _maxRefreshMs = Math.max(_maxRefreshMs, _lastRefreshMs);
+        _refreshes++;
+    }
+
+    /** Geometry handed to deck.gl for a polygon record list. Pure. */
+    function polygonStats(data) {
+        const out = { polygons: 0, vertices: 0, selected: 0, bySource: { overture: 0, baked: 0, estimate: 0 } };
+        for (const d of (data || [])) {
+            out.polygons++;
+            out.vertices += d.polygon ? d.polygon.length : 0;
+            if (d.sel) out.selected++;
+            if (d.hsrc in out.bySource) out.bySource[d.hsrc]++;
+        }
+        return out;
+    }
+
+    /** Current draw cost: geometry of the last draw (deck overlay or twin source) plus refresh timings since the last reset. */
+    function renderStats() {
+        const peak = polygonStats(_peakData);
+        return Object.assign(polygonStats(_drawData), {
+            mode: _drawMode, enabled: _enabled, refreshes: _refreshes,
+            lastRefreshMs: Math.round(_lastRefreshMs), maxRefreshMs: Math.round(_maxRefreshMs),
+            peakPolygons: peak.polygons, peakVertices: peak.vertices, peakBySource: peak.bySource,
+        });
+    }
+    function resetRenderStats() { _refreshes = 0; _lastRefreshMs = 0; _maxRefreshMs = 0; _drawMode = 'off'; _drawData = []; _peakData = []; }
 
     /** Attach the deck overlay to the map. Returns false if deck is unavailable. */
     function enable(map, getFocus) {
@@ -261,7 +456,22 @@ const DeckBuildings = (() => {
         }
         _overlay = new deck.MapboxOverlay({ interleaved: false, layers: [] });
         map.addControl(_overlay);
-        if (!_moveBound) { map.on('moveend', refresh); _moveBound = true; }
+        if (!_moveBound) {
+            map.on('moveend', () => { ensureHeights(); refresh(); });
+            // Footprint tiles keep streaming in after the camera stops: harvest
+            // again on the first frame after the source has finished loading.
+            let dirty = false;
+            map.on('sourcedata', (e) => { if (_enabled && e && e.sourceId === 'overture-buildings-source' && e.tile) dirty = true; });
+            map.on('render', () => {
+                if (!_enabled || !dirty) return;
+                let loaded = true;
+                try { loaded = map.isSourceLoaded('overture-buildings-source'); } catch { /* source gone */ }
+                if (!loaded) return;
+                dirty = false;
+                setTimeout(() => { if (_enabled) refresh(); }, 300);
+            });
+            _moveBound = true;
+        }
         ensureHeights();   // real heights when available
         refresh();
         return true;
@@ -280,7 +490,7 @@ const DeckBuildings = (() => {
     function setFocus(center) {
         _focus = (center && isFinite(center.lat) && isFinite(center.lng))
             ? { lat: center.lat, lng: center.lng } : null;
-        if (_enabled) refresh();
+        if (_enabled) { ensureHeights(); refresh(); }
     }
 
     /** True while the deck overlay is attached. */
@@ -293,9 +503,13 @@ const DeckBuildings = (() => {
         return _vertExag;
     }
 
-    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights,
+    /** Grids currently held, for tests / diagnostics. */
+    function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0, failed: _failedGrids.size, failedReasons: Object.fromEntries(_failedGrids) }; }
+
+    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, retryHeights, resetHeights, heightIndex, heightsCacheStats,
+        polygonStats, renderStats, resetRenderStats, noteDraw,
         setExaggeration, getExaggeration,
-        featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight };
+        featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, mergeHeightGridSliced, cellHeight, gridsFor };
 })();
 
 if (typeof window !== 'undefined') window.DeckBuildings = DeckBuildings;

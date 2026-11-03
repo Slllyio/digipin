@@ -31,9 +31,11 @@ function swLocalAssets() {
     return [...block[1].matchAll(/['"]\.\/((?:js|css)\/[a-z0-9-]+\.(?:js|css))['"]/g)].map(x => x[1]);
 }
 
-/** Pinned CDN libs referenced in app.html (unpkg @version). */
+/** Pinned CDN libs referenced in app.html (unpkg @version), plus the ones
+ *  js/lazy-libs.js loads on first use (precached so they work offline too). */
+const lazyLibsJs = readFileSync(path.join(rootDir, 'js', 'lazy-libs.js'), 'utf-8');
 function appHtmlCdnVersions() {
-    return [...appHtml.matchAll(/unpkg\.com\/([a-z-]+)@([0-9.]+)\//g)].map(x => `${x[1]}@${x[2]}`);
+    return [appHtml, lazyLibsJs].flatMap(src => [...src.matchAll(/unpkg\.com\/([a-z-]+)@([0-9.]+)\//g)].map(x => `${x[1]}@${x[2]}`));
 }
 function swCdnVersions() {
     const block = swJs.match(/const CDN_ASSETS = \[([\s\S]*?)\];/);

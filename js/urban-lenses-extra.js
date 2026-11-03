@@ -1,0 +1,1216 @@
+/**
+ * Further lenses for UrbanLenses: research and official layers added after urban-lenses-wards.js reached the 150 kB
+ * per-module budget (first: Greater Chennai liquefaction susceptibility). Registers itself on load, after urban-lenses.js.
+ */
+const UrbanLensesExtra = (() => {
+    'use strict';
+    if (typeof UrbanLenses === 'undefined') return null;
+    const { _fin, _round, _people, _residents, wmean, wquantile } = UrbanLenses._kit;
+
+    // Ground that could liquefy. A published first-level assessment of Greater Chennai scores 20 m pixels for liquefaction
+    // susceptibility (lithology, landform, groundwater and bedrock depth) and overlays amplified shaking into a hazard class.
+    function liquefy(fr) {
+        const c = fr.cols, n = fr.grid.n, likely = c['liquefaction.lq_likely_pct'], poss = c['liquefaction.lq_possible_pct'];
+        const high = c['liquefaction.sh_high_pct'], pop = c['population.population'];
+        if (!likely || !likely.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(likely[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 0);
+        const mostly = sum(i => likely[i] >= 50), any = sum(i => likely[i] + (poss && _fin(poss[i]) ? poss[i] : 0) >= 50);
+        const hazard = high ? sum(i => _fin(high[i]) && high[i] >= 50) : NaN;
+        const stats = [
+            { label: 'Residents in blocks mostly on ground where liquefaction is likely', value: `${_people(mostly)} (${pct(mostly)}%)` },
+            { label: 'Residents in blocks mostly on ground where it is likely or possible', value: `${_people(any)} (${pct(any)}%)` },
+            { label: 'Residents in blocks mostly in the high seismic hazard class', value: _fin(hazard) ? `${_people(hazard)} (${pct(hazard)}%)` : 'n/a' },
+            { label: 'Share of ground likely to liquefy (residents-weighted)', value: `${_round(wmean(likely, pop, idx), 0)}%` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = likely[i];
+        return {
+            columns: { liquefy_likely_pct: out }, idx, weightKey: 'liquefy_likely_pct',
+            metric: { label: 'Residents in blocks mostly on ground likely to liquefy', value: pct(mostly), unit: '%', higherIs: 'worse' },
+            headline: `${_people(mostly)} residents here (${pct(mostly)}%) live in blocks mostly on ground a published assessment rates likely to liquefy in a strong earthquake${_fin(hazard) ? `, and ${pct(hazard)}% in blocks mostly in its high seismic hazard class` : ''}. Chennai is in seismic zone III, so this is about how the ground would behave, not how likely a quake is.`,
+            stats,
+        };
+    }
+
+    // Counted junction traffic. BBMP's 2024 traffic infrastructure plan counted vehicles turning through 28 junctions on
+    // its study corridors; each nearby block takes its nearest counted junction's busier peak hour.
+    function junctions(fr) {
+        const c = fr.cols, n = fr.grid.n, veh = c['junction_counts.jc_peak_veh'], km = c['junction_counts.jc_km'];
+        const daily = c['junction_counts.jc_daily_veh'], pop = c['population.population'];
+        if (!veh || !veh.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(veh[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 0);
+        const heavy = sum(i => veh[i] >= 12000), close = sum(i => veh[i] >= 12000 && _fin(km[i]) && km[i] <= 0.5);
+        const top = Math.max(...idx.map(i => veh[i])), dmax = daily ? Math.max(...idx.filter(i => _fin(daily[i])).map(i => daily[i])) : NaN;
+        const stats = [
+            { label: 'Residents near a junction carrying 12,000+ vehicles in its peak hour', value: `${_people(heavy)} (${pct(heavy)}%)` },
+            { label: 'Of them, within 500 m of it', value: `${_people(close)} (${pct(close)}%)` },
+            { label: 'Busiest counted junction near here (vehicles in the peak hour)', value: _round(top, 0).toLocaleString('en-IN') },
+            { label: 'Busiest 24-hour count near here (vehicles a day)', value: _fin(dmax) ? _round(dmax, 0).toLocaleString('en-IN') : 'n/a' },
+            { label: 'Peak hour vehicles at the nearest counted junction (residents-weighted)', value: _round(wmean(veh, pop, idx), 0).toLocaleString('en-IN') },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = veh[i];
+        return {
+            columns: { junction_peak_veh: out }, idx, weightKey: 'junction_peak_veh',
+            metric: { label: 'Residents near a junction with 12,000+ peak hour vehicles', value: pct(heavy), unit: '%', higherIs: 'worse' },
+            headline: `${pct(heavy)}% of residents within 2 km of a counted junction live nearest one that carried 12,000 or more vehicles in its busiest hour in BBMP's 2024 surveys; the busiest near here counted ${_round(top, 0).toLocaleString('en-IN')}. These are measured counts at 28 junctions on the study corridors, so most of the city is not covered.`,
+            stats,
+        };
+    }
+
+    // Traffic tickets by police station. Mumbai Traffic Police publish the violations they booked in 2024 in each station
+    // area, by offence; every block carries its station's figures. This is enforcement, not a measure of bad driving.
+    function challans(fr) {
+        const c = fr.cols, n = fr.grid.n, per = c['traffic_challans.tc_per_1000'], helmet = c['traffic_challans.tc_helmet_pct'];
+        const signal = c['traffic_challans.tc_signal_pct'], wrong = c['traffic_challans.tc_wrongway_pct'], obst = c['traffic_challans.tc_obstruct_pct'];
+        const pop = c['population.population'];
+        if (!per || !per.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(per[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 0);
+        const heavy = sum(i => per[i] >= 100), med = wquantile(per, pop, idx, 0.5);
+        const w = col => (col ? _round(wmean(col, pop, idx), 0) : NaN);
+        const stats = [
+            { label: 'Violations booked per 1,000 residents of the station area (residents-weighted median)', value: _round(med, 0) },
+            { label: 'Residents in station areas booking 100+ per 1,000 residents', value: `${_people(heavy)} (${pct(heavy)}%)` },
+            { label: 'Share booked for riding without a helmet', value: `${w(helmet)}%` },
+            { label: 'Share booked for causing obstruction (mostly parking)', value: `${w(obst)}%` },
+            { label: 'Share booked for jumping a signal', value: `${w(signal)}%` },
+            { label: 'Share booked for wrong-side driving or entering a one-way', value: `${w(wrong)}%` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = per[i];
+        return {
+            columns: { challans_per_1000: out }, idx, weightKey: 'challans_per_1000',
+            metric: { label: 'Residents in station areas booking 100+ violations per 1,000 residents', value: pct(heavy), unit: '%', higherIs: null },
+            headline: `In 2024 the traffic police booked a median ${_round(med, 0)} violations per 1,000 residents in the station areas here, and ${pct(heavy)}% of residents live where they booked 100 or more; riding without a helmet made up ${w(helmet)}% of bookings and obstruction ${w(obst)}%. These count enforcement, so a high number can mean more patrolling as well as worse driving.`,
+            stats,
+        };
+    }
+
+    // The city's temperatures since 1951. IMD's daily series for the city's grid cell, the 1991-2020 normal against
+    // 1951-1980: one value per city, so the lens tells the city's story rather than mapping blocks.
+    function since1951(fr) {
+        const c = fr.cols, n = fr.grid.n, tx = c['city_climate.cc_tmax_change'], tn = c['city_climate.cc_tmin_change'];
+        const hotThen = c['city_climate.cc_hot_then'], hotNow = c['city_climate.cc_hot_now'], warm = c['city_climate.cc_warm_nights_now'];
+        const f40a = c['city_climate.cc_40_then'], f40b = c['city_climate.cc_40_now'];
+        if (!tx || !tx.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(tx[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = col => (col && _fin(col[i0]) ? col[i0] : NaN), sgn = x => `${x > 0 ? '+' : ''}${_round(x, 1)}`;
+        const dTx = v(tx), dTn = v(tn), hb = v(hotThen), ha = v(hotNow), wn = v(warm), a40 = v(f40a), b40 = v(f40b);
+        const stats = [
+            { label: 'Change in the average daily high, 1991-2020 vs 1951-1980', value: `${sgn(dTx)} °C` },
+            { label: 'Change in the average daily low (nights)', value: `${sgn(dTn)} °C` },
+            { label: 'Unusually hot days a year (hottest 5% of 1951-1980), then and now', value: `${_round(hb, 0)} → ${_round(ha, 0)}` },
+            { label: 'Unusually warm nights a year by the same yardstick, 1991-2020', value: `${_round(wn, 0)} (18 in 1951-1980)` },
+            { label: 'Days a year at 40 °C or more, then and now', value: _fin(a40) && (a40 > 0.5 || b40 > 0.5) ? `${_round(a40, 0)} → ${_round(b40, 0)}` : 'almost none' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = ha;
+        const nights = dTn > dTx + 0.2;
+        return {
+            columns: { since1951_hot_days: out }, idx, weightKey: 'since1951_hot_days',
+            metric: { label: 'Unusually hot days a year now (18 in 1951-1980)', value: _round(ha, 0), unit: 'days', higherIs: 'worse' },
+            headline: `Compared with 1951-1980, the 1991-2020 average daily high here is ${sgn(dTx)} °C and the daily low ${sgn(dTn)} °C. Days that used to be the hottest 5% (about 18 a year) now come ${_round(ha, 0)} times a year, and warm nights ${_round(wn, 0)} times.${nights ? ' The warming here is mostly at night, which matters for sleep and for people without cooling.' : ''} This is one series for the whole city, from IMD's daily grid.`,
+            stats,
+        };
+    }
+
+    // Slopes that can slide. NASA's global landslide susceptibility map (about 1 km) sampled under each block, crossed with
+    // mapped slums where the city has them: hillside settlements are where monsoon slides kill.
+    function slidezone(fr) {
+        const c = fr.cols, n = fr.grid.n, cls = c['landslide_susceptibility.ls_class'], near = c['landslide_susceptibility.ls_near_max'];
+        const slum = c['slums_mapped.slum_pct'], pop = c['population.population'];
+        if (!cls || !cls.some(x => _fin(x) && x >= 3)) return null;
+        const idx = _residents(fr).filter(i => _fin(cls[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const mod = sum(i => cls[i] >= 3), high = sum(i => cls[i] >= 4), nearHigh = sum(i => _fin(near[i]) && near[i] >= 4);
+        const slumMod = slum ? idx.filter(i => cls[i] >= 3).reduce((s, i) => s + pop[i] * Math.min(_fin(slum[i]) ? slum[i] : 0, 100) / 100, 0) : NaN;
+        const stats = [
+            { label: 'Residents on ground of moderate or higher landslide susceptibility', value: `${_people(mod)} (${pct(mod)}%)` },
+            { label: 'Of them on high or very high', value: `${_people(high)} (${pct(high)}%)` },
+            { label: 'Residents within about 1 km of high or very high ground', value: `${_people(nearHigh)} (${pct(nearHigh)}%)` },
+            { label: 'Residents of mapped slums on moderate or higher ground', value: _fin(slumMod) ? _people(slumMod) : 'no slum map' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = cls[i];
+        return {
+            columns: { slide_class: out }, idx, weightKey: 'slide_class',
+            metric: { label: 'Residents on moderate or higher landslide susceptibility', value: pct(mod), unit: '%', higherIs: 'worse' },
+            headline: `${_people(mod)} residents here (${pct(mod)}%) live on ground NASA's global map rates moderate or higher for landslides, ${_people(high)} on high or very high${_fin(slumMod) && slumMod >= 100 ? `; about ${_people(slumMod)} of them in mapped slums, the hillside settlements where monsoon slides do most harm` : ''}. The map is about 1 km coarse, so it flags neighbourhoods with slopes that can fail, not single buildings.`,
+            stats,
+        };
+    }
+
+    // Flooded in a named event. Sentinel-1 radar flood proxy maps from the Earth Observatory of Singapore for the Yamuna
+    // flood of July 2023 (Delhi) and Cyclone Amphan (Kolkata, May 2020).
+    function radarflood(fr) {
+        const c = fr.cols, n = fr.grid.n, fl = c['sar_floods.sf_flooded_pct'], yr = c['sar_floods.sf_year'], dm = c['sar_floods.sf_damage_pct'], pop = c['population.population'];
+        if (!fl || !fl.some(x => _fin(x) && x > 0)) return null;
+        const idx = _residents(fr).filter(i => _fin(fl[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const most = sum(i => fl[i] >= 50), some = sum(i => fl[i] >= 10);
+        const year = yr ? yr.find(_fin) : NaN;
+        const event = year === 2023 ? 'the Yamuna flood of July 2023' : year === 2020 ? 'Cyclone Amphan in May 2020' : 'the mapped flood';
+        const stats = [
+            { label: 'Residents in blocks mostly flagged as flooded', value: `${_people(most)} (${pct(most)}%)` },
+            { label: 'Residents in blocks with at least a tenth flagged', value: `${_people(some)} (${pct(some)}%)` },
+            { label: 'Share of ground flagged (residents-weighted)', value: `${_round(wmean(fl, pop, idx), 1)}%` },
+        ];
+        const di = dm ? idx.filter(i => _fin(dm[i])) : [];
+        let dmg = '';
+        if (di.length >= 5) {
+            const hit = sum(i => _fin(dm[i]) && dm[i] >= 10);
+            stats.push({ label: 'Residents where the radar damage map flags at least a tenth of the ground', value: `${_people(hit)} (${pct(hit)}%)` });
+            dmg = ` A second radar map of change before and after the storm flags at least a tenth of the ground around ${_people(hit)} residents (${pct(hit)}%) as likely damaged, felled trees included.`;
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = fl[i];
+        return {
+            columns: { radar_flooded_pct: out }, idx, weightKey: 'radar_flooded_pct',
+            metric: { label: 'Residents in blocks mostly flagged as flooded', value: pct(most), unit: '%', higherIs: 'worse' },
+            headline: `Radar images taken during ${event} flag ${_people(most)} residents here (${pct(most)}%) in blocks mostly under water and ${_people(some)} where at least a tenth of the ground was. Radar misses water in narrow streets between tall buildings, so built-up areas are under-counted.${dmg}`,
+            stats,
+        };
+    }
+
+    function unpaved(fr) {
+        const c = fr.cols, n = fr.grid.n, up = c['road_surface.rs_unpaved_pct'], kn = c['road_surface.rs_known_pct'], wl = c['waterlogging.waterlogging_index'], pop = c['population.population'];
+        if (!up || !up.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(up[i]));
+        if (idx.length < 5) return null;
+        const all = _residents(fr).reduce((s, i) => s + pop[i], 0) || 1;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const some = sum(i => up[i] >= 20), most = sum(i => up[i] >= 50);
+        const cover = kn ? _round(wmean(kn, pop, _residents(fr).filter(i => _fin(kn[i]))), 0) : NaN;
+        const stats = [
+            { label: 'Residents where a fifth or more of the known roads are unpaved', value: `${_people(some)} (${pct(some)}%)` },
+            { label: 'Residents where most known roads are unpaved', value: `${_people(most)} (${pct(most)}%)` },
+            { label: 'Unpaved share of known road length (residents-weighted)', value: `${_round(wmean(up, pop, idx), 1)}%` },
+            { label: 'Residents covered (300 m or more of road with a known surface)', value: `${_people(P)} (${_round(100 * P / all, 1)}%)` },
+        ];
+        if (_fin(cover)) stats.push({ label: 'Road length nearby with a known surface (residents-weighted)', value: `${cover}%` });
+        let mud = '';
+        if (wl && idx.some(i => _fin(wl[i]))) {
+            const m = sum(i => up[i] >= 20 && _fin(wl[i]) && wl[i] >= 60);
+            stats.push({ label: 'Residents with a fifth or more unpaved and a high waterlogging score (60+)', value: `${_people(m)} (${pct(m)}%)` });
+            mud = ` ${_people(m)} (${pct(m)}%) live where those roads are also in low, waterlogging-prone ground, likely to turn to mud in the monsoon.`;
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = up[i];
+        return {
+            columns: { unpaved_pct: out }, idx, weightKey: 'unpaved_pct',
+            metric: { label: 'Residents where a fifth or more of the known roads are unpaved', value: pct(some), unit: '%', higherIs: 'worse' },
+            headline: `Of the residents whose nearby roads have a known surface, ${_people(some)} (${pct(some)}%) live where a fifth or more of that road length is unpaved, and ${_people(most)} where most of it is. Only part of the network is known (a street photo or an OpenStreetMap tag), so read this as a sample of the streets, not a full survey.${mud}`,
+            stats,
+        };
+    }
+
+    // Generated by pipeline/realestate/socialties.py --js (Meta Social Connectedness Index, public domain).
+    const TIES = {"ahmedabad":{"districts":[["Dungarpur","Rajasthan",24829],["Sirohi","Rajasthan",16536],["Jalor","Rajasthan",13653],["Banswara","Rajasthan",12218],["Udaipur","Rajasthan",11506]],"countries":[["Kuwait",28439],["the UAE",26992],["Nepal",21900],["Canada",19721],["Oman",19266]],"distinct":[["Canada",20.0],["Australia",15.7],["New Zealand",12.0]]},"bengaluru":{"districts":[["Hailakandi","Assam",20856],["Karimganj","Assam",16643],["Krishnagiri","Tamil Nadu",13574],["North Tripura","Tripura",13445],["Cachar","Assam",12363]],"countries":[["Nepal",72788],["the UAE",56596],["Bahrain",41992],["Qatar",41495],["Kuwait",37504]],"distinct":[["Luxembourg",20.9],["Ireland",16.7],["Australia",10.2]]},"bhopal":{"districts":[["Lalitpur","Uttar Pradesh",21615],["Jhalawar","Rajasthan",10319],["Jhansi","Uttar Pradesh",9492],["Baran","Rajasthan",8281],["Mungeli","Chhattisgarh",7382]],"countries":[["the UAE",21658],["Oman",14146],["Qatar",13402],["Kuwait",13362],["Nepal",12097]],"distinct":[]},"chennai":{"districts":[["Puducherry","Puducherry",24947],["Karaikal","Puducherry",20990],["Sipahijala","Tripura",12042],["Nawada","Bihar",8031],["Peren","Nagaland",8002]],"countries":[["Singapore",95771],["the UAE",70449],["Kuwait",59055],["Qatar",56462],["Bahrain",53885]],"distinct":[["Singapore",37.2],["Luxembourg",15.6],["Sri Lanka",13.6]]},"delhi":{"districts":[["Gautam Buddha Nagar","Uttar Pradesh",13492],["Budaun","Uttar Pradesh",13466],["Sambhal","Uttar Pradesh",12300],["Gurgaon","Haryana",12235],["Darbhanga","Bihar",11730]],"countries":[["Nepal",40054],["the UAE",38375],["Qatar",30539],["Kuwait",28958],["Oman",25828]],"distinct":[["Canada",8.1],["New Zealand",7.1],["Australia",6.0]]},"guna":{"districts":[["Baran","Rajasthan",218380],["Jhalawar","Rajasthan",92383],["Kota","Rajasthan",31671],["Lalitpur","Uttar Pradesh",25059],["Bundi","Rajasthan",20016]],"countries":[["the UAE",11062],["Oman",10127],["Kuwait",8841],["Qatar",8375],["Saudi Arabia",7375]],"distinct":[]},"hyderabad":{"districts":[["Bidar","Karnataka",23066],["Prakasam","Andhra Pradesh",15426],["Yanam","Puducherry",14397],["Guntur","Andhra Pradesh",14369],["East Godavari","Andhra Pradesh",13653]],"countries":[["the UAE",48373],["Kuwait",45123],["Bahrain",42330],["Qatar",40314],["Oman",32164]],"distinct":[["the US",15.2],["Australia",13.3],["Somalia",11.7]]},"indore_pilot":{"districts":[["Lalitpur","Uttar Pradesh",23910],["Jhalawar","Rajasthan",11897],["Pratapgarh","Rajasthan",7425],["Kota","Rajasthan",6115],["Baran","Rajasthan",6082]],"countries":[["the UAE",17323],["Kuwait",15609],["Oman",11695],["Qatar",10024],["Bahrain",9979]],"distinct":[]},"jaipur":{"districts":[["Sheopur","Madhya Pradesh",29961],["Mahendragarh","Haryana",20463],["Rewari","Haryana",8939],["Mewat","Haryana",8642],["Morena","Madhya Pradesh",8443]],"countries":[["the UAE",33104],["Kuwait",22139],["Oman",21855],["Qatar",20592],["Bahrain",17985]],"distinct":[["Mauritius",2.2]]},"kolkata":{"districts":[["Banka","Bihar",11809],["South Andaman","Andaman and Nicobar",9068],["Jamui","Bihar",7557],["Giridih","Jharkhand",7250],["Nawada","Bihar",6970]],"countries":[["the UAE",34139],["Oman",26236],["Qatar",23970],["Kuwait",22704],["Bangladesh",22268]],"distinct":[["Bhutan",4.2],["Bangladesh",3.1],["Singapore",2.6]]},"lucknow":{"districts":[["Panchkula","Haryana",5331],["Gurgaon","Haryana",5313],["Jhajjar","Haryana",4337],["West","Delhi",4296],["Sonipat","Haryana",4271]],"countries":[["Kuwait",53752],["Oman",44900],["Saudi Arabia",44379],["the UAE",42707],["Bahrain",27083]],"distinct":[["Saudi Arabia",3.2],["Kuwait",2.4],["Brunei",2.3]]},"mumbai":{"districts":[["Siddharth Nagar","Uttar Pradesh",20960],["Shravasti","Uttar Pradesh",16516],["Bahraich","Uttar Pradesh",15204],["Balrampur","Uttar Pradesh",15203],["Gonda","Uttar Pradesh",13788]],"countries":[["the UAE",64920],["Kuwait",52191],["Qatar",49072],["Oman",42614],["Bahrain",39703]],"distinct":[["Ireland",11.7],["New Zealand",10.2],["Canada",9.6]]},"pune":{"districts":[["Siddharth Nagar","Uttar Pradesh",8677],["Bidar","Karnataka",8526],["Balrampur","Uttar Pradesh",6925],["Chitrakoot","Uttar Pradesh",6758],["Umaria","Madhya Pradesh",6469]],"countries":[["the UAE",34864],["Nepal",32196],["Oman",22745],["Kuwait",22379],["Qatar",22363]],"distinct":[["Ireland",11.6],["Australia",6.8],["Canada",6.0]]}};
+    function friends(fr) {
+        const c = fr.cols, n = fr.grid.n, top = c['social_ties.st_top_out_sci'], t = TIES[fr.city];
+        if (!t || !top || !top.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(top[i]));
+        if (idx.length < 5) return null;
+        const list = (a, k) => { const w = a.slice(0, k).map(x => x[0] + (x.length > 2 ? ` (${x[1]})` : '')); return w.length > 1 ? `${w.slice(0, -1).join(', ')} and ${w[w.length - 1]}` : w.join(''); };
+        const d = t.districts, far = d.filter(x => x[2] >= 0.5 * d[0][2]);
+        const stats = d.map((x, k) => ({ label: `Most-connected district outside the home state ${k + 1}`, value: `${x[0]}, ${x[1]} (SCI ${x[2].toLocaleString('en-IN')})` }));
+        stats.push({ label: 'Countries people here are most likely to have friends in', value: list(t.countries, 5) });
+        if (t.distinct.length) stats.push({ label: 'Ties abroad far above a typical Indian district', value: t.distinct.map(x => `${x[0]} (${x[1]}×)`).join(', ') });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = top[i];
+        return {
+            columns: { friends_top_sci: out }, idx, weightKey: 'friends_top_sci',
+            metric: { label: 'Social connectedness with the most-connected district outside the home state', value: d[0][2], unit: 'SCI', higherIs: null },
+            headline: `Outside its own state, this city is most tied by friendship to ${list(far.length > 1 ? far : d, 3)}: strong ties to a distant district usually mean people who moved here from there. Abroad, people here are most likely to have friends in ${list(t.countries, 3)}${t.distinct.length ? `, and far more than a typical Indian district in ${t.distinct.map(x => x[0]).slice(0, 2).join(' and ')}` : ''}. One reading for the whole city, from Facebook friendships.`,
+            stats,
+        };
+    }
+
+    function foodbasket(fr) {
+        const c = fr.cols, n = fr.grid.n, b = c['food_prices.fp_basket_rs'], vs = c['food_prices.fp_vs_median_pct'], ten = c['food_prices.fp_10y_pct'];
+        const sw = c['food_prices.fp_onion_swing'], yr = c['food_prices.fp_last_year'], pci = c['district_income.di_pci'];
+        if (!b || !b.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(b[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = col => (col && _fin(col[i0]) ? col[i0] : NaN), rs = x => `₹${Math.round(x).toLocaleString('en-IN')}`;
+        const cost = v(b), d = v(vs), t = v(ten), o = v(sw), y = v(yr);
+        const stats = [
+            { label: `A month's kitchen basket at retail prices (12 months to ${_fin(y) ? y : 'the latest'})`, value: rs(cost) },
+            { label: 'Against the median of the eleven price-centre cities', value: _fin(d) ? `${d > 0 ? '+' : ''}${d}%` : 'n/a' },
+            { label: 'Change over ten years (same months)', value: _fin(t) ? `+${t}%` : 'n/a' },
+            { label: 'Dearest over cheapest monthly onion price, last five years', value: _fin(o) ? `${o}×` : 'n/a' },
+        ];
+        const pc = pci ? wmean(pci, c['population.population'], idx.filter(i => _fin(pci[i]))) : NaN;
+        let share = '';
+        if (_fin(pc) && pc > 0) {
+            const sh = _round(100 * cost * 12 / (pc * 4.5), 1);
+            stats.push({ label: 'Basket over a year as a share of district income for a household of 4.5', value: `${sh}%` });
+            share = ` At the district's average income per head (a mean that high earners pull up) that is about ${sh}% of a household's income, far more for a low-wage family.`;
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = cost;
+        const rel = !_fin(d) || Math.abs(d) < 3 ? 'about the same as the other price-centre cities' : d > 0 ? `${d}% dearer than the median price-centre city` : `${-d}% cheaper than the median price-centre city`;
+        return {
+            columns: { food_basket_rs: out }, idx, weightKey: 'food_basket_rs',
+            metric: { label: "A month's kitchen basket at retail prices", value: Math.round(cost), unit: '₹', higherIs: 'worse' },
+            headline: `A month's basket of staples for a family (rice, atta, dal, oil, sugar, milk, vegetables, tea and salt) cost ${rs(cost)} here in the year to ${_fin(y) ? y : 'the latest data'}, ${rel}${_fin(t) ? `, and ${t}% more than ten years earlier` : ''}.${share} Onion prices swung ${_fin(o) ? `${o}-fold` : 'widely'} between their cheapest and dearest months over five years. One price series for the whole city.`,
+            stats,
+        };
+    }
+
+    function footpaths(fr) {
+        const c = fr.cols, n = fr.grid.n, fp = c['pune_prabhag_2016.pp_footpath_pct'], sw = c['pune_prabhag_2016.pp_swd_pct'];
+        const slum = c['pune_prabhag_2016.pp_slum_hh'], pr = c['pune_prabhag_2016.pp_prabhag'], pop = c['population.population'];
+        if (!fp || !fp.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(fp[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const low = sum(i => fp[i] < 20), none = sum(i => fp[i] < 5);
+        const both = sw ? sum(i => fp[i] < 20 && _fin(sw[i]) && sw[i] < 30) : 0;
+        const stats = [
+            { label: 'Residents in prabhags where under a fifth of roads have usable footpaths', value: `${_people(low)} (${pct(low)}%)` },
+            { label: 'Residents in prabhags with almost no usable footpaths (under 5%)', value: `${_people(none)} (${pct(none)}%)` },
+            { label: 'Usable footpath share of roads (residents-weighted)', value: `${_round(wmean(fp, pop, idx), 1)}%` },
+        ];
+        if (sw) stats.push({ label: 'Roads with a storm-water drain (residents-weighted)', value: `${_round(wmean(sw, pop, idx.filter(i => _fin(sw[i]))), 1)}%` },
+            { label: 'Residents with under a fifth footpaths and under 30% drained roads', value: `${_people(both)} (${pct(both)}%)` });
+        if (slum && pr) {
+            const seen = new Map();
+            for (const i of idx) if (_fin(pr[i]) && _fin(slum[i])) seen.set(pr[i], [slum[i], fp[i]]);
+            const rows = [...seen.values()], hh = rows.reduce((s, r) => s + r[0], 0), lowHh = rows.filter(r => r[1] < 20).reduce((s, r) => s + r[0], 0);
+            if (hh > 0) stats.push({ label: 'Slum households in prabhags where under a fifth of roads have usable footpaths', value: `${Math.round(lowHh).toLocaleString('en-IN')} of ${Math.round(hh).toLocaleString('en-IN')} (${_round(100 * lowHh / hh, 0)}%)` });
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = fp[i];
+        return {
+            columns: { usable_footpath_pct: out }, idx, weightKey: 'usable_footpath_pct',
+            metric: { label: 'Residents in prabhags where under a fifth of roads have usable footpaths', value: pct(low), unit: '%', higherIs: 'worse' },
+            headline: `In PMC's 2016 survey of its 76 prabhags, ${_people(low)} residents here (${pct(low)}%) live where under a fifth of the roads have a usable footpath, and ${_people(none)} where almost none do. The figures are PMC's own, ten years old, for the prabhags of 2012-2017.`,
+            stats,
+        };
+    }
+
+    function intercity(fr) {
+        const c = fr.cols, n = fr.grid.n, t5 = c['intercity_trains.it_trains_5km'], hk = c['intercity_trains.it_hub_km'], ht = c['intercity_trains.it_hub_trains'], pop = c['population.population'];
+        if (!t5 || !t5.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(t5[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const none = sum(i => t5[i] === 0), rich = sum(i => t5[i] >= 100);
+        const hi = hk ? idx.filter(i => _fin(hk[i])) : [];
+        const far = hi.length ? sum(i => _fin(hk[i]) && hk[i] > 10) : NaN;
+        const stats = [
+            { label: 'Residents with no long-distance train stop within 5 km', value: `${_people(none)} (${pct(none)}%)` },
+            { label: 'Residents with 100 or more long-distance trains stopping within 5 km', value: `${_people(rich)} (${pct(rich)}%)` },
+            { label: 'Long-distance trains within 5 km for the middle resident', value: `${_round(wquantile(t5, pop, idx, 0.5), 0)}` },
+        ];
+        if (hi.length) {
+            stats.push({ label: 'Distance to the nearest big station (50+ long-distance trains), middle resident', value: `${_round(wquantile(hk, pop, hi, 0.5), 1)} km` });
+            stats.push({ label: 'Residents more than 10 km from a big station', value: `${_people(far)} (${pct(far)}%)` });
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = t5[i];
+        return {
+            columns: { intercity_trains_5km: out }, idx, weightKey: 'intercity_trains_5km',
+            metric: { label: 'Residents with no long-distance train stop within 5 km', value: pct(none), unit: '%', higherIs: 'worse' },
+            headline: `${_people(none)} residents here (${pct(none)}%) have no station within 5 km where an express or superfast train stops, while ${_people(rich)} (${pct(rich)}%) have 100 or more such trains within 5 km.${hi.length ? ` The middle resident is ${_round(wquantile(hk, pop, hi, 0.5), 1)} km from a station with 50 or more.` : ''} Counts come from the 2016 Indian Railways timetable, so newer trains such as the Vande Bharat expresses are missing.`,
+            stats,
+        };
+    }
+
+    function emitters(fr) {
+        const c = fr.cols, n = fr.grid.n, pm = c['emission_sources.es_pm25_t'], ind = c['emission_sources.es_industry_pct'], home = c['emission_sources.es_homes_pct'],
+            pw = c['emission_sources.es_power_pct'], nt = c['emission_sources.es_nox_traffic_pct'], pop = c['population.population'];
+        if (!pm || !pm.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(pm[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const top = wquantile(pm, pop, idx, 0.9);
+        const hot = sum(i => pm[i] >= top), indLed = ind ? sum(i => _fin(ind[i]) && ind[i] >= 50) : NaN, homeLed = home ? sum(i => _fin(home[i]) && home[i] >= 50) : NaN;
+        const w = (col) => col ? wmean(col, pop, idx.filter(i => _fin(col[i]))) : NaN;
+        const stats = [
+            { label: 'PM2.5 emitted a year within 2 km, middle resident', value: `${_round(wquantile(pm, pop, idx, 0.5), 0)} t` },
+            { label: 'Residents where industry emits most of the PM2.5 within 2 km', value: `${_people(indLed)} (${pct(indLed)}%)` },
+            { label: 'Residents where household cooking and heating fuel emits most of it', value: `${_people(homeLed)} (${pct(homeLed)}%)` },
+            { label: 'Industry share of PM2.5 emitted near the average resident', value: `${_round(w(ind), 0)}%` },
+            { label: 'Household fuel share of PM2.5 emitted near the average resident', value: `${_round(w(home), 0)}%` },
+        ];
+        if (pw && _fin(w(pw)) && w(pw) >= 1) stats.push({ label: 'Power plant share of PM2.5 emitted near the average resident', value: `${_round(w(pw), 0)}%` });
+        if (nt && _fin(w(nt))) stats.push({ label: 'Vehicle exhaust share of NOx emitted near the average resident', value: `${_round(w(nt), 0)}%` });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = pm[i];
+        return {
+            columns: { emitters_pm25_t: out }, idx, weightKey: 'emitters_pm25_t',
+            metric: { label: 'Residents where industry emits most of the PM2.5 within 2 km', value: pct(indLed), unit: '%', higherIs: 'worse' },
+            headline: `By the EU's EDGAR inventory, industry puts out most of the fine soot emitted within 2 km of ${_people(indLed)} residents here (${pct(indLed)}%), and household cooking and heating fuel most of it for ${_people(homeLed)} (${pct(homeLed)}%). The ${_people(hot)} residents in the top tenth of blocks have ${_round(top, 0)} tonnes or more emitted around them a year.${nt && _fin(w(nt)) ? ` Vehicles show up in nitrogen oxides instead: ${_round(w(nt), 0)}% of the NOx emitted near the average resident is exhaust.` : ''} Road and construction dust are not in the inventory.`,
+            stats,
+        };
+    }
+
+    function sootrend(fr) {
+        const c = fr.cols, n = fr.grid.n, pm = c['city_emissions.ce_pm25_t'];
+        if (!pm || !pm.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(pm[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`city_emissions.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const t = v('ce_pm25_t'), ch = v('ce_pm25_2000_pct'), kg = v('ce_pm25_kg_pp'), vs = v('ce_pm25_vs_india'), nx = v('ce_nox_t'), nch = v('ce_nox_2000_pct');
+        const h = v('ce_homes_pct'), h0 = v('ce_homes_2000_pct'), ind = v('ce_industry_pct');
+        const sg = x => `${x > 0 ? '+' : ''}${x}%`, tn = x => `${Math.round(x).toLocaleString('en-IN')} t`;
+        const stats = [
+            { label: 'PM2.5 emitted in the urban centre, 2024', value: tn(t) },
+            { label: 'Change since 2000', value: _fin(ch) ? sg(ch) : 'n/a' },
+            { label: 'PM2.5 emitted per resident, 2024', value: _fin(kg) ? `${kg} kg` : 'n/a' },
+            { label: 'Against the median of India\'s 1,925 urban centres', value: _fin(vs) ? `${vs}×` : 'n/a' },
+            { label: 'Household fuel share of PM2.5, 2000 → 2024', value: _fin(h) && _fin(h0) ? `${h0}% → ${h}%` : 'n/a' },
+            { label: 'Industry share of PM2.5, 2024', value: _fin(ind) ? `${ind}%` : 'n/a' },
+            { label: 'NOx emitted, 2024 (change since 2000)', value: _fin(nx) ? `${tn(nx)}${_fin(nch) ? ` (${sg(nch)})` : ''}` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = kg;
+        const rel = !_fin(vs) ? '' : vs >= 1.15 ? `, ${vs} times the median Indian urban centre` : vs <= 0.87 ? `, less than the median Indian urban centre (${vs}×)` : ', close to the median Indian urban centre';
+        return {
+            columns: { soot_kg_pp: out }, idx, weightKey: 'soot_kg_pp',
+            metric: { label: 'PM2.5 emitted per resident, 2024', value: kg, unit: 'kg', higherIs: 'worse' },
+            headline: `The ${fr.city ? `${fr.city[0].toUpperCase()}${fr.city.slice(1).replace('_pilot', '')} ` : ''}urban centre emitted about ${tn(t)} of fine particles (PM2.5) in 2024${_fin(ch) ? `, ${ch >= 0 ? `${ch}% more` : `${-ch}% less`} than in 2000` : ''}: ${_fin(kg) ? `${kg} kg per resident` : ''}${rel}.${_fin(h) && _fin(h0) ? ` Household cooking and heating fuel fell from ${h0}% to ${h}% of it, while industry took ${ind}%.` : ''}${_fin(nch) ? ` Nitrogen oxides, mostly from fuel burnt in engines and plants, ${nch >= 0 ? `rose ${nch}%` : `fell ${-nch}%`}.` : ''} EDGAR's modelled inventory of direct emissions; road and construction dust are not in it.`,
+            stats,
+        };
+    }
+
+    function packingin(fr) {
+        const c = fr.cols, n = fr.grid.n, r0 = c['land_efficiency.le_ratio_00_20'];
+        if (!r0 || !r0.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(r0[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`land_efficiency.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const r = v('le_ratio_00_20'), land = v('le_land_pct_yr'), ppl = v('le_pop_pct_yr'), r90 = v('le_ratio_90_00'), r10 = v('le_ratio_10_20'), r30 = v('le_ratio_20_30');
+        const wp = v('le_world_pctile'), ip = v('le_india_pctile');
+        const ratio = x => (!_fin(x) ? 'n/a' : x >= 5 ? '5 or more' : x <= -5 ? 'below -5' : `${x}`);
+        const stats = [
+            { label: 'Built-up land growth over population growth, 2000-2020 (SDG 11.3.1)', value: ratio(r) },
+            { label: 'Built-up land grew a year, 2000-2020', value: _fin(land) ? `${land}%` : 'n/a' },
+            { label: 'Population grew a year, 2000-2020', value: _fin(ppl) ? `${ppl}%` : 'n/a' },
+            { label: 'The ratio by decade: 1990-2000 → 2010-2020', value: `${ratio(r90)} → ${ratio(r10)}` },
+            { label: 'World urban centres of a million or more that spread out less', value: _fin(wp) ? `${wp}%` : 'n/a' },
+            { label: 'Indian urban centres of a million or more that spread out less', value: _fin(ip) ? `${ip}%` : 'n/a' },
+        ];
+        if (_fin(r30) && r30 > 0) stats.push({ label: 'GHSL projection for 2020-2030', value: ratio(r30) });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = r;
+        const way = r > 1.1 ? `built-up land grew ${r} times as fast as the population (${land}% a year against ${ppl}%), so the city spread out and thinned` : r < 0.9 ? `the population grew faster than built-up land (${ppl}% a year against ${land}%), so the city packed more people onto its land` : `built-up land and population grew at about the same pace (${land}% and ${ppl}% a year)`;
+        return {
+            columns: { land_over_pop_growth: out }, idx, weightKey: 'land_over_pop_growth',
+            metric: { label: 'Built-up land growth over population growth, 2000-2020', value: r, unit: '×', higherIs: 'worse' },
+            headline: `From 2000 to 2020 ${way}.${_fin(wp) ? ` That ratio, the UN's land use efficiency indicator (SDG 11.3.1), is higher than in ${wp}% of the world's urban centres of a million or more${_fin(ip) ? ` and ${ip}% of India's` : ''}.` : ''}${_fin(r90) && _fin(r10) ? ` It ran at ${ratio(r90)} in the 1990s and ${ratio(r10)} in the 2010s.` : ''} Measured on GHSL's urban centre, the dense built-up area, from its built-up and population grids.`,
+            stats,
+        };
+    }
+
+    function heatisland(fr) {
+        const c = fr.cols, n = fr.grid.n, sn = c['heat_island.hi_surf_night'];
+        if (!sn || !sn.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(sn[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`heat_island.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const sd = v('hi_surf_day'), nn = v('hi_surf_night'), ad = v('hi_air_day'), an = v('hi_air_night'), tn = v('hi_surf_night_trend'), td = v('hi_surf_day_trend'), ta = v('hi_air_night_trend'), sm = v('hi_summer_surf_day');
+        const deg = x => (_fin(x) ? `${x > 0 ? '+' : ''}${_round(x, 1)} °C` : 'n/a'), dec = x => (_fin(x) ? `${x > 0 ? '+' : ''}${_round(x, 2)} °C a decade` : 'n/a');
+        const stats = [
+            { label: 'Ground surface, night (city minus countryside, 2016-2020)', value: deg(nn) },
+            { label: 'Ground surface, day', value: deg(sd) },
+            { label: 'Ground surface, March-May days', value: deg(sm) },
+            { label: 'Air, night', value: deg(an) },
+            { label: 'Air, day', value: deg(ad) },
+            { label: 'Night surface heat island, change 2001-2020', value: dec(tn) },
+            { label: 'Day surface heat island, change 2001-2020', value: dec(td) },
+            { label: 'Night air heat island, change 2001-2020', value: dec(ta) },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = nn;
+        const day = !_fin(sm) ? '' : sm <= -0.5 ? ` On March-May days it flips: the city's ground is ${_round(-sm, 1)} °C cooler than the dry, bare fields around it, which heat up faster than shaded streets and lawns.` : sm >= 0.5 ? ` On March-May days its ground is ${_round(sm, 1)} °C hotter than the green or watered countryside around it.` : ' On March-May days city and countryside ground are about equally hot.';
+        const trend = _fin(tn) ? ` The night gap ${Math.abs(tn) < 0.1 ? 'barely changed' : tn > 0 ? `widened by ${_round(tn, 2)} °C a decade` : `narrowed by ${_round(-tn, 2)} °C a decade`} from 2001 to 2020.` : '';
+        return {
+            columns: { heat_island_night_c: out }, idx, weightKey: 'heat_island_night_c',
+            metric: { label: 'Night surface heat island (city minus countryside)', value: nn, unit: '°C', higherIs: 'worse' },
+            headline: `At night the city's ground stays ${_round(nn, 1)} °C warmer than comparable countryside around it${_fin(an) ? `, and the air ${_round(an, 1)} °C warmer` : ''} (2016-2020), because brick, concrete and asphalt give back the day's heat after dark.${day}${trend} One value for the whole city; the hot-night and surface heat lenses map which blocks hold the most heat.`,
+            stats,
+        };
+    }
+
+    function greenrank(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['green_rank.gr_ndvi_2025'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`green_rank.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const now = v('gr_ndvi_2025'), then = v('gr_ndvi_2000'), ch = v('gr_ndvi_change_pct'), wp = v('gr_world_pctile'), ip = v('gr_india_pctile'), cm = v('gr_canopy_m'), cp = v('gr_canopy_world_pctile');
+        const pc = x => (_fin(x) ? `${_round(x, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Mean greenness (NDVI) of the built-up area, 2025', value: _fin(now) ? _round(now, 2) : 'n/a' },
+            { label: 'Same in 2000', value: _fin(then) ? _round(then, 2) : 'n/a' },
+            { label: 'Change 2000-2025', value: _fin(ch) ? `${ch > 0 ? '+' : ''}${_round(ch, 0)}%` : 'n/a' },
+            { label: "World cities of 1 million+ that are less green", value: pc(wp) },
+            { label: "Indian cities of 1 million+ that are less green", value: pc(ip) },
+            { label: 'Mean tree canopy height, 2020', value: _fin(cm) ? `${_round(cm, 1)} m` : 'n/a' },
+            { label: 'World cities of 1 million+ with lower canopy', value: pc(cp) },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = now;
+        const rank = _fin(wp) ? (wp >= 50 ? `greener than ${_round(wp, 0)}% of the world's cities of a million or more` : `greyer than ${_round(100 - wp, 0)}% of the world's cities of a million or more`) : '';
+        const india = _fin(ip) ? ` and ${ip >= 50 ? `greener than ${_round(ip, 0)}%` : `greyer than ${_round(100 - ip, 0)}%`} of India's` : '';
+        const trend = _fin(ch) ? ` Since 2000 it has ${Math.abs(ch) < 3 ? 'stayed about as green' : ch > 0 ? `grown ${_round(ch, 0)}% greener` : `lost ${_round(-ch, 0)}% of its greenness`}.` : '';
+        return {
+            columns: { green_rank_ndvi: out }, idx, weightKey: 'green_rank_ndvi',
+            metric: { label: 'Mean greenness (NDVI) of the built-up area, 2025', value: now, unit: 'NDVI', higherIs: 'better' },
+            headline: `The city's built-up area has a mean greenness of ${_round(now, 2)} (2025): ${rank}${india}.${trend}${_fin(cm) ? ` Its trees average ${_round(cm, 1)} m tall.` : ''} Rainfall sets much of this, so the Indian ranking is the fairer one. One value for the whole city; the greenness-change lens maps which blocks gained or lost green.`,
+            stats,
+        };
+    }
+
+    // UCDB ids of the climate analogues found by pipeline/realestate/climatetwin.py (its TWIN_NAMES line)
+    const TWIN_NAMES = { 391: 'Bamako, Mali', 395: 'Bobo-Dioulasso, Burkina Faso', 548: 'Niamey, Niger', 1301: 'Lubango, Angola', 2902: 'Mombasa, Kenya', 3823: 'Rajkot, India', 5906: 'Khulna, Bangladesh', 6912: 'Multan, Pakistan', 7021: 'Vadodara, India', 7563: 'Vasai-Virar, India', 7794: 'Lahore, Pakistan', 8012: 'Nashik, India', 8125: 'Kano, Nigeria', 8234: 'Kota, India', 8305: 'Meerut, India', 8564: 'Maiduguri, Nigeria', 8565: 'Indore, India', 8660: 'Agra, India', 8954: 'Solapur, India', 10224: 'Vijayawada, India', 10444: 'Marhaura, India', 11302: 'Tamluk, India' };
+
+    function climatetwin(fr) {
+        const c = fr.cols, n = fr.grid.n, t = c['climate_twin.ct_temp_2030'];
+        if (!t || !t.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(t[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`climate_twin.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const t10 = v('ct_temp_2010'), t30 = v('ct_temp_2030'), t45 = v('ct_temp_2030_45'), r10 = v('ct_rain_2010'), r30 = v('ct_rain_2030');
+        const tw = TWIN_NAMES[v('ct_twin_id')], td = v('ct_twin_dist'), ab = TWIN_NAMES[v('ct_abroad_id')], ad = v('ct_abroad_dist');
+        const deg = x => (_fin(x) ? `${_round(x, 1)} °C` : 'n/a'), mm = x => (_fin(x) ? `${_round(x, 0)} mm` : 'n/a');
+        const stats = [
+            { label: 'Annual mean temperature, 2010s', value: deg(t10) },
+            { label: 'Projected for the 2030s (RCP 8.5)', value: deg(t30) },
+            { label: 'Projected for the 2030s (RCP 4.5)', value: deg(t45) },
+            { label: 'Annual rainfall, 2010s', value: mm(r10) },
+            { label: 'Projected for the 2030s (RCP 8.5)', value: mm(r30) },
+            { label: "Closest analogue (its 2010s climate)", value: tw || 'n/a' },
+            { label: 'Closest analogue outside India', value: ab ? `${ab}${_fin(ad) && ad > 1 ? ' (loose match)' : ''}` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = t30;
+        const rain = _fin(r10) && _fin(r30) && r10 > 0 ? (Math.abs(r30 / r10 - 1) < 0.05 ? ' with about the same rain' : ` with ${_round(Math.abs(100 * (r30 / r10 - 1)), 0)}% ${r30 > r10 ? 'more' : 'less'} rain`) : '';
+        const twin = tw ? ` By the 2030s its climate should most resemble today's ${tw}${ab && ab !== tw ? (_fin(ad) && ad > 1 ? `; nothing abroad is a close match, the nearest being ${ab}` : `, and abroad ${ab}`) : ''}.` : '';
+        return {
+            columns: { climate_twin_temp: out }, idx, weightKey: 'climate_twin_temp',
+            metric: { label: 'Annual mean temperature projected for the 2030s (RCP 8.5)', value: t30, unit: '°C', higherIs: 'worse' },
+            headline: `The city averaged ${deg(t10)} a year in the 2010s; climate models put the 2030s at ${deg(t30)} under high emissions${rain}.${twin} Analogues compare yearly temperature, rainfall and their seasons over coarse grid cells, so they describe the regional climate, not street heat. One value for the whole city.`,
+            stats,
+        };
+    }
+
+    function roomrank(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['room_rank.rr_m3_pp_2020'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`room_rank.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const now = v('rr_m3_pp_2020'), then = v('rr_m3_pp_2000'), ch = v('rr_change_pct'), fl = v('rr_floor_m2_pp'), wp = v('rr_world_pctile'), ip = v('rr_india_pctile'), lo = v('rr_low_pct'), mi = v('rr_mid_pct'), hi = v('rr_high_pct');
+        const pc = x => (_fin(x) ? `${_round(x, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Residential built-up volume per resident, 2020', value: _fin(now) ? `${_round(now, 0)} m³` : 'n/a' },
+            { label: 'Same in 2000', value: _fin(then) ? `${_round(then, 0)} m³` : 'n/a' },
+            { label: 'Change 2000-2020', value: _fin(ch) ? `${ch > 0 ? '+' : ''}${_round(ch, 0)}%` : 'n/a' },
+            { label: 'Rough floor area per resident (volume / 3 m, upper bound)', value: _fin(fl) ? `${_round(fl, 0)} m²` : 'n/a' },
+            { label: 'World cities of 1 million+ with less', value: pc(wp) },
+            { label: 'Indian cities of 1 million+ with less', value: pc(ip) },
+            { label: 'Residents in 1-2 / 3-7 / 8+ floor areas', value: _fin(lo) ? `${_round(lo, 0)} / ${_round(mi, 0)} / ${_round(hi, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = now;
+        const rank = _fin(wp) ? ` That is less than ${_round(100 - wp, 0)}% of the world's cities of a million or more${_fin(ip) ? ` and ${ip >= 50 ? `more than ${_round(ip, 0)}%` : `less than ${_round(100 - ip, 0)}%`} of India's` : ''}.` : '';
+        const trend = _fin(ch) ? (Math.abs(ch) < 5 ? ' It has kept pace with population since 2000.' : ch < 0 ? ` Since 2000 people arrived faster than homes were built: space per resident fell ${_round(-ch, 0)}%.` : ` Since 2000 building outpaced population: space per resident rose ${_round(ch, 0)}%.`) : '';
+        return {
+            columns: { room_rank_m3: out }, idx, weightKey: 'room_rank_m3',
+            metric: { label: 'Residential built-up volume per resident, 2020', value: now, unit: 'm³', higherIs: 'better' },
+            headline: `Homes in the city add up to about ${_round(now, 0)} m³ of building per resident (2020), very roughly ${_round(fl, 0)} m² of floor counting walls, stairs and empty flats.${rank}${trend}${_fin(hi) ? ` ${_round(hi, 0)}% of residents live where 8-floor-plus homes prevail.` : ''} One value for the whole city.`,
+            stats,
+        };
+    }
+
+    function floodgrown(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['flood_exposure.fx_river100_pct'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`flood_exposure.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const now = v('fx_river100_pct'), y75 = v('fx_river100_1975_pct'), y00 = v('fx_river100_2000_pct'), ppl = v('fx_river100_people'), r10 = v('fx_river10_pct'), co = v('fx_coast100_pct'), l5 = v('fx_lecz5_pct'), l10 = v('fx_lecz10_pct'), wp = v('fx_world_pctile'), ip = v('fx_india_pctile');
+        const pc = x => (_fin(x) ? `${_round(x, 1)}%` : 'n/a');
+        const stats = [
+            { label: 'Residents in the 100-year river flood zone, 2020', value: pc(now) },
+            { label: 'Same in 1975 / 2000', value: `${pc(y75)} / ${pc(y00)}` },
+            { label: 'People in the 100-year river flood zone', value: _fin(ppl) ? _people(ppl) : 'n/a' },
+            { label: 'Residents in the 10-year river flood zone', value: pc(r10) },
+            { label: 'Residents in the 100-year coastal flood zone', value: pc(co) },
+            { label: 'Residents under 5 m / 10 m above sea level', value: _fin(l10) ? `${pc(l5)} / ${pc(l10)}` : 'inland' },
+            { label: 'World cities of 1 million+ with a smaller share', value: _fin(wp) ? `${_round(wp, 0)}%` : 'n/a' },
+            { label: 'Indian cities of 1 million+ with a smaller share', value: _fin(ip) ? `${_round(ip, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = now;
+        const coast = _fin(l10) && l10 >= 1 ? ` ${_round(l10, 0)}% live on land under 10 m above the sea${_fin(co) && co >= 0.5 ? `, and ${_round(co, 1)}% where a 100-year sea surge would reach` : ''}.` : '';
+        let headline;
+        if (now < 0.5) {
+            headline = `Almost none of the city's residents live where the river flood model puts a 100-year flood (${pc(now)}, 2020); its flooding is waterlogging from rain and blocked drains, which this map cannot see.${coast} One value for the whole city; the flood lenses map the low spots block by block.`;
+        } else {
+            const trend = _fin(y75) ? (now - y75 >= 1 ? `, up from ${pc(y75)} in 1975 as the city spread onto the floodplain` : `, about the same as in 1975 (${pc(y75)})`) : '';
+            headline = `${pc(now)} of the city's residents${_fin(ppl) ? `, about ${_people(ppl)} people,` : ''} live where a 100-year river flood would reach (2020)${trend}. That is a larger share than in ${_round(wp, 0)}% of the world's cities of a million or more${_fin(ip) ? ` and ${_round(ip, 0)}% of India's` : ''}.${_fin(r10) && r10 >= 1 ? ` ${pc(r10)} live in the zone a 10-year flood would reach.` : ''}${coast} The model assumes no embankments or drains. One value for the whole city.`;
+        }
+        return {
+            columns: { flood_grown_pct: out }, idx, weightKey: 'flood_grown_pct',
+            metric: { label: 'Residents in the 100-year river flood zone, 2020', value: now, unit: '%', higherIs: 'worse' },
+            headline, stats,
+        };
+    }
+
+    function warmdays(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['warm_days.wd_2010s'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`warm_days.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const d70 = v('wd_1970s'), d90 = v('wd_1990s'), d10 = v('wd_2010s'), wp = v('wd_world_pctile'), ip = v('wd_india_pctile');
+        const pc = x => (_fin(x) ? `${_round(x, 1)}%` : 'n/a'), days = x => _round(3.65 * x, 0);
+        const stats = [
+            { label: 'Days hotter than the old normal for the date, 1970s', value: pc(d70) },
+            { label: 'Same, 1990s', value: pc(d90) },
+            { label: 'Same, 2010s', value: pc(d10) },
+            { label: 'World cities of 1 million+ with fewer, 2010s', value: _fin(wp) ? `${_round(wp, 0)}%` : 'n/a' },
+            { label: 'Indian cities of 1 million+ with fewer, 2010s', value: _fin(ip) ? `${_round(ip, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = d10;
+        const ratio = d10 / 10;
+        const change = ratio >= 1.3 ? `about ${_round(days(d10), 0)} days a year, ${_round(ratio, 1)} times the old normal of one day in ten` : ratio <= 0.85 ? `about ${_round(days(d10), 0)} days a year, fewer than the old normal of one day in ten (haze and wetter seasons can hold daytime highs down)` : `about ${_round(days(d10), 0)} days a year, close to the old normal of one day in ten`;
+        return {
+            columns: { warm_days_pct: out }, idx, weightKey: 'warm_days_pct',
+            metric: { label: 'Days hotter than the 1961-1990 normal for the date, 2010s', value: d10, unit: '%', higherIs: 'worse' },
+            headline: `In the 2010s, ${pc(d10)} of days were hotter than the 1961-1990 normal for that date: ${change}${_fin(d70) ? ` (${pc(d70)} in the 1970s)` : ''}. That is more often than in ${_round(wp, 0)}% of the world's cities of a million or more${_fin(ip) ? ` and ${_round(ip, 0)}% of India's` : ''}. It counts days unusual for the city and the season, not absolute heat; the hot-days lens counts days above fixed temperatures. One value for the whole city.`,
+            stats,
+        };
+    }
+
+    // City-vs-world rows: [dataset.field of the world percentile, theme, true when a higher percentile is worse]
+    const WORLD_ROWS = [
+        ['green_rank.gr_world_pctile', 'greenness of the built-up area', false],
+        ['room_rank.rr_world_pctile', 'home space per resident', false],
+        ['flood_exposure.fx_world_pctile', 'share of residents in the river flood zone', true],
+        ['warm_days.wd_world_pctile', 'how often days are unusually hot', true],
+        ['land_efficiency.le_world_pctile', 'built-up land growing faster than population', true],
+        ['green_rank.gr_canopy_world_pctile', 'tree canopy height', false],
+    ];
+
+    function worldcard(fr) {
+        const c = fr.cols, n = fr.grid.n;
+        const idx = _residents(fr).filter(i => WORLD_ROWS.some(([k]) => c[k] && _fin(c[k][i])));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], rows = [];
+        for (const [k, theme, worse] of WORLD_ROWS) {
+            const a = c[k];
+            if (a && _fin(a[i0])) rows.push({ theme, better: worse ? 100 - a[i0] : a[i0] });
+        }
+        if (rows.length < 3) return null;
+        const score = rows.reduce((t, r) => t + r.better, 0) / rows.length;
+        const sorted = [...rows].sort((a, b) => b.better - a.better), best = sorted[0], worst = sorted.at(-1);
+        const stats = rows.map(r => ({ label: `Better than this share of the world's cities of 1 million+ on ${r.theme}`, value: `${_round(r.better, 0)}%` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = score;
+        return {
+            columns: { world_card_score: out }, idx, weightKey: 'world_card_score',
+            metric: { label: "Average standing among the world's cities of 1 million+ (0-100)", value: _round(score, 0), unit: '/100', higherIs: 'better' },
+            headline: `Across ${rows.length} measures the city does better than ${_round(score, 0)}% of the world's 524 cities of a million or more on average. Its strongest is ${best.theme} (better than ${_round(best.better, 0)}%); its weakest is ${worst.theme} (better than only ${_round(worst.better, 0)}%). Each measure has its own lens with the detail; climate and rainfall shape several of them, so compare with Indian cities too. One value for the whole city.`,
+            stats,
+        };
+    }
+
+    const EARTH_BOUNDS = { bio: 'too little intact nature', gwa: 'groundwater decline', nit: 'nitrogen surplus', pho: 'phosphorus surplus', p25: 'fine-particle air pollution', slr: 'sea level rise', swa: 'surface water flows', wet: 'wet-bulb heat' };
+
+    function earthbounds(fr) {
+        const c = fr.cols, n = fr.grid.n, g = c['earth_bounds.eb_max'];
+        if (!g || !g.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(g[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`earth_bounds.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const mx = v('eb_max'), mn = v('eb_min'), wp = v('eb_world_pctile');
+        const crossed = Object.keys(EARTH_BOUNDS).filter(k => v(`eb_${k}`) === 1).map(k => EARTH_BOUNDS[k]);
+        const clear = Object.keys(EARTH_BOUNDS).filter(k => v(`eb_${k}`) === 0).map(k => EARTH_BOUNDS[k]);
+        const stats = [
+            { label: 'Boundaries crossed somewhere in the city (of 8)', value: String(crossed.length) },
+            { label: 'Most crossed at one spot / fewest', value: `${_round(mx, 0)} / ${_fin(mn) ? _round(mn, 0) : 'n/a'}` },
+            ...Object.keys(EARTH_BOUNDS).filter(k => _fin(v(`eb_${k}`))).map(k => ({ label: `Crossed: ${EARTH_BOUNDS[k]}`, value: v(`eb_${k}`) === 1 ? 'yes' : 'no' })),
+            { label: 'World cities of 1 million+ crossing fewer at one spot', value: _fin(wp) ? `${_round(wp, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = mx;
+        const list = a => (a.length > 1 ? `${a.slice(0, -1).join(', ')} and ${a.at(-1)}` : a[0] || 'none');
+        return {
+            columns: { earth_bounds_max: out }, idx, weightKey: 'earth_bounds_max',
+            metric: { label: 'Most Earth system boundaries crossed at one spot (of 8)', value: mx, unit: 'of 8', higherIs: 'worse' },
+            headline: `The land under the city crosses ${crossed.length} of the Earth Commission's 8 safe and just Earth system boundaries somewhere: ${list(crossed)}. Up to ${_round(mx, 0)} overlap at one spot, more than in ${_round(wp, 0)}% of the world's cities of a million or more.${clear.length ? ` Not crossed: ${list(clear)}.` : ''} The map is about 50 km coarse and describes the region the city draws on, not single neighbourhoods. One value for the whole city.`,
+            stats,
+        };
+    }
+
+    function playreach(fr) {
+        const c = fr.cols, n = fr.grid.n, gd = c['play_space.pl_ground_m'], pg = c['play_space.pl_playground_m'], k5 = c['demographics.under5'], k14 = c['demographics.school_age'], pop = c['population.population'];
+        if (!gd || !gd.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(gd[i]));
+        if (idx.length < 5) return null;
+        const kids = i => (k5 && _fin(k5[i]) ? k5[i] : 0) + (k14 && _fin(k14[i]) ? k14[i] : 0);
+        const useKids = idx.some(i => kids(i) > 0), w = i => (useKids ? kids(i) : (pop && _fin(pop[i]) ? pop[i] : 0));
+        let all = 0, far = 0, farPg = 0, none = 0;
+        for (const i of idx) {
+            const x = w(i);
+            all += x;
+            if (gd[i] > 500) far += x;
+            if (!pg || !_fin(pg[i]) || pg[i] > 1000) farPg += x;
+            if (gd[i] > 1000) none += x;
+        }
+        if (!all) return null;
+        const who = useKids ? 'children aged 0-14' : 'residents', pc = x => `${_round(100 * x / all, 0)}%`;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = gd[i];
+        const stats = [
+            { label: `${useKids ? 'Children' : 'Residents'} over 500 m from any mapped playground or sports ground`, value: `${_people(far)} (${pc(far)})` },
+            { label: '…over 1 km', value: `${_people(none)} (${pc(none)})` },
+            { label: `${useKids ? 'Children' : 'Residents'} over 1 km from a mapped playground`, value: `${_people(farPg)} (${pc(farPg)})` },
+            { label: 'Median distance to the nearest playground or sports ground', value: `${_round(wquantile(gd, Array.from({ length: n }, (_, i) => w(i)), idx, 0.5), -1)} m` },
+        ];
+        return {
+            columns: { play_reach_m: out }, idx, weightKey: 'play_reach_m',
+            metric: { label: `Share of ${who} over 500 m from a mapped playground or sports ground`, value: _round(100 * far / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(far)} ${who} (${pc(far)}) live more than 500 m in a straight line from any playground or sports ground on the map, and ${pc(farPg)} are over 1 km from a playground. Red blocks are the furthest. These are mapped spaces from OpenStreetMap: colonies and the centre are mapped best, many grounds belong to schools or clubs, and a gully or rooftop where children play will not show.`,
+            stats,
+        };
+    }
+
+    function walledland(fr) {
+        const c = fr.cols, n = fr.grid.n, cl = c['closed_land.cl_closed_pct'];
+        if (!cl || !cl.some(_fin)) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(cl[i]) && cl[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const km = k => { const a = c[`closed_land.cl_${k}_pct`]; return a ? idx.reduce((t, i) => t + (_fin(a[i]) ? a[i] / 100 : 0), 0) * fr.grid.cellKm2 : 0; };
+        const mil = km('military'), rail = km('rail'), golf = km('golf'), all = mil + rail + golf;
+        const pop = c['population.population'];
+        let lived = 0;
+        if (pop) for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0) lived++;
+        const livedKm2 = lived * fr.grid.cellKm2;
+        const big = c['closed_land.cl_big_estate'], nBig = big ? idx.filter(i => big[i] === 1).length : 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = cl[i];
+        const k1 = x => `${_round(x, 1)} km²`;
+        const stats = [
+            { label: 'Defence land mapped', value: k1(mil) },
+            { label: 'Railway land mapped', value: k1(rail) },
+            { label: 'Golf courses', value: k1(golf) },
+            { label: 'All three, as a share of the lived-in city area', value: livedKm2 ? `${_round(100 * all / livedKm2, 1)}%` : 'n/a' },
+            { label: 'Blocks touching a single estate of 50 ha or more', value: nBig.toLocaleString('en-IN') },
+        ];
+        const lead = [['defence', mil], ['railway', rail], ['golf', golf]].sort((a, b) => b[1] - a[1])[0];
+        return {
+            columns: { walled_land_pct: out }, idx, weightKey: 'walled_land_pct',
+            metric: { label: 'Defence, railway and golf land mapped', value: _round(all, 1), unit: 'km²', higherIs: null },
+            headline: `About ${k1(all)} of the city sits behind walls as defence (${k1(mil)}), railway (${k1(rail)}) or golf (${k1(golf)}) land${livedKm2 ? `, ${_round(100 * all / livedKm2, 1)}% of its lived-in area` : ''}; ${lead[0]} land is the largest. These estates are outside the municipal plan and closed to the public, which shapes where roads, parks and homes can go, and are where land is sometimes released (cantonment excision, railway land leasing). From OpenStreetMap, which leaves some defence land blank, so treat it as a floor.`,
+            stats,
+        };
+    }
+
+    function quakepast(fr) {
+        const c = fr.cols, n = fr.grid.n, n45 = c['quake_history.qh_n45'], pop = c['population.population'];
+        if (!n45 || !n45.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(n45[i]));
+        if (idx.length < 5) return null;
+        const W = Array.from({ length: n }, (_, i) => (pop && _fin(pop[i]) ? pop[i] : 0));
+        const med = (a, f = x => x) => { const v = a ? idx.filter(i => _fin(a[i])) : []; return v.length ? f(wquantile(a, W, v, 0.5)) : null; };
+        const mm = c['quake_history.qh_max_mag'], my = c['quake_history.qh_max_year'], n6 = c['quake_history.qh_n6'], nk = c['quake_history.qh_near_m5_km'];
+        let top = -1;
+        for (const i of idx) if (mm && _fin(mm[i]) && (top < 0 || mm[i] > mm[top])) top = i;
+        const typ = med(n45, Math.round), six = med(n6, Math.round), near = med(nk);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = n45[i];
+        const biggest = top >= 0 ? `M${_round(mm[top], 1)}${my && _fin(my[top]) ? ` in ${my[top]}` : ''}` : null;
+        const stats = [
+            { label: 'Earthquakes M4.5+ within 300 km of the typical home since 1900', value: String(typ) },
+            { label: '…of them M6 or more', value: six == null ? 'n/a' : String(six) },
+            { label: 'Largest within 300 km of any block', value: biggest || 'none recorded' },
+            { label: 'Typical distance to the nearest M5+ epicentre', value: near == null ? 'over 900 km' : `${_round(near, -1)} km` },
+        ];
+        return {
+            columns: { quakes_300km: out }, idx, weightKey: 'quakes_300km',
+            metric: { label: 'Earthquakes M4.5+ within 300 km since 1900 (typical home)', value: typ, unit: 'events', higherIs: 'worse' },
+            headline: `Since 1900 the record shows ${typ} earthquake${typ === 1 ? '' : 's'} of magnitude 4.5 or more within 300 km of the typical home${six ? `, ${six} of them M6 or larger` : ''}${biggest ? `; the largest was ${biggest}` : ''}${near != null ? `, and the nearest M5+ epicentre is about ${_round(near, -1)} km away` : ''}. Red blocks have had the most nearby quakes. This is the USGS catalogue, which misses many events before the 1960s, not the official BIS seismic zone; building to the code for your zone matters more than this count.`,
+            stats,
+        };
+    }
+
+    function dryyears(fr) {
+        const c = fr.cols, n = fr.grid.n, dl = c['droughts.dr_dry_late'];
+        if (!dl || !dl.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(dl[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`droughts.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const early = v('dr_dry_early'), late = v('dr_dry_late'), sev = v('dr_severe_years'), wet = v('dr_wet_late'), wy = v('dr_worst_year'), ws = v('dr_worst_spei'), last = v('dr_last_dry'), tr = v('dr_trend');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = late;
+        const f = x => (_fin(x) ? String(x) : 'n/a');
+        const stats = [
+            { label: 'Dry years, 1901-1962 (62 years)', value: f(early) },
+            { label: 'Dry years, 1963-2024 (62 years)', value: f(late) },
+            { label: 'Severely dry years since 1901', value: f(sev) },
+            { label: 'Wet years, 1963-2024', value: f(wet) },
+            { label: 'Driest year since 1901', value: _fin(wy) ? `${wy} (SPEI ${_round(ws, 2)})` : 'n/a' },
+            { label: 'Latest dry year', value: f(last) },
+            { label: 'Trend since 1901', value: _fin(tr) ? `${tr > 0 ? '+' : ''}${_round(tr, 2)} SD a decade (${tr < -0.02 ? 'drying' : tr > 0.02 ? 'wetting' : 'about flat'})` : 'n/a' },
+        ];
+        const change = !_fin(early) || !_fin(late) ? '' : late > early + 1 ? `, up from ${early} in 1901-1962` : late < early - 1 ? `, down from ${early} in 1901-1962` : `, about the same as the ${early} of 1901-1962`;
+        return {
+            columns: { dry_years_late: out }, idx, weightKey: 'dry_years_late',
+            metric: { label: 'Dry years 1963-2024 (SPEI-12 at or below -1)', value: late, unit: 'years', higherIs: 'worse' },
+            headline: `In the last 62 years the city had ${f(late)} dry years${change}, counting rainfall against the water that heat draws back out of soil and reservoirs. The driest year since 1901 was ${f(wy)}${_fin(last) ? `, and the latest dry year was ${last}` : ''}. One value for the whole city (a 50 km cell of SPEIbase): a city's water supply usually comes from farther away, so this shows the local climate, not tap supply.`,
+            stats,
+        };
+    }
+
+    function waterstore(fr) {
+        const c = fr.cols, n = fr.grid.n, tr = c['water_store.ws_trend_cm_yr'];
+        if (!tr || !tr.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(tr[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`water_store.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const t = v('ws_trend_cm_yr'), ch = v('ws_change_cm'), low = v('ws_low_year'), last = v('ws_last_cm');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = t;
+        const cm = x => (_fin(x) ? `${x > 0 ? '+' : ''}${_round(x, 1)} cm` : 'n/a');
+        const word = t <= -1 ? 'losing water fast' : t <= -0.3 ? 'slowly losing water' : t >= 0.3 ? 'gaining water' : 'roughly holding steady';
+        const stats = [
+            { label: 'Trend, 2003-2023', value: _fin(t) ? `${t > 0 ? '+' : ''}${_round(t, 2)} cm of water a year` : 'n/a' },
+            { label: 'Change, 2003-2007 to 2019-2023', value: cm(ch) },
+            { label: 'Lowest year', value: _fin(low) ? String(low) : 'n/a' },
+            { label: 'Latest year against 2004-2009', value: cm(last) },
+            { label: 'Same as about', value: _fin(ch) ? `${_round(Math.abs(ch) / 100 * 1e5 * 1e5 / 1e9, 1)} km³ of water per 100 km × 100 km` : 'n/a' },
+        ];
+        return {
+            columns: { water_store_trend: out }, idx, weightKey: 'water_store_trend',
+            metric: { label: 'Regional water store trend, 2003-2023', value: _round(t, 2), unit: 'cm/yr', higherIs: 'better' },
+            headline: `Weighed from space, the region around the city is ${word}: ${_fin(t) ? `${t > 0 ? '+' : ''}${_round(t, 2)} cm of water a year` : 'n/a'} since 2003, ${cm(ch)} between 2003-2007 and 2019-2023${_fin(low) ? `, lowest in ${low}` : ''}. This is groundwater, soil moisture and reservoirs together over about 300 km, so nearby cities share a value; where it falls year after year it is mostly groundwater pumped faster than the monsoon refills it.`,
+            stats,
+        };
+    }
+
+    function underflood(fr) {
+        const c = fr.cols, n = fr.grid.n, un = c['underpasses.up_road_n'], wl = c['waterlogging.waterlogging_index'];
+        if (!un || !un.some(_fin)) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(un[i]) && un[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const um = c['underpasses.up_road_m'], ped = c['underpasses.up_ped_n'], br = c['underpasses.up_bridge_m'];
+        const sum = (a, f = () => true) => { let t = 0; if (a) for (let i = 0; i < n; i++) if (_fin(a[i]) && f(i)) t += a[i]; return t; };
+        const total = sum(un), km = sum(um) / 1000, subways = sum(ped), flyKm = sum(br) / 1000;
+        const wet = i => wl && _fin(wl[i]) && wl[i] >= 45, vwet = i => wl && _fin(wl[i]) && wl[i] >= 65;
+        const nWet = sum(un, wet), nV = sum(un, vwet), known = sum(un, i => wl && _fin(wl[i]));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = wl && _fin(wl[i]) ? wl[i] : NaN;
+        const pc = x => (known ? `${_round(100 * x / known, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Underpass and tunnel stretches mapped', value: `${total.toLocaleString('en-IN')} (${_round(km, 1)} km)` },
+            { label: '…in blocks with high or very high waterlogging risk', value: `${nWet.toLocaleString('en-IN')} (${pc(nWet)})` },
+            { label: '…very high risk', value: `${nV.toLocaleString('en-IN')} (${pc(nV)})` },
+            { label: 'Pedestrian subways mapped', value: subways.toLocaleString('en-IN') },
+            { label: 'Flyovers and road bridges', value: `${_round(flyKm, 0)} km` },
+        ];
+        return {
+            columns: { underpass_wet: out }, idx, weightKey: 'underpass_wet', noHotspots: true,
+            metric: { label: 'Underpasses in high-waterlogging blocks', value: nWet, unit: 'underpasses', higherIs: 'worse' },
+            headline: `${total.toLocaleString('en-IN')} stretches of road run through underpasses or tunnels on the map (${_round(km, 1)} km below ground), and ${nWet.toLocaleString('en-IN')} of them (${pc(nWet)}) sit in blocks with high or very high waterlogging risk; darker blocks are wetter. A dip below the street fills first in a heavy shower and traps cars, so these are where pumps, gauges and closure barriers pay off. From OpenStreetMap, which does not separate an underpass from a road tunnel, so a floor.`,
+            stats,
+        };
+    }
+
+    function gatedlanes(fr) {
+        const c = fr.cols, n = fr.grid.n, pp = c['gated_streets.gs_private_pct'], pop = c['population.population'];
+        if (!pp || !pp.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(pp[i]));
+        if (idx.length < 5) return null;
+        const lk = c['gated_streets.gs_local_km'], pk = c['gated_streets.gs_private_km'], ow = c['gated_streets.gs_oneway_pct'];
+        let loc = 0, prv = 0, all = 0, half = 0;
+        for (let i = 0; i < n; i++) { if (lk && _fin(lk[i])) loc += lk[i]; if (pk && _fin(pk[i])) prv += pk[i]; }
+        for (const i of idx) { const w = pop && _fin(pop[i]) ? pop[i] : 0; all += w; if (pp[i] >= 50) half += w; }
+        const W = Array.from({ length: n }, (_, i) => (pop && _fin(pop[i]) ? pop[i] : 0));
+        const owIdx = ow ? idx.filter(i => _fin(ow[i])) : [];
+        const owMed = owIdx.length ? wquantile(ow, W, owIdx, 0.5) : NaN;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = pp[i];
+        const share = loc ? 100 * prv / loc : 0, pc = x => (all ? `${_round(100 * x / all, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Local streets mapped', value: `${_round(loc, 0).toLocaleString('en-IN')} km` },
+            { label: '…marked private (gated colonies, societies, campuses)', value: `${_round(prv, 0).toLocaleString('en-IN')} km (${_round(share, 1)}%)` },
+            { label: 'Residents in blocks where half or more of the lanes are private', value: `${_people(half)} (${pc(half)})` },
+            { label: 'One-way share of road length, typical home', value: _fin(owMed) ? `${_round(owMed, 0)}%` : 'n/a' },
+        ];
+        return {
+            columns: { private_lanes_pct: out }, idx, weightKey: 'private_lanes_pct',
+            metric: { label: 'Local streets marked private', value: _round(share, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_round(share, 1)}% of the city's mapped local streets (${_round(prv, 0).toLocaleString('en-IN')} km) are marked private: gated colonies, housing societies, campuses and cantonments. ${_people(half)} people (${pc(half)}) live in blocks where half or more of the lanes are closed to the public, which makes short walks long and pushes traffic onto a few main roads. Red blocks are the most gated. OpenStreetMap tags private lanes unevenly, so treat it as a floor.`,
+            stats,
+        };
+    }
+
+    function waterbalance(fr) {
+        const c = fr.cols, n = fr.grid.n, dn = c['water_balance.ta_def_now'];
+        if (!dn || !dn.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(dn[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`water_balance.ta_${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const pb = v('pr_base'), pn = v('pr_now'), eb = v('pet_base'), en = v('pet_now'), db = v('def_base'), dn0 = v('def_now'), vb = v('vpd_base'), vn = v('vpd_now');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = dn0;
+        const mm = x => (_fin(x) ? `${Math.round(x).toLocaleString('en-IN')} mm` : 'n/a');
+        const ch = (a, b) => (_fin(a) && _fin(b) && a ? `${b >= a ? '+' : ''}${_round(100 * (b - a) / a, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Rainfall a year, 1961-1990 → 2015-2024', value: `${mm(pb)} → ${mm(pn)} (${ch(pb, pn)})` },
+            { label: 'Evaporative demand a year', value: `${mm(eb)} → ${mm(en)} (${ch(eb, en)})` },
+            { label: 'Water deficit a year (demand rain and soil cannot meet)', value: `${mm(db)} → ${mm(dn0)} (${ch(db, dn0)})` },
+            { label: 'Air dryness in March-May (vapour pressure deficit)', value: _fin(vb) && _fin(vn) ? `${_round(vb, 2)} → ${_round(vn, 2)} kPa` : 'n/a' },
+        ];
+        const fell = _fin(eb) && _fin(en) && en < eb;
+        const why = fell ? ' Evaporative demand fell even as the city warmed, as across most of India: haze dims the sun and winds have calmed (the "evaporation paradox"), so cleaner air could push it back up.' : ' Evaporative demand rose, so lakes, soil and trees lose water faster than they did.';
+        return {
+            columns: { water_deficit_now: out }, idx, weightKey: 'water_deficit_now',
+            metric: { label: 'Water deficit a year, 2015-2024', value: Math.round(dn0), unit: 'mm', higherIs: 'worse' },
+            headline: `Against the 1961-1990 normal, the last ten years brought ${mm(pn)} of rain a year (${ch(pb, pn)}), while the air could evaporate ${mm(en)} (${ch(eb, en)}); the yearly water deficit, the demand that rain and soil cannot meet, went from ${mm(db)} to ${mm(dn0)}.${why} One value for the city centre's 4 km cell.`,
+            stats,
+        };
+    }
+
+    function premiumstreets(fr) {
+        const c = fr.cols, n = fr.grid.n, pr = c['premium_brands.pb_premium'], ev = c['premium_brands.pb_everyday'];
+        if (!pr || !pr.some(_fin)) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if ((_fin(pr[i]) && pr[i] > 0) || (ev && _fin(ev[i]) && ev[i] > 0)) idx.push(i);
+        if (idx.length < 5) return null;
+        let P = 0, E = 0;
+        for (const i of idx) { P += _fin(pr[i]) ? pr[i] : 0; E += ev && _fin(ev[i]) ? ev[i] : 0; }
+        if (!P) return null;
+        const withP = idx.filter(i => _fin(pr[i]) && pr[i] > 0).sort((a, b) => pr[b] - pr[a]);
+        const top = Math.max(1, Math.round(withP.length * 0.1)), topSum = withP.slice(0, top).reduce((t, i) => t + pr[i], 0);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _fin(pr[i]) ? pr[i] : 0;
+        const stats = [
+            { label: 'Premium chain outlets mapped', value: P.toLocaleString('en-IN') },
+            { label: 'Everyday chain outlets mapped', value: E.toLocaleString('en-IN') },
+            { label: 'Premium share of chain outlets', value: `${_round(100 * P / (P + E), 0)}%` },
+            { label: 'Blocks with a premium outlet', value: withP.length.toLocaleString('en-IN') },
+            { label: 'Share of premium outlets in the top tenth of those blocks', value: `${_round(100 * topSum / P, 0)}%` },
+        ];
+        return {
+            columns: { premium_outlets: out }, idx, weightKey: 'premium_outlets', noHotspots: true,
+            metric: { label: 'Premium chain outlets mapped', value: P, unit: 'outlets', higherIs: null },
+            headline: `${P.toLocaleString('en-IN')} premium chain outlets (coffee chains, fashion, jewellery, luxury car showrooms, multiplexes, big hotels) are mapped, ${_round(100 * P / (P + E), 0)}% of matched chain outlets, and the busiest tenth of the blocks that have one hold ${_round(100 * topSum / P, 0)}% of them: the city's premium high streets and malls. Brighter blocks have more. This shows where retailers pay for footfall, not where wealthy people live: block by block it does not track the wealth index. From Overture places brand names; big chains are mapped best.`,
+            stats,
+        };
+    }
+
+    function roadsbuilding(fr) {
+        const c = fr.cols, n = fr.grid.n, mj = c['roads_building.rb_major_m'], mn = c['roads_building.rb_minor_m'], el = c['roads_building.rb_elevated_m'], pop = c['population.population'];
+        if (!mj || !mj.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(mj, i) + v(mn, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        let M = 0, m = 0, E = 0, ppl = 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) { M += v(mj, i); m += v(mn, i); E += v(el, i); ppl += v(pop, i); out[i] = v(mj, i) + v(mn, i); }
+        const km = x => `${_round(x / 1000, 1)} km`;
+        const stats = [
+            { label: 'Arterial roads under construction', value: km(M) },
+            { label: 'Other roads under construction', value: km(m) },
+            { label: '…of which elevated (flyovers, elevated corridors)', value: km(E) },
+            { label: 'Blocks the new roads pass through', value: idx.length.toLocaleString('en-IN') },
+            { label: 'Residents of those blocks', value: _people(ppl) },
+        ];
+        return {
+            columns: { road_building_m: out }, idx, weightKey: 'road_building_m', noHotspots: true,
+            metric: { label: 'Road under construction on the map', value: _round((M + m) / 1000, 1), unit: 'km', higherIs: null },
+            headline: `The map shows ${km(M + m)} of road under construction, ${km(M)} of it arterial${E ? ` and ${km(E)} elevated` : ''}, passing through ${idx.length.toLocaleString('en-IN')} blocks where ${_people(ppl)} people live. New arterials and flyovers change who can reach what, and land along them is often priced up before they open; construction also brings dust, diversions and noise for a few years. Brighter blocks have more. A snapshot of OpenStreetMap: some sites stay tagged after opening and many are never tagged.`,
+            stats,
+        };
+    }
+
+    function sundayair(fr) {
+        const c = fr.cols, n = fr.grid.n, sd = c['sunday_air.sa_sunday_drop'];
+        if (!sd || !sd.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(sd[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`sunday_air.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const wk = v('sa_weekday'), su = v('sa_sunday'), drop = v('sa_sunday_drop'), lock = v('sa_lockdown_drop');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = drop;
+        const pc = x => (_fin(x) ? `${_round(x, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'NO2 on working days (Mon-Sat), 2019-2024', value: _fin(wk) ? `${_round(wk, 0)} µmol/m²` : 'n/a' },
+            { label: 'NO2 on Sundays', value: _fin(su) ? `${_round(su, 0)} µmol/m²` : 'n/a' },
+            { label: 'Lower on Sundays by', value: pc(drop) },
+            { label: 'Lower in the 2020 lockdown (25 Mar-30 Apr) than the same weeks of other years', value: pc(lock) },
+        ];
+        return {
+            columns: { sunday_no2_drop: out }, idx, weightKey: 'sunday_no2_drop',
+            metric: { label: 'NO2 drop in the 2020 lockdown', value: _round(lock, 0), unit: '%', higherIs: null },
+            headline: `Nitrogen dioxide over the city centre is ${pc(drop)} lower on Sundays than on working days, and it fell ${pc(lock)} in the spring 2020 lockdown. NO2 lasts only hours, so that share comes from traffic, offices and workshops that stop; what stayed in the lockdown is power plants, kilns, burning and background. A bigger lockdown drop means cleaner vehicles and less congestion would clear more of the air. One value for 8 km around the centre, from Sentinel-5P.`,
+            stats,
+        };
+    }
+
+    function diwaliair(fr) {
+        const c = fr.cols, n = fr.grid.n, jp = c['diwali_air.dw_jump_pct'];
+        if (!jp || !jp.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(jp[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`diwali_air.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const b = v('dw_before'), a = v('dw_after'), j = v('dw_jump_pct'), wy = v('dw_worst_year'), wa = v('dw_worst_after'), ny = v('dw_years');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = a;
+        const ug = x => (_fin(x) ? `${Math.round(x)} µg/m³` : 'n/a');
+        const times = _fin(a) && a > 0 ? _round(a / 60, 1) : NaN;
+        const stats = [
+            { label: 'PM2.5 in the week before Diwali (average of years)', value: ug(b) },
+            { label: 'PM2.5 on Diwali and the day after', value: ug(a) },
+            { label: 'Jump in the median year', value: _fin(j) ? `+${Math.round(j)}%` : 'n/a' },
+            { label: 'Biggest jump', value: _fin(wy) ? `${wy} (${ug(wa)} on Diwali and the day after)` : 'n/a' },
+            { label: 'Years compared', value: _fin(ny) ? `${ny} (2017-2022)` : 'n/a' },
+        ];
+        return {
+            columns: { diwali_pm25: out }, idx, weightKey: 'diwali_pm25',
+            metric: { label: 'PM2.5 on Diwali and the day after', value: Math.round(a), unit: 'µg/m³', higherIs: 'worse' },
+            headline: `On Diwali and the day after, PM2.5 over the city centre averages ${ug(a)}, against ${ug(b)} in the week before: in the median year it is ${_fin(j) ? `${Math.round(j)}%` : 'n/a'} higher${_fin(times) && times > 1 ? `, and ${times} times the Indian daily limit of 60` : ''}. The worst jump was in ${_fin(wy) ? wy : 'n/a'}. Firecrackers add to crop-fire smoke and the first still winter nights, so the jump depends on the weather as much as the crackers. One value for 8 km around the centre, from GHAP daily satellite-based PM2.5.`,
+            stats,
+        };
+    }
+
+    const ENTRIES = [
+        { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
+            question: 'Would the ground under my home turn soft in an earthquake?',
+            field: { key: 'liquefy_likely_pct', label: 'Ground where liquefaction is likely (share of block)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 100] },
+            needs: ['liquefaction.lq_likely_pct', 'liquefaction.lq_possible_pct', 'liquefaction.sh_high_pct', 'population.population'],
+            method: `Manoharan and Ganapathy's first-level GIS assessment of Greater Chennai (Zenodo record 19105121, CC BY 4.0) scores every 20 m pixel for liquefaction susceptibility by weighting lithology, landform, depth to groundwater (ward wells, 2016-2020, interpolated) and depth to bedrock with AHP weights, and classes it as liquefaction not likely (score up to 2.2), possible (2.2-2.75) or likely (above 2.75); a seismic hazard class then adds surface shaking amplified by soil type. Each block takes the share of pixels within 120 m of its centre in each class. It is a desk assessment from mapped geology and well levels, not borehole tests, and says nothing about how strong or likely a quake is: Chennai sits in seismic zone III. Only the authors' own derived rasters are used. Greater Chennai only.`,
+            refs: 'S. G. Manoharan and G. P. Ganapathy, Integrated seismic hazard and liquefaction susceptibility mapping of a coastal megacity: dataset and GIS workflow, Zenodo 19105121 (CC BY 4.0); IS 1893 seismic zones' },
+        { id: 'junctions', title: 'Counted junction traffic', icon: '🚥',
+            question: 'How many vehicles actually pass through the big junction near me at rush hour?',
+            field: { key: 'junction_peak_veh', label: 'Vehicles through the nearest counted junction in its busier peak hour', unit: 'vehicles/h', higherIs: 'worse', ramp: 'reds', domain: [6000, 17000] },
+            needs: ['junction_counts.jc_peak_veh', 'junction_counts.jc_km', 'junction_counts.jc_daily_veh', 'population.population'],
+            method: `BBMP's Comprehensive Bengaluru City Traffic Management Infrastructure Plan (final feasibility report, December 2024, via data.opencity.in) reprints the classified turning-volume counts its consultants made in 2024 at 28 junctions on Tumkur Road, JC Road, Hosur Road, Mysore Road and the north-south tunnel study area, with morning and evening peak hour vehicles and PCUs, plus 24-hour counts at seven central junctions and nine cordon roads. The tables were transcribed by hand and each site placed at its OpenStreetMap location by name. Blocks within 2 km of a counted junction take that junction's busier peak hour; vehicles are mapped because the studies used different PCU factors. Only the study corridors were counted, so blank areas mean no count, not no traffic. A check against DigiPin's own modelled traffic load found it does not rank these junctions well (Spearman about 0.1), so measured counts and the model should be read side by side.`,
+            refs: 'BBMP, Comprehensive Bengaluru City Traffic Management Infrastructure Plan, final feasibility report (December 2024), tables 10, 44, 77, 93, 153 and 158, via data.opencity.in (public domain); sites © OpenStreetMap contributors' },
+        { id: 'challans', title: 'Traffic tickets by police station', icon: '🎫',
+            question: 'What do the traffic police book people for around here?',
+            field: { key: 'challans_per_1000', label: 'Traffic violations booked per 1,000 residents of the station area, 2024', unit: 'per 1,000', higherIs: null, ramp: 'reds', domain: [0, 200] },
+            needs: ['traffic_challans.tc_per_1000', 'traffic_challans.tc_helmet_pct', 'traffic_challans.tc_signal_pct', 'traffic_challans.tc_wrongway_pct', 'traffic_challans.tc_obstruct_pct', 'population.population'],
+            method: `Mumbai Traffic Police tables of violations booked from 1 January to 31 December 2024 by police station and offence (via data.opencity.in, public domain), about 8.5 lakh in all. Each block takes the figures of the law-and-order police station whose jurisdiction map holds it; all 91 station names in the table were matched to the map (21 by spelling fixes). Per 1,000 residents uses the residents of the station area, but many tickets go to people driving through, so market and transit areas score high (Pydhonie, Jogeshwari, Malvani and Khar book the most per resident). These are bookings: they show where and for what the police enforce, not how badly people drive. Mumbai only.`,
+            refs: 'Mumbai Traffic Police, violations and challans 2024 by police station, via data.opencity.in (public domain); station areas from Mumbai Police jurisdiction maps' },
+        { id: 'since1951', title: 'Hotter than in 1951?', icon: '🌡️',
+            question: 'How much hotter has my city got since my grandparents were young?',
+            field: { key: 'since1951_hot_days', label: 'Unusually hot days a year, 1991-2020 (18 a year in 1951-1980)', unit: 'days', higherIs: 'worse', ramp: 'reds', domain: [10, 40] },
+            needs: ['city_climate.cc_tmax_change', 'city_climate.cc_tmin_change', 'city_climate.cc_hot_then', 'city_climate.cc_hot_now', 'city_climate.cc_warm_nights_now', 'city_climate.cc_40_then', 'city_climate.cc_40_now', 'population.population'],
+            method: `India Meteorological Department daily maximum and minimum temperatures for Delhi, Mumbai, Chennai, Bengaluru, Ahmedabad, Hyderabad, Pune and Kolkata, republished on data.opencity.in (public domain). Up to 2020 the values match IMD's gridded daily series for the city's grid cell; from 2021 the file switches source (Mumbai's mean low jumps 2 °C in one year, Pune's drops 2.3 °C), so only 1951-2020 is used, and the rain column is left out (it does not describe the city before 2021). The 1991-2020 normal period is compared with 1951-1980: changes in the mean daily high and low, how often a day beats the hottest 5% of 1951-1980 days (about 18 a year then) and a night the warmest 5% of nights, and days at 40 °C or more. A grid cell is about 100 km across, so this is the regional climate around the city; the heat maps for blocks are the hot-day, hot-night and heated-up lenses. Delhi and Kolkata show little change in daytime highs, as other studies of the Indo-Gangetic plain have found (haze and irrigation damp daytime warming), but their nights have warmed.`,
+            refs: 'India Meteorological Department daily temperature 1951-2024 for eight cities, via data.opencity.in (public domain); WMO 1991-2020 climate normals convention' },
+        { id: 'slidezone', title: 'Slopes that can slide', icon: '⛰️',
+            question: 'Is my neighbourhood on ground that could give way in heavy rain?',
+            field: { key: 'slide_class', label: 'Landslide susceptibility (1 very low ... 5 very high)', unit: 'class', higherIs: 'worse', ramp: 'reds', domain: [1, 5] },
+            needs: ['landslide_susceptibility.ls_class', 'landslide_susceptibility.ls_near_max', 'slums_mapped.slum_pct', 'population.population'],
+            method: `NASA's global landslide susceptibility map (Stanley and Kirschbaum, Natural Hazards 2017; 2023 update; public domain) scores each cell of about 1 km from very low to very high using slope, geology, distance to faults, road cuts and forest loss. It is the static layer behind NASA's LHASA landslide nowcasts, which add rainfall. Each block takes the class under its centre and the highest class in the 3 x 3 cells around it; residents of mapped slums (where the city has a slum map) on moderate or higher ground are counted separately because monsoon slides in Indian cities mostly hit hillside settlements. At 1 km the map mixes slopes with the flat ground below them, so it marks neighbourhoods to check rather than unsafe buildings; the hillside lens adds the finer DEM slope and the slides on record.`,
+            refs: 'T. Stanley and D. B. Kirschbaum, A heuristic approach to global landslide susceptibility mapping, Natural Hazards 87 (2017); NASA GPM global landslide susceptibility map, 2023 update (public domain)' },
+        { id: 'radarflood', title: 'Under water in a named flood', icon: '🛰️',
+            question: 'Was my area under water in the last big flood?',
+            field: { key: 'radar_flooded_pct', label: 'Ground flagged as flooded by radar in the event (share of block)', unit: '%', higherIs: 'worse', ramp: 'blues', domain: [0, 100] },
+            needs: ['sar_floods.sf_flooded_pct', 'sar_floods.sf_year', 'sar_floods.sf_damage_pct', 'population.population'],
+            method: `Flood proxy maps by the Earth Observatory of Singapore Remote Sensing Lab (EOS-RS; ARIA-SG with NASA-JPL for 2020), via the Humanitarian Data Exchange under CC BY 4.0: Copernicus Sentinel-1 radar images taken during the flood are compared with images from before, and pixels of about 30 m that turned to likely water are flagged. Delhi: 12 July 2023, during the Yamuna flood (the river reached a record 208.66 m on 13 July, so the peak is a day later than the image). Kolkata: 22 May 2020, after Cyclone Amphan. Each block takes the share of flagged pixels in about 250 m around its centre. Radar sees open water and flooded fields well but misses water in narrow streets between buildings, and EOS-RS call the maps less reliable over urban and vegetated areas, so read blank built-up blocks as not seen rather than dry. For Amphan, the ARIA-SG damage proxy map (Sentinel-1 track P048, v0.4) is added: it flags pixels whose radar coherence changed sharply between images before and after the storm, which picks out roof and wall damage, debris and fallen trees; scattered single pixels can be false alarms, and it is least reliable over vegetation.`,
+            refs: 'Earth Observatory of Singapore Remote Sensing Lab flood proxy maps: New Delhi floods 12 Jul 2023 v0.9; Cyclone Amphan 22 May 2020 v0.8 and damage proxy map P048 v0.4 (ARIA-SG), via data.humdata.org (CC BY 4.0); contains modified Copernicus Sentinel data' },
+        { id: 'unpaved', title: 'Unpaved streets', icon: '🛤️',
+            question: 'Are the streets around me still dirt roads?',
+            field: { key: 'unpaved_pct', label: 'Unpaved share of nearby roads with a known surface', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
+            needs: ['road_surface.rs_unpaved_pct', 'road_surface.rs_known_pct', 'road_surface.rs_unpaved_km', 'waterlogging.waterlogging_index', 'population.population'],
+            method: `HeiGIT's road surface dataset for India (Heidelberg Institute for Geoinformation Technology, via the Humanitarian Data Exchange, ODbL) labels each OpenStreetMap road paved or unpaved: from its OSM surface tag where one exists, otherwise from a deep-learning model run over Mapillary street-level photos taken along it (Randhawa et al. 2024). Footways, paths, steps and cycleways are left out. Each block takes the drivable roads whose middle lies within 500 m and gets an unpaved share when at least 300 m of them have a known surface. Only 7-27% of road length in most cities is known (59% in Lucknow), and known roads lean towards main roads that are tagged or photographed, so the share is a sample, likely to under-count unpaved lanes; outer, thinly built blocks carry most of the unpaved roads (rank correlation with residents about -0.35 to -0.42 in Bengaluru, Delhi and Hyderabad). Blocks with a fifth or more unpaved and a waterlogging index of 60 or more (DigiPin's terrain and monsoon-water score) are counted as likely to turn to mud in the rains.`,
+            refs: 'HeiGIT, Mapillary-based road surface data for India (via data.humdata.org, ODbL); A. Randhawa et al., Paved or unpaved? A deep learning derived road surface global dataset from Mapillary street-view imagery, arXiv 2410.19874; © OpenStreetMap contributors' },
+        { id: 'friends', title: 'Where people here have ties', icon: '🤝',
+            question: 'Where do people in this city come from, and where are their friends abroad?',
+            field: { key: 'friends_top_sci', label: 'Social connectedness with the most-connected district outside the home state', unit: 'SCI', higherIs: null, ramp: 'viridis' },
+            needs: ['social_ties.st_top_out_sci', 'social_ties.st_gulf_sci', 'social_ties.st_abroad_ratio', 'population.population'],
+            method: `Meta's Social Connectedness Index (Bailey, Cao, Kuchler, Stroebel and others; 2025 release via the Humanitarian Data Exchange, public domain) measures the relative probability that a Facebook user in one place is friends with a user in another, from an anonymised snapshot of all active users. The city is its GADM district (Mumbai averages Mumbai City and Mumbai Suburban; Delhi is one unit). DigiPin lists the five districts outside the city's home state with the highest index, the five countries with the highest index, and the countries where the city's index is at least twice the median Indian district's (only where the city's index is 5,000 or more, so tiny states do not crowd the list). Strong ties to a far district usually trace migration; the index reflects Facebook users, who skew younger, urban and male in India, and says nothing about any one person. The map is a single value for the city.`,
+            refs: 'M. Bailey, R. Cao, T. Kuchler, J. Stroebel and A. Wong, Social Connectedness: Measurement, Determinants, and Effects, Journal of Economic Perspectives 32(3), 2018; Meta Data for Good, Social Connectedness Index (2025 release), via data.humdata.org (public domain); district names from GADM 4.1' },
+        { id: 'foodbasket', title: 'Kitchen basket cost', icon: '🧺',
+            question: 'What does a month of staples cost in this city, and how fast has it risen?',
+            field: { key: 'food_basket_rs', label: "A month's kitchen basket at retail prices", unit: '₹', higherIs: 'worse', ramp: 'reds' },
+            needs: ['food_prices.fp_basket_rs', 'food_prices.fp_vs_median_pct', 'food_prices.fp_10y_pct', 'food_prices.fp_onion_swing', 'food_prices.fp_last_year', 'district_income.di_pci', 'population.population'],
+            method: `Monthly retail prices from the Department of Consumer Affairs' price monitoring cell, republished by the World Food Programme on the Humanitarian Data Exchange (CC BY-IGO), 1994 to July 2023; eleven DigiPin cities are price centres (Pune and Guna are not). A fixed month's basket for a family of four or five (10 kg rice, 10 kg wheat flour, 3 kg lentils, 2 kg mustard oil, 2 kg sugar, 30 litres milk, 5 kg potatoes, 4 kg onions, 3 kg tomatoes, 250 g tea, 1 kg salt) is priced in each month that has every item, and the last 12 such months are averaged. The ten-year change compares the same calendar months a decade earlier over the items priced then, weighted by today's basket. The basket is illustrative, the same in every city: real diets differ (rice-heavy in the south and east, mustard oil mostly in the north and east), and the prices are what the monitoring centres record, not every shop. Where district income figures exist the basket is set against a household of 4.5 at the district's income per head.`,
+            refs: 'World Food Programme, India food prices (via data.humdata.org, CC BY-IGO), data from the Department of Consumer Affairs, Government of India, price monitoring cell' },
+        { id: 'footpaths', title: 'Usable footpaths (Pune)', icon: '🚶',
+            question: 'Can I walk on a footpath here, or do I walk on the road?',
+            field: { key: 'usable_footpath_pct', label: 'Roads with usable footpaths in the prabhag (PMC 2016)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [0, 100] },
+            needs: ['pune_prabhag_2016.pp_footpath_pct', 'pune_prabhag_2016.pp_swd_pct', 'pune_prabhag_2016.pp_slum_hh', 'pune_prabhag_2016.pp_prabhag', 'population.population'],
+            method: `Pune Municipal Corporation's 2016 prabhag tables (via data.opencity.in, public domain) give, for each of the 76 prabhags used from 2012 to 2017, the length of roads, the length with a footpath on one or both sides, the share of roads with usable footpaths, the share of roads with a storm-water drain and the number of slum households. The prabhags are placed with DataMeet's trace of the 2012 electoral wards (Municipal Spatial Data, CC BY 4.0), and each block takes its prabhag's row. These are the corporation's own reported figures, not a field audit, and are ten years old; footpaths built or lost since are not counted. PMC's table of homes with drainage connections on the same prabhags is left out because it reads 100% almost everywhere.`,
+            refs: 'Pune Municipal Corporation prabhag-wise roads and footpaths, storm-water drain coverage and slum tables, 2016 (data.opencity.in, public domain); DataMeet, Municipal Spatial Data, Pune electoral wards 2012 (CC BY 4.0)' },
+        { id: 'intercity', title: 'Long-distance trains within reach', icon: '🚆',
+            question: 'How easily can I catch a long-distance train from here?',
+            field: { key: 'intercity_trains_5km', label: 'Long-distance trains stopping within 5 km (2016 timetable)', unit: 'trains', higherIs: 'better', ramp: 'viridis', domain: [0, 300] },
+            needs: ['intercity_trains.it_trains_5km', 'intercity_trains.it_hub_km', 'intercity_trains.it_hub_trains', 'population.population'],
+            method: `DataMeet's Indian Railways data (github.com/datameet/railways, CC0), gathered from the 2016 timetable: 8,990 stations, 5,208 trains and 417,080 scheduled stops. Only express-class trains count (Express, Superfast, Mail, Rajdhani, Shatabdi, Jan Shatabdi, Duronto, Garib Rath, Sampark Kranti); passenger, MEMU/DEMU and suburban trains are left out, and a station a train runs through without stopping (arrival equal to departure) is not counted. Each block adds up the distinct trains stopping at stations within 5 km in a straight line and finds the nearest station with 50 or more. A train counts once however many days a week it runs. The timetable is ten years old: trains added since, including the Vande Bharat expresses, are missing, and a few stations have been renamed or rebuilt.`,
+            refs: 'DataMeet, Indian Railways stations, trains and schedules (S. Bhangar and S. Hussain, 2016), github.com/datameet/railways (CC0)' },
+        { id: 'emitters', title: 'Who emits the soot nearby', icon: '🏭',
+            question: 'Where does the smoke and soot around my home come from: factories, kitchens or traffic?',
+            field: { key: 'emitters_pm25_t', label: 'PM2.5 emitted within 2 km a year (EDGAR 2024)', unit: 't/yr', higherIs: 'worse', ramp: 'reds', domain: [0, 1500] },
+            needs: ['emission_sources.es_pm25_t', 'emission_sources.es_industry_pct', 'emission_sources.es_homes_pct', 'emission_sources.es_power_pct', 'emission_sources.es_nox_traffic_pct', 'population.population'],
+            method: `The European Commission Joint Research Centre's EDGAR 2025 release (CC BY 4.0) maps the tonnes of fine particles (PM2.5) and nitrogen oxides emitted in 2024 on a 1 km grid, by sector: industry, residential (cooking and heating fuel in homes), road transport exhaust, power plants, agriculture, shipping and aviation, and waste for NOx. Each block adds up the 1 km cells whose centre lies within 2 km and takes each sector's share. EDGAR is a modelled inventory: national fuel and activity totals are spread over the map using lists of plants and factories, population, roads and land use, so a cell is an estimate rather than a measurement, and its industry hot spots (Peenya and Bommasandra in Bengaluru, Sahibabad and Mundka in Delhi) are where it places factories. It counts only what chimneys, stoves and tailpipes emit: road and construction dust and the particles that form in the air from gases, which source apportionment studies find large in Indian cities, are not in it. So it shows who emits nearby, not what people breathe; the air lenses show the measured and satellite air.`,
+            refs: 'M. Crippa et al., EDGAR 2025 global emission grids at 0.01 degree for 2024, European Commission Joint Research Centre (edgar.jrc.ec.europa.eu/dataset_ghg2025, CC BY 4.0)' },
+        { id: 'sootrend', title: 'Is the city emitting more soot?', icon: '📈',
+            question: 'Is my city putting out more smoke and soot than it did in 2000?',
+            field: { key: 'soot_kg_pp', label: 'PM2.5 emitted per resident of the urban centre, 2024', unit: 'kg', higherIs: 'worse', ramp: 'reds', domain: [1, 4] },
+            needs: ['city_emissions.ce_pm25_t', 'city_emissions.ce_pm25_2000_pct', 'city_emissions.ce_pm25_kg_pp', 'city_emissions.ce_pm25_vs_india', 'city_emissions.ce_nox_t', 'city_emissions.ce_nox_2000_pct', 'city_emissions.ce_homes_pct', 'city_emissions.ce_homes_2000_pct', 'city_emissions.ce_industry_pct', 'population.population'],
+            method: `The European Commission Joint Research Centre adds up its EDGAR emission grids over each of the world's 11,422 urban centres in the GHSL Urban Centre Database, by sector, for 1975 to 2024 (EDGAR emissions by city, 2025 release, CC BY 4.0). Only the air pollutant columns are used: PM2.5 and nitrogen oxides. The fossil CO2 and greenhouse gas columns rest on IEA energy data licensed for non-commercial use only, so they are left out. An urban centre is the GHSL's dense built-up area, not the municipal area: Delhi's runs into Noida, Ghaziabad, Gurugram and Faridabad, Kolkata's spans both banks of the Hooghly. Per resident uses GHSL's 2025 population, and the comparison is with the median of India's 1,925 urban centres (1.56 kg). The change since 2000 is the total and grows with the population. EDGAR is a modelled inventory of what chimneys, stoves and tailpipes emit; road and construction dust and particles formed in the air are not in it. One figure for the whole city; the soot-nearby lens maps the same source block by block.`,
+            refs: 'European Commission JRC, EDGAR GHG and air pollutant emissions by urban centre, 2025 release (EDGAR_GHG_AP_by_UCDB_2026.xlsx, edgar.jrc.ec.europa.eu/edgar_cities, CC BY 4.0); GHSL Urban Centre Database 2025' },
+        { id: 'packingin', title: 'Spreading out or packing in?', icon: '🧭',
+            question: 'Is my city eating up land faster than it is adding people?',
+            field: { key: 'land_over_pop_growth', label: 'Built-up land growth over population growth, 2000-2020 (SDG 11.3.1)', unit: '×', higherIs: 'worse', ramp: 'reds', domain: [0.5, 2] },
+            needs: ['land_efficiency.le_ratio_00_20', 'land_efficiency.le_land_pct_yr', 'land_efficiency.le_pop_pct_yr', 'land_efficiency.le_ratio_90_00', 'land_efficiency.le_ratio_10_20', 'land_efficiency.le_ratio_20_30', 'land_efficiency.le_world_pctile', 'land_efficiency.le_india_pctile', 'population.population'],
+            method: `UN Sustainable Development Goal indicator 11.3.1 divides the land consumption rate (yearly growth of built-up land) by the population growth rate. Above 1, built-up land grew faster than the number of people and the city spread out and thinned; below 1, it packed more people onto each hectare. The European Commission Joint Research Centre computes it for each of the world's 11,422 urban centres from GHSL's built-up and population grids (GHS Urban Centre Database 2025, R2024A V1.2, CC BY 4.0), clipped at plus and minus 5. An urban centre is GHSL's dense built-up area, not the municipal area. The city's 2000-2020 ratio is ranked against the 524 urban centres of a million or more worldwide and the 77 in India. Growth into the ring outside the urban centre is not counted, and a low ratio can mean crowding as much as good planning; the sprawl and growth lenses show where inside the city the new building went.`,
+            refs: 'European Commission JRC, GHS Urban Centre Database 2025 (GHS-UCDB R2024A V1.2, doi:10.2905/1a338be6-7eaf-480c-9664-3a8ade88cbcd, CC BY 4.0); M. Melchiorri et al., ISPRS Int. J. Geo-Inf. 8 (2019) 96; UN SDG indicator 11.3.1 metadata' },
+        { id: 'heatisland', title: 'How much hotter than the countryside?', icon: '🌆',
+            question: 'How much warmer is my city than the countryside around it, by day and by night?',
+            field: { key: 'heat_island_night_c', label: 'Night surface heat island, city minus countryside, 2016-2020', unit: '°C', higherIs: 'worse', ramp: 'reds', domain: [1, 4.5] },
+            needs: ['heat_island.hi_surf_day', 'heat_island.hi_surf_night', 'heat_island.hi_air_day', 'heat_island.hi_air_night', 'heat_island.hi_surf_night_trend', 'heat_island.hi_surf_day_trend', 'heat_island.hi_air_night_trend', 'heat_island.hi_summer_surf_day', 'population.population'],
+            method: `Yang, Xu, Chakraborty and others (Remote Sensing of Environment, 2024; data CC BY 4.0 via the Earth Engine community catalog) estimate the monthly urban heat island intensity of over 10,000 cities from 2001 to 2020: the city's temperature minus that of a ring of comparable countryside of the same area, with water, high ground and other confounders removed (their dynamic equal-area method). Two of their series are used: ground surface temperature from MODIS Terra under all skies (cloud gaps filled; about 10:30 in the morning and 10:30 at night) and 1 km near-surface air temperature. Each city's value is read near its GHSL urban-centre centre, averaged by year, given as the 2016-2020 mean and as a least-squares change per decade over 2001-2020. Indian cities in dry regions often show a daytime cool island before the monsoon, because bare fields around them heat faster than the city. Air temperature heat islands are smaller than surface ones. One figure for the whole city.`,
+            refs: 'Q. Yang, Y. Xu, T. C. Chakraborty et al., A global urban heat island intensity dataset: generation, comparison, and analysis, Remote Sensing of Environment 312 (2024); data figshare doi:10.6084/m9.figshare.24821538 (CC BY 4.0)' },
+        { id: 'greenrank', title: 'Greener or greyer than other cities?', icon: '🌳',
+            question: 'Is my city greener or greyer than other big cities in India and the world?',
+            field: { key: 'green_rank_ndvi', label: 'Mean greenness (NDVI) of the built-up area, 2025', unit: 'NDVI', higherIs: 'better', ramp: 'greens', domain: [0.2, 0.5] },
+            needs: ['green_rank.gr_ndvi_2025', 'green_rank.gr_ndvi_2000', 'green_rank.gr_ndvi_change_pct', 'green_rank.gr_world_pctile', 'green_rank.gr_india_pctile', 'green_rank.gr_canopy_m', 'green_rank.gr_canopy_world_pctile', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) gives every one of the world's 11,422 urban centres the mean Landsat NDVI (an index of green leaf: roofs and bare ground near 0.1, lawns and crops 0.3-0.6, dense trees above 0.6) over its built-up area and a 300 m buffer, every five years as three-year averages, and the mean canopy top height there in 2020 from Lang and others' 10 m global canopy height model. The city is ranked against the 524 urban centres of a million or more worldwide and the 77 in India. An urban centre is GHSL's dense built-up area, not the municipal boundary. Rainfall and season of the images set much of the value, so a dry city will rank low however many parks it has; compare with Indian peers. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, greenness theme (doi:10.2905/1a338be6-7eaf-480c-9664-3a8ade88cbcd, CC BY 4.0); N. Lang et al., A high-resolution canopy height model of the Earth, Nature Ecology & Evolution 7 (2023)' },
+        { id: 'climatetwin', title: "Which city's climate will mine have?", icon: '🧭',
+            question: "Which city's climate today will my city have by the 2030s?",
+            field: { key: 'climate_twin_temp', label: 'Annual mean temperature projected for the 2030s (RCP 8.5)', unit: '°C', higherIs: 'worse', ramp: 'heat', domain: [24, 30] },
+            needs: ['climate_twin.ct_temp_2010', 'climate_twin.ct_temp_2030', 'climate_twin.ct_temp_2030_45', 'climate_twin.ct_rain_2010', 'climate_twin.ct_rain_2030', 'climate_twin.ct_twin_id', 'climate_twin.ct_twin_dist', 'climate_twin.ct_abroad_id', 'climate_twin.ct_abroad_dist', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) gives every urban centre decade averages of four bioclimatic indicators from the Copernicus Climate Change Service (Wouters 2021): annual mean temperature, temperature seasonality, annual rainfall and rainfall seasonality, from reanalysis up to the 2010s and from a CMIP5 model ensemble under RCP 4.5 and RCP 8.5 for the 2020s and 2030s, averaged over the coarse (about 50 km) grid cells touching the centre. A climate analogue (Fitzpatrick and Dunn 2019; Bastin et al. 2019) is the city whose 2010s climate is closest to this city's projected 2030s climate under RCP 8.5: Euclidean distance over the four indicators, each scaled by its spread across the world's 524 urban centres of a million or more, which are the candidates. A distance above 1 is a loose match. Coarse cells blur coast and hills (Pune's cells take in Western Ghats rain), and models and reanalysis differ, so read the analogue as a picture of the regional climate shift, not a forecast. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, climate theme (CC BY 4.0); H. Wouters, Global bioclimatic indicators from 1979 to 2018 derived from reanalysis, Copernicus C3S CDS (doi:10.24381/cds.bce175f0); M. C. Fitzpatrick and R. R. Dunn, Contemporary climatic analogs for 540 North American urban areas in the late 21st century, Nature Communications 10 (2019)' },
+        { id: 'roomrank', title: 'Home space per resident vs the world', icon: '📐',
+            question: 'How much home space does each resident of my city have compared with other big cities?',
+            field: { key: 'room_rank_m3', label: 'Residential built-up volume per resident, 2020', unit: 'm³', higherIs: 'better', ramp: 'viridis', domain: [80, 260] },
+            needs: ['room_rank.rr_m3_pp_2020', 'room_rank.rr_m3_pp_2000', 'room_rank.rr_change_pct', 'room_rank.rr_floor_m2_pp', 'room_rank.rr_world_pctile', 'room_rank.rr_india_pctile', 'room_rank.rr_low_pct', 'room_rank.rr_mid_pct', 'room_rank.rr_high_pct', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) sums GHSL's residential built-up volume (footprints from Sentinel-2 and Landsat times heights from AW3D30, SRTM and Sentinel-2) and GHSL population over each urban centre. Volume per resident is a proxy for home floor space: divided by a 3 m storey it gives a rough floor area that also counts walls, stairs, common areas and empty flats, so it is an upper bound best used to compare cities and years. The city is ranked against the world's 524 urban centres of a million or more and India's 77. Residents are also split by the prevalent height of the residential area they live in (2020). Population and volume are modelled grids, and GHSL's residential class is everything not mapped as non-residential. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, GHSL theme (CC BY 4.0); M. Pesaresi and P. Politis, GHS-BUILT-V R2023A; M. Schiavina et al., GHS-POP R2023A' },
+        { id: 'floodgrown', title: 'Has the city grown into its floodplain?', icon: '🌊',
+            question: 'What share of my city lives in flood zones, and how does that compare with other cities and with 1975?',
+            field: { key: 'flood_grown_pct', label: 'Residents in the 100-year river flood zone, 2020', unit: '%', higherIs: 'worse', ramp: 'blues', domain: [0, 30] },
+            needs: ['flood_exposure.fx_river100_pct', 'flood_exposure.fx_river100_1975_pct', 'flood_exposure.fx_river100_2000_pct', 'flood_exposure.fx_river100_people', 'flood_exposure.fx_river10_pct', 'flood_exposure.fx_coast100_pct', 'flood_exposure.fx_lecz5_pct', 'flood_exposure.fx_lecz10_pct', 'flood_exposure.fx_world_pctile', 'flood_exposure.fx_india_pctile', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) overlays GHSL population grids for 1975 to 2020 on hazard maps for every urban centre: JRC GloFAS modelled river inundation for 10 and 100-year return periods (Baugh et al. 2024), JRC extreme sea level flood maps for a 100-year surge (Vousdoukas et al. 2018), and CIESIN's Low Elevation Coastal Zone v3 (land under 5 m and 10 m). The city's share of residents in the 100-year river flood zone is ranked among the world's 524 urban centres of a million or more and India's 77 (ties count half). Flood maps are about 90 m models of a rare flood without defences: they miss embankments, drains and the rain waterlogging that floods most Indian streets. Population after 2020 is projected, so 2020 is the latest year. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, exposure theme (CC BY 4.0); C. Baugh et al., Modelled flood inundation for different return period scenarios at the global scale, JRC (2024); M. I. Vousdoukas et al., Nature Communications 9 (2018); CIESIN, LECZ v3 (2021)' },
+        { id: 'warmdays', title: 'Unusually hot days, then and now', icon: '📈',
+            question: 'How much more often is it unusually hot in my city than it used to be?',
+            field: { key: 'warm_days_pct', label: 'Days hotter than the 1961-1990 normal for the date, 2010s', unit: '%', higherIs: 'worse', ramp: 'heat', domain: [5, 30] },
+            needs: ['warm_days.wd_1970s', 'warm_days.wd_1990s', 'warm_days.wd_2010s', 'warm_days.wd_world_pctile', 'warm_days.wd_india_pctile', 'population.population'],
+            method: `The European Commission JRC's GHSL Urban Centre Database 2025 (R2024A V1.2, CC BY 4.0) carries the climate extreme index TX90p from the Copernicus Climate Change Service (Sandstad et al. 2022): the share of days whose maximum temperature beats the 90th percentile for that calendar day (5-day window) in 1961-1990. It was about 10% in the base years by construction, so 20% means unusually hot days are twice as common. Decade averages come from reanalysis over the coarse (about 50 km) grid cells touching the urban centre. The 2010s value is ranked among the world's 524 urban centres of a million or more and India's 77. The database's CMIP6 projections for the 2030s are raw model output that does not line up with the reanalysis, so they are left out. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, climate theme (CC BY 4.0); M. Sandstad, C. Schwingshackl and C. Iles, Climate extreme indices and heat stress indicators derived from CMIP6 global climate projections, Copernicus C3S CDS (doi:10.24381/cds.776e08bd)' },
+        { id: 'worldcard', title: 'City vs the world scorecard', icon: '🌍',
+            question: "How does my city compare with the world's big cities?",
+            field: { key: 'world_card_score', label: "Average standing among the world's cities of 1 million+", unit: '/100', higherIs: 'better', ramp: 'viridis', domain: [20, 70] },
+            needs: ['green_rank.gr_world_pctile', 'green_rank.gr_canopy_world_pctile', 'room_rank.rr_world_pctile', 'flood_exposure.fx_world_pctile', 'warm_days.wd_world_pctile', 'land_efficiency.le_world_pctile', 'population.population'],
+            method: `A summary of the city-level rankings built from the European Commission JRC's GHSL Urban Centre Database 2025 (CC BY 4.0), each ranking the city's urban centre among the world's 524 urban centres of a million or more: mean greenness of the built-up area (2025), tree canopy height (2020), residential built-up volume per resident (2020), share of residents in the 100-year river flood zone (2020), share of days hotter than the 1961-1990 normal for the date (2010s), and built-up land growth over population growth (SDG 11.3.1, 2000-2020). Each is turned into the share of world cities the city does better than (flipping the measures where higher is worse) and the scorecard is their plain average, with equal weights. It is a conversation starter, not an index: the measures are not independent, climate drives several, and ties at zero exposure count half. See each lens for sources and caveats. One figure for the whole city.`,
+            refs: 'European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2 (CC BY 4.0); see the greenrank, roomrank, floodgrown, warmdays and packingin lenses' },
+        { id: 'earthbounds', title: 'Earth system boundaries crossed', icon: '🪐',
+            question: "Which of the planet's safe limits does the land around my city cross?",
+            field: { key: 'earth_bounds_max', label: 'Most Earth system boundaries crossed at one spot', unit: 'of 8', higherIs: 'worse', ramp: 'reds', domain: [2, 6] },
+            needs: ['earth_bounds.eb_max', 'earth_bounds.eb_min', 'earth_bounds.eb_world_pctile', 'earth_bounds.eb_bio', 'earth_bounds.eb_gwa', 'earth_bounds.eb_nit', 'earth_bounds.eb_pho', 'earth_bounds.eb_p25', 'earth_bounds.eb_slr', 'earth_bounds.eb_swa', 'earth_bounds.eb_wet', 'population.population'],
+            method: `The Earth Commission (Rockström and others, Nature 2023) set "safe and just" limits for eight of the planet's life-support systems and mapped where on land each is crossed at about 50 km: biosphere integrity (too little intact natural land), nitrogen and phosphorus surplus from fertiliser, surface water flows, groundwater decline, aerosols (annual PM2.5 above 15 µg/m³), climate (wet-bulb heat that harms people) and sea level rise exposure. The European Commission JRC's GHSL Urban Centre Database 2025 (CC BY 4.0) flags each boundary crossed anywhere under the city's urban centre and counts the most and fewest crossed at one spot; the most is ranked among the world's 524 urban centres of a million or more. The transgression map is Abrams (2022), figshare, CC BY 4.0. It describes the region the city sits in and draws on, so neighbourhoods do not differ. One figure for the whole city.`,
+            refs: 'J. Rockström et al., Safe and just Earth system boundaries, Nature 619 (2023); J. Abrams, Transgression map, figshare doi:10.6084/m9.figshare.20079200 (CC BY 4.0); European Commission, Joint Research Centre, GHS Urban Centre Database R2024A V1.2, natural systems theme (CC BY 4.0)' },
+        { id: 'playreach', title: 'Somewhere to play nearby', icon: '🛝',
+            question: 'Do children near me have a playground or sports ground within a short walk?',
+            field: { key: 'play_reach_m', label: 'Distance to the nearest mapped playground or sports ground', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 1500] },
+            needs: ['play_space.pl_ground_m', 'play_space.pl_playground_m', 'play_space.pl_within_500', 'demographics.under5', 'demographics.school_age', 'population.population'],
+            method: `Playgrounds and sports grounds are Overture Maps base-theme land-use polygons (from OpenStreetMap, ODbL) of the recreation subtype: playground, pitch, recreation ground, track and stadium, each reduced to its centroid. Each lived-in block takes the straight-line distance to the nearest of them and to the nearest playground. Children aged 0-14 per block come from WorldPop 2020 age structure (CC BY 4.0); where it is missing, all residents are counted. 500 m is about a 7-minute walk for a child, a common planning reach for neighbourhood play space. OpenStreetMap coverage of play space is uneven: some cities have only a handful of playgrounds mapped (Bhopal 5, Lucknow 6), so long distances there partly mean thin mapping. Guna has none mapped and is left out.`,
+            refs: 'Overture Maps Foundation, base theme land_use (ODbL 1.0, OpenStreetMap contributors); WorldPop 2020 age and sex structures (CC BY 4.0)' },
+        { id: 'walledland', title: 'Big estates behind walls', icon: '🧱',
+            question: 'How much of my city is defence, railway or golf land closed to the public?',
+            field: { key: 'walled_land_pct', label: 'Defence, railway and golf land (share of block)', unit: '%', higherIs: null, ramp: 'reds', domain: [0, 100] },
+            needs: ['closed_land.cl_military_pct', 'closed_land.cl_rail_pct', 'closed_land.cl_golf_pct', 'closed_land.cl_closed_pct', 'closed_land.cl_big_estate', 'population.population'],
+            method: `Overture Maps base-theme land use (from OpenStreetMap, ODbL) is clipped to each lived-in block: subtype military (cantonments, airfields, training areas, barracks), class railway (yards, sidings, railway colonies) and subtype golf. Each block keeps the share covered by each; areas are summed over the city and set against the lived-in city area (blocks with residents). OpenStreetMap leaves some defence land blank on purpose and maps railway colonies unevenly, so totals are a floor. Ownership is not shown: some golf courses sit on defence or leased government land and are counted once, under golf.`,
+            refs: 'Overture Maps Foundation, base theme land_use (ODbL 1.0, OpenStreetMap contributors); Cantonments Act 2006; Rail Land Development Authority' },
+        { id: 'quakepast', title: 'Earthquakes felt nearby since 1900', icon: '🫨',
+            question: 'How many earthquakes have struck near my city, and how big was the largest?',
+            field: { key: 'quakes_300km', label: 'Earthquakes M4.5+ within 300 km since 1900', unit: 'events', higherIs: 'worse', ramp: 'reds' },
+            needs: ['quake_history.qh_n45', 'quake_history.qh_n6', 'quake_history.qh_max_mag', 'quake_history.qh_max_year', 'quake_history.qh_near_m5_km', 'population.population'],
+            method: `Events of magnitude 4.5 or more since 1900 from the USGS ComCat catalogue (FDSN event service) are counted within 300 km of each lived-in block, with the M6+ count, the largest event and the distance to the nearest M5+ epicentre. City figures are the resident-weighted median block. The catalogue is complete for M4.5+ only from about 1964, so older counts are a floor. India's seismic zone map (BIS IS 1893) is not openly licensed and is not used.`,
+            refs: 'USGS Earthquake Hazards Program, ComCat (public domain); Bureau of Indian Standards IS 1893 (Part 1): 2016 for zones' },
+        { id: 'dryyears', title: 'Dry and wet years since 1901', icon: '🏜️',
+            question: 'How often has my city had a drought year, and is it getting drier?',
+            field: { key: 'dry_years_late', label: 'Dry years 1963-2024 (SPEI-12 at or below -1)', unit: 'years', higherIs: 'worse', ramp: 'heat' },
+            needs: ['droughts.dr_dry_early', 'droughts.dr_dry_late', 'droughts.dr_severe_years', 'droughts.dr_wet_late', 'droughts.dr_worst_year', 'droughts.dr_worst_spei', 'droughts.dr_last_dry', 'droughts.dr_trend'],
+            method: `SPEIbase v2.11 (CSIC; built on CRU TS rainfall and potential evapotranspiration) gives the 12-month standardised precipitation-evapotranspiration index ending each December at the city centre's 0.5° cell, 1901-2024. A year at or below -1 counts as dry, at or below -1.5 as severely dry, at or above +1 as wet. The two 62-year halves are compared, and a least-squares trend is fitted. Early decades rest on fewer rain gauges.`,
+            refs: 'Beguería S., Vicente-Serrano S.M. et al., SPEIbase v2.11 (CC BY 4.0, CSIC); Vicente-Serrano et al. 2010, J. Climate 23:1696' },
+        { id: 'waterstore', title: 'Water under the region, weighed from space', icon: '🛰️',
+            question: 'Is the ground water around my city running down?',
+            field: { key: 'water_store_trend', label: 'Regional water store trend, 2003-2023', unit: 'cm of water/yr', higherIs: 'better', ramp: 'diverging' },
+            needs: ['water_store.ws_trend_cm_yr', 'water_store.ws_change_cm', 'water_store.ws_low_year', 'water_store.ws_last_cm'],
+            method: `NASA JPL GRACE and GRACE-FO RL06.3 v04 mascons (with the coastline resolution improvement) give the monthly water-equivalent anomaly of all water in and on the ground, against 2004-2009, in cells about 300 km across. Annual means (years with at least 6 months; mid-2017 to mid-2018 is a gap between missions) at the city centre give a 2003-2023 least-squares trend, the change between 2003-2007 and 2019-2023, and the lowest year. It cannot separate groundwater from soil moisture or reservoirs, and it cannot see a single aquifer.`,
+            refs: 'Watkins et al. 2015 and Wiese et al. 2016, JPL GRACE mascons (NASA open data); Rodell et al. 2009, Nature 460:999 (north-west India groundwater)' },
+        { id: 'underflood', title: 'Underpasses that fill in the rain', icon: '🚇',
+            question: 'Which road underpasses in my city sit where water collects?',
+            field: { key: 'underpass_wet', label: 'Waterlogging index where an underpass is mapped', unit: '0-100', higherIs: 'worse', ramp: 'blues', domain: [0, 100] },
+            needs: ['underpasses.up_road_n', 'underpasses.up_road_m', 'underpasses.up_ped_n', 'underpasses.up_bridge_m', 'waterlogging.waterlogging_index'],
+            method: `Overture Maps transportation segments (from OpenStreetMap, ODbL) carry flags for the part of a road that runs in a tunnel or on a bridge. Each tunnel part on a vehicle road (not footways or tracks) is placed at its midpoint in an L7 block and counted; pedestrian subways and flyover length are kept for context. Blocks with an underpass are coloured by the DigiPin waterlogging index (terrain hollows, wetness, upstream area and paving; 45 or more is high, 65 or more very high). The index is for the block, not the dip itself, which is deeper, so the real risk is higher.`,
+            refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors); DigiPin waterlogging index (pipeline/cells/ee_layers.py)' },
+        { id: 'gatedlanes', title: 'Private lanes closed to the public', icon: '🔒',
+            question: 'How much of my neighbourhood is behind gates, with lanes I cannot walk through?',
+            field: { key: 'private_lanes_pct', label: 'Share of local streets marked private', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 100] },
+            needs: ['gated_streets.gs_private_pct', 'gated_streets.gs_local_km', 'gated_streets.gs_private_km', 'gated_streets.gs_oneway_pct', 'population.population'],
+            method: `Complements the Gated colonies lens (which counts gates and barriers): this one measures street length. Overture Maps transportation segments (from OpenStreetMap, ODbL) are placed at their midpoints in L7 blocks. Local streets (residential, living street, service, unclassified) with an access restriction recognised as private (OSM access=private) are summed against all local street length; blocks need 300 m of mapped local street. One-way roads are those denied in one heading for all modes. Residents in blocks where half or more of local lanes are private are counted with GHSL/WorldPop population. Gates that are not tagged, and lanes closed only at night, will not show.`,
+            refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors)' },
+        { id: 'waterbalance', title: 'Rain against evaporation since the 1960s', icon: '💧',
+            question: 'Has my city got more rain or less since the 1960s, and does the air pull more water out now?',
+            field: { key: 'water_deficit_now', label: 'Water deficit a year, 2015-2024', unit: 'mm', higherIs: 'worse', ramp: 'heat' },
+            needs: ['water_balance.ta_pr_base', 'water_balance.ta_pr_now', 'water_balance.ta_pet_base', 'water_balance.ta_pet_now', 'water_balance.ta_def_base', 'water_balance.ta_def_now', 'water_balance.ta_vpd_base', 'water_balance.ta_vpd_now'],
+            method: `TerraClimate (University of Idaho; CRU and ERA5-based monthly climate on a ~4 km grid) gives monthly precipitation, Penman-Monteith potential evapotranspiration (which uses sunshine, wind, humidity and temperature), climatic water deficit and vapour pressure deficit. At the city centre, annual totals are averaged for 1961-1990 and 2015-2024; vapour pressure deficit is the March-May mean. Gridded climate in the 1960s rests on fewer stations.`,
+            refs: 'Abatzoglou J.T. et al. 2018, TerraClimate, Scientific Data 5:170191 (CC0); Roderick and Farquhar 2002, Science 298:1410 (evaporation paradox)' },
+        { id: 'premiumstreets', title: 'Premium high streets', icon: '🛍️',
+            question: 'Where do premium brands open shops in my city?',
+            field: { key: 'premium_outlets', label: 'Premium chain outlets', unit: 'outlets', higherIs: null, ramp: 'viridis' },
+            needs: ['premium_brands.pb_premium', 'premium_brands.pb_everyday', 'premium_brands.pb_premium_share'],
+            method: `Overture Maps places (confidence 0.6 or more, not closed) are matched on brand name against a list of premium chains (Starbucks and other coffee chains, international fashion and sportswear, jewellery chains, luxury and premium car showrooms, multiplexes, premium gyms, five-star and upscale hotel chains) and everyday chains (fast food, supermarkets, public-sector banks, fuel, budget hotels). Outlets are counted per L7 block. Tested against Meta's Relative Wealth Index at L6 in ten cities, premium counts and premium share correlate weakly or not at all (Spearman about -0.1 to 0.4), so this is a retail-location signal, not an affluence measure.`,
+            refs: 'Overture Maps Foundation, places theme (CDLA-Permissive-2.0)' },
+        { id: 'roadsbuilding', title: 'Roads being built now', icon: '🚜',
+            question: 'Which new roads and flyovers are being built in my city right now?',
+            field: { key: 'road_building_m', label: 'Road under construction in the block', unit: 'm', higherIs: null, ramp: 'viridis' },
+            needs: ['roads_building.rb_major_m', 'roads_building.rb_minor_m', 'roads_building.rb_elevated_m', 'population.population'],
+            method: `Overture Maps transportation segments (from OpenStreetMap, ODbL) carry an is_under_construction flag on the part of a road being built (OSM highway=construction). Each flagged part is cut into pieces of about 50 m and placed in the L7 blocks it crosses; arterial (motorway, trunk, primary, secondary) and other roads are kept apart, and parts also flagged as bridges count as elevated. Residents are GHSL/WorldPop population of the blocks crossed. See the New roads lens for named projects with dates.`,
+            refs: 'Overture Maps Foundation, transportation theme (ODbL 1.0, OpenStreetMap contributors)' },
+        { id: 'sundayair', title: 'Air on Sundays and in the lockdown', icon: '🌤️',
+            question: 'How much of my city’s air pollution stops when the city rests?',
+            field: { key: 'sunday_no2_drop', label: 'NO2 lower on Sundays than working days', unit: '%', higherIs: null, ramp: 'viridis' },
+            needs: ['sunday_air.sa_weekday', 'sunday_air.sa_sunday', 'sunday_air.sa_sunday_drop', 'sunday_air.sa_lockdown_drop'],
+            method: `Daily Sentinel-5P TROPOMI tropospheric NO2 (OFFL L3, about 13:30 local overpass) is averaged within 8 km of the city centre for Sundays and for Monday-Saturday, 2019-2024, and for 25 March to 30 April 2020 against the same dates in 2019 and 2021-2023. Clouds and seasons are not adjusted for beyond averaging many days; the lockdown period was also a weather period, so treat its drop as approximate (studies put Indian city drops at 40-70%).`,
+            refs: 'Copernicus Sentinel-5P TROPOMI (contains modified Copernicus Sentinel data); Beirle et al. 2003, Atmos. Chem. Phys. 3:2225 (weekly cycle of NO2)' },
+        { id: 'diwaliair', title: 'Diwali night air', icon: '🎆',
+            question: 'How bad does the air get on Diwali in my city?',
+            field: { key: 'diwali_pm25', label: 'PM2.5 on Diwali and the day after', unit: 'µg/m³', higherIs: 'worse', ramp: 'reds' },
+            needs: ['diwali_air.dw_before', 'diwali_air.dw_after', 'diwali_air.dw_jump_pct', 'diwali_air.dw_worst_year', 'diwali_air.dw_worst_after', 'diwali_air.dw_years'],
+            method: `GHAP daily 1 km PM2.5 (satellite aerosol, reanalysis and ground monitors combined by machine learning) is averaged within 8 km of the city centre on Lakshmi Puja day and the day after, and on days 3-10 before, for each Diwali from 2017 to 2022. The yearly percentage jumps are summarised by their median. Daily estimates smooth the overnight peak that monitors see, so the real night-time spike is sharper.`,
+            refs: 'Wei J. et al., GHAP global 1 km daily PM2.5 (CC BY 4.0); CPCB National Ambient Air Quality Standards (60 µg/m³, 24 hours)' },
+    ];
+
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears, waterstore, underflood, gatedlanes, waterbalance, premiumstreets, roadsbuilding, sundayair, diwaliair });
+    return { ENTRIES };
+})();

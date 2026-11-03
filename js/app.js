@@ -27,13 +27,45 @@ const App = (() => {
             }
         };
 
+        // Error capture first, so anything that breaks below still gets a notice.
+        step('CrashGuard', () => {
+            if (typeof CrashGuard !== 'undefined') CrashGuard.init();
+        });
+
         // Theme first: MapModule.init reads Theme for the basemap + grid colours.
         step('Theme', () => {
             if (typeof Theme !== 'undefined') Theme.init();
             // Localize the static chrome (top-bar/toolbar/DISHA) to the saved language.
             if (typeof I18n !== 'undefined') I18n.init();
         });
-        step('MapModule', () => MapModule.init());
+        // Without the map engine there is no app: say so in a persistent
+        // notice (plus a message in the map box) instead of a silent blank
+        // page. The engine comes from unpkg.com, which a blocker, captive
+        // portal or first offline visit can withhold.
+        const engineMissing = typeof maplibregl === 'undefined';
+        if (engineMissing) {
+            step('MapEngine', () => {
+                if (typeof UIPolish !== 'undefined' && UIPolish.hideSplash) UIPolish.hideSplash();
+                const text = 'The map engine (MapLibre) could not be loaded from unpkg.com. Check the connection or a content blocker, then retry.';
+                if (typeof DataStatus !== 'undefined') {
+                    DataStatus.set('engine', { text, kind: 'error', action: { label: 'Retry', run: () => window.location.reload() } });
+                }
+                const box = document.getElementById('map');
+                if (box && !box.querySelector('.map-engine-missing')) {
+                    const msg = document.createElement('div');
+                    msg.className = 'map-engine-missing';
+                    msg.setAttribute('role', 'alert');
+                    const card = document.createElement('div');
+                    card.className = 'map-engine-missing-card';
+                    card.textContent = text;
+                    msg.appendChild(card);
+                    box.appendChild(msg);
+                }
+            });
+        }
+        // (MapModule.init would only throw "maplibregl is not defined" and
+        // raise a misleading "the rest of the app still works" toast.)
+        if (!engineMissing) step('MapModule', () => MapModule.init());
         // Find the newest Overture tile release (old ones are deleted upstream)
         // before any building/road overlay is switched on. Non-blocking.
         step('OvertureRelease', () => {
@@ -43,12 +75,34 @@ const App = (() => {
         // data/scores/coverage.json is absent it stays disabled and the app uses
         // the live path unchanged.
         step('PrecomputedScores', () => {
-            if (typeof PrecomputedScores !== 'undefined') PrecomputedScores.init();
+            if (typeof PrecomputedScores !== 'undefined') {
+                // Once coverage loads, flag the cities that have a score tile.
+                PrecomputedScores.init().then(() => {
+                    if (typeof CitySelector !== 'undefined') CitySelector.refreshCoverage();
+                });
+            }
         });
         // Per-DIGIPIN-cell data store (data/cells/catalog.json): the layer
         // registry behind the "Cell Data" panel group + drag-and-drop ingest.
         step('CellStore', () => {
-            if (typeof CellStore !== 'undefined') CellStore.init();
+            if (typeof CellStore !== 'undefined') {
+                const cellStoreUp = (ok) => {
+                    // Building-level joins need the registry loaded first.
+                    if (ok && typeof BuildingData !== 'undefined') BuildingData.init();
+                    if (typeof DataStatus === 'undefined') return ok;
+                    // Only flag a real failure: a deployment that has turned the
+                    // store off (config.cellStore === false) is not degraded.
+                    const disabled = window.DIGIPIN_CONFIG && window.DIGIPIN_CONFIG.cellStore === false;
+                    if (ok || disabled) DataStatus.clear('cellstore');
+                    else DataStatus.set('cellstore', {
+                        kind: 'error',
+                        text: 'Per-cell datasets are unavailable right now — layers and analyses are limited.',
+                        action: { label: 'Retry', run: () => CellStore.init().then(cellStoreUp) },
+                    });
+                    return ok;
+                };
+                CellStore.init().then(cellStoreUp);
+            }
             if (typeof CellIngest !== 'undefined') CellIngest.wireDropTarget(document.getElementById('map'));
         });
         step('Panel', () => Panel.init());
@@ -61,10 +115,23 @@ const App = (() => {
         step('SavedViews', () => {
             if (typeof SavedViews !== 'undefined') SavedViews.init();
         });
+        step('AnalysesPanel', () => {
+            if (typeof AnalysesPanel !== 'undefined') AnalysesPanel.init();
+        });
+        step('InsightsPanel', () => {
+            if (typeof InsightsPanel !== 'undefined') InsightsPanel.init();
+        });
+        step('AgentsPanel', () => {
+            if (typeof AgentsPanel !== 'undefined') AgentsPanel.init();
+        });
         step('search', () => initSearch());
         step('queryPanel', () => initQueryPanel());
         step('sidebar', () => initSidebar());
         step('toolbar', () => initToolbar());
+        step('Quality3D', () => { if (typeof Quality3D !== 'undefined') Quality3D.init(); });
+        step('MassingSketch', () => { if (typeof MassingSketch !== 'undefined') MassingSketch.init(); });
+        step('CameraPresets', () => { if (typeof CameraPresets !== 'undefined') CameraPresets.init(); });
+        step('ViewHandoff', () => { if (typeof ViewHandoff !== 'undefined') ViewHandoff.init(); });
         // Deep-link state: wire the Share button + apply any ?cell/?ll/?score/?q.
         step('URLState', () => {
             if (typeof URLState !== 'undefined') URLState.init();
@@ -77,10 +144,19 @@ const App = (() => {
         // Connectivity feedback: tell the user when live data pauses/resumes so a
         // wall of "unavailable" sources reads as "offline", not "broken".
         step('connectivity', () => {
-            window.addEventListener('offline', () =>
-                showToast('You’re offline', 'Showing cached data — live sources are paused.', 'warning'));
-            window.addEventListener('online', () =>
-                showToast('Back online', 'Live data sources reconnected.', 'info'));
+            const offline = () => {
+                showToast('You’re offline', 'Showing cached data — live sources are paused.', 'warning');
+                if (typeof DataStatus !== 'undefined') DataStatus.set('offline', {
+                    kind: 'warning', text: 'You’re offline — showing cached data; live sources are paused.',
+                });
+            };
+            window.addEventListener('offline', offline);
+            window.addEventListener('online', () => {
+                showToast('Back online', 'Live data sources reconnected.', 'info');
+                if (typeof DataStatus !== 'undefined') DataStatus.clear('offline');
+            });
+            // Opened the tab while already offline: say so without waiting for an event.
+            if (typeof navigator !== 'undefined' && navigator.onLine === false) offline();
         });
 
         step('welcome', () => {
@@ -113,6 +189,10 @@ const App = (() => {
             reg('compare-panel', () => Compare.closePanel(), 20);
             reg('bookmarks-panel', () => Bookmarks.closePanel(), 20);
             reg('saved-views-panel', () => SavedViews.closePanel(), 20);
+            reg('analysis-report-dialog', () => AnalysesPanel.closeDialog(), 30);
+            reg('analyses-panel', () => AnalysesPanel.closePanel(), 20);
+            reg('insights-dialog', () => InsightsPanel.close(), 25);
+            if (typeof AgentsPanel !== 'undefined') reg('agents-dialog', () => AgentsPanel.close(), 25);
             reg('detail-panel', () => Panel.close(), 10);
             reg('results-panel', () => removeOpen('results-panel'), 10);
         });
@@ -145,18 +225,23 @@ const App = (() => {
             const query = searchInput.value.trim();
             if (!query || searching) return;
 
-            const cleaned = query.replace(/-/g, '').toUpperCase();
-            const validChars = new Set('23456789CFJKLMPT'.split(''));
-            const isDigiPin = cleaned.length >= 3 && cleaned.length <= 10 && [...cleaned].every(c => validChars.has(c));
+            // DIGIPIN codes of any level (3–10 symbols), dashes/spaces optional.
+            const cleaned = query.replace(/[-\s]/g, '').toUpperCase();
+            const isDigiPin = cleaned.length >= 3 && DigiPin.isValid(cleaned);
+            let liveHit = null;
 
             if (isDigiPin) {
                 try {
-                    const decoded = cleaned.length === 10 ? DigiPin.decode(query) : DigiPin.decodePartial(cleaned);
-                    MapModule.flyTo(decoded.lat, decoded.lng, Math.min(18, 8 + cleaned.length));
-                    showToast('DigiPin Found', `${DigiPin.format(cleaned)} \u2192 ${decoded.lat.toFixed(4)}\u00b0N, ${decoded.lng.toFixed(4)}\u00b0E`, 'success');
+                    const cell = DigiPin.cellBounds(cleaned);
+                    MapModule.selectByCode(cleaned);   // fly to its level's zoom, outline, open the panel
+                    showToast('DigiPin Found', `${DigiPin.format(cleaned)} \u00b7 L${cell.level} (${DigiPin.sizeLabel(cell.level, cell.lat)}) \u2192 ${cell.lat.toFixed(4)}\u00b0N, ${cell.lng.toFixed(4)}\u00b0E`, 'success');
                 } catch (e) {
                     showToast('Invalid DigiPin', e.message, 'error');
                 }
+            } else if ((liveHit = typeof LiveSearch !== 'undefined' ? LiveSearch.find(query) : null) && LiveSearch.go(liveHit)) {
+                // A flight, place or live correlation on a layer that is on.
+                const hit = liveHit;
+                showToast('Found on the map', `${hit.label} \u00b7 ${hit.kind === 'aircraft' ? 'Live sky' : hit.kind === 'place' ? 'Places' : 'Live now'}`, 'success');
             } else {
                 setSearching(true);
                 try {
@@ -424,7 +509,13 @@ const App = (() => {
                 if (isOpen) {
                     const rect = heatmapBtn.getBoundingClientRect();
                     heatmapDrop.style.top = rect.top + 'px';
-                    heatmapDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    if (rect.left < window.innerWidth / 2) {
+                        heatmapDrop.style.right = 'auto';
+                        heatmapDrop.style.left = (rect.right + 18) + 'px';
+                    } else {
+                        heatmapDrop.style.left = 'auto';
+                        heatmapDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    }
                 }
             });
 
@@ -521,7 +612,10 @@ const App = (() => {
                 is3d = !is3d;
                 btn3d.classList.toggle('active', is3d);
                 if (is3d) {
-                    map.easeTo({ pitch: 60, duration: 1000 });
+                    // Below street-block zoom the extrusions are specks on the
+                    // horizon and 3D looks empty, so come in close enough to see them.
+                    const z = map.getZoom();
+                    map.easeTo({ pitch: 60, duration: 1000, ...(z < 15 ? { zoom: 15.5 } : {}) });
                     // Auto-enable 3D buildings (Overture) if none are showing yet.
                     if (typeof OvertureBuildings !== 'undefined' && !OvertureBuildings.isActive()) {
                         try {
@@ -836,6 +930,8 @@ const App = (() => {
                     item.appendChild(iconEl);
                     item.appendChild(nameEl);
                     item.appendChild(toggleLabel);
+                    // ⓘ source card: where this layer's data comes from (js/provenance.js).
+                    if (typeof Provenance !== 'undefined') Provenance.decorateRow(item);
 
                     // Click handler by layer type
                     if (ld._heatKey) {
@@ -1009,9 +1105,15 @@ const App = (() => {
                 dtLayersBtn.setAttribute('aria-expanded', String(isOpen));
                 if (isOpen) {
                     const rect = dtLayersBtn.getBoundingClientRect();
-                    dtLayersDrop.style.left = 'auto';
                     dtLayersDrop.style.top = rect.top + 'px';
-                    dtLayersDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    if (rect.left < window.innerWidth / 2) {
+                        // Left tool rail (light theme): open beside it, not under it.
+                        dtLayersDrop.style.right = 'auto';
+                        dtLayersDrop.style.left = (rect.right + 18) + 'px';
+                    } else {
+                        dtLayersDrop.style.left = 'auto';
+                        dtLayersDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    }
                     // Clamp within the viewport (phones: the toolbar wraps and the
                     // right-anchored menu can spill off the top/left edge).
                     requestAnimationFrame(() => {

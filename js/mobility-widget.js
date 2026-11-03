@@ -40,6 +40,22 @@ const MobilityWidget = (() => {
         const pol = (mobility.nearest_police_km != null)
             ? `${mobility.nearest_police_km} km to nearest police` : 'Police distance unknown';
 
+        // Emergency Accessibility Index — the headline: how easily authorities /
+        // police can REACH this cell in an incident (higher = easier). Colour +
+        // band from EmergencyAccessScore (graceful fallback when absent).
+        let eaiHTML = '';
+        if (mobility.emergency_index != null) {
+            const band = mobility.emergency_band;
+            const eColor = (typeof EmergencyAccessScore !== 'undefined' && EmergencyAccessScore.classColor)
+                ? EmergencyAccessScore.classColor(band) : '#9ca3af';
+            eaiHTML = `
+            <div class="growth-widget__composite" style="border-left:3px solid ${eColor};padding-left:8px;">
+                Emergency access: <strong>${_esc(mobility.emergency_index)}/100</strong>
+                <span class="growth-widget__badge" style="background:${eColor};">${_esc(band || 'Unknown')}</span>
+                <div class="growth-widget__conf" style="margin-top:2px;">How quickly police/authorities can reach this cell</div>
+            </div>`;
+        }
+
         const wrap = document.createElement('div');
         wrap.setAttribute('data-mobility-widget', '');
         wrap.className = 'growth-widget';
@@ -50,6 +66,7 @@ const MobilityWidget = (() => {
                     ${_esc(info.label)}
                 </span>
             </div>
+            ${eaiHTML}
             <div class="growth-widget__composite">
                 Restriction risk: <strong>${mobility.mobility_risk != null ? _esc(mobility.mobility_risk) + '/100' : '—'}</strong>
                 ${mobility.sealable ? '<span class="growth-widget__conf">⚠ sealable pocket</span>' : ''}
@@ -70,6 +87,9 @@ const MobilityWidget = (() => {
                     <p>Access resilience from the OSM road graph: sole-connector links &amp;
                     sealable pockets (2-edge-connected analysis), rail level crossings / gates as
                     chokepoints, and straight-line reach to the nearest police station.</p>
+                    <p><strong>Emergency access</strong> blends police reach (.30), on/near-arterial
+                    network reach (.28), road flow (.17), and chokepoint-/seal-/critical-link-free
+                    (.13/.07/.05) into a 0–100 index — higher = authorities can reach the cell faster.</p>
                     <p><strong>Defensive planning aid</strong> — flags where force/ambulance movement
                     can be choked or sealed so access can be kept open. Structural &amp; OSM-derived
                     (arterial network); not a live operational feed.</p>

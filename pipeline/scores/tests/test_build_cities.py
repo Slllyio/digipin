@@ -18,7 +18,8 @@ def test_group_by_zone_covers_all_pilots_once():
     # every pilot appears exactly once, partitioned across its zone
     assert sorted(flat) == sorted(regions.CITY_PILOTS)
     assert "indore_pilot" in grouped["central-zone"]
-    assert set(grouped["western-zone"]) == {"pune", "mumbai"}
+    assert {"pune", "mumbai"} <= set(grouped["western-zone"])
+    assert grouped["eastern-zone"] == ["kolkata"]
 
 
 def test_group_by_zone_subset():

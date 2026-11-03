@@ -65,6 +65,7 @@ MP STATE DEVELOPMENT INDICATORS:
 - Seismic Zone: II (low risk)
 
 RESPONSE GUIDELINES:
+- When a CELL STORE EVIDENCE block is present, ground your claims in it first and cite each fact with its tag, e.g. "flood risk is in the city's worst 10% [C5]". Never invent a tag; only use tags listed in that block
 - Lead with a clear verdict or answer, then support with data citations
 - Cite specific scores (e.g. "safety=72/100"), feature counts, and measurements
 - When comparing areas, use a structured table or ranked list
@@ -98,6 +99,8 @@ MAP ACTIONS — in addition to your normal answer, you MAY emit up to 3 machine-
   [ACTION] selectCell code:39J-49L-L8T4
   [ACTION] overlay name:heat   (names: growth, prediction, scenario, traffic, mobility, heat, ndvi, bivariate, kde, access, grid, wards, buildings)
   [ACTION] query id:best_residential
+  [ACTION] colorBuildings color:scores:flood_risk height:bldg:height_m   (fields as <dataset>:<field>; datasets: scores, traffic, traffic_load (peak_vc, am_vc, pm_vc, mid_vc, peak_los, peak_speed_kmh), traffic_noise (lden_db, nox_kg_day), emergency_access (hospital_min_am, hospital_min_pm, hospital_min_night, rush_delay_min, schools), rail_access (metro_walk_min, rail_walk_min), ev_charging (charger_km, chargers, parking, fuel), mobility, growth, waterlogging, climate_zones, bldg; color:none resets)
+  [ACTION] trafficHour hour:18   (modelled road traffic at an hour 0–23; hour:peak = worse peak, hour:play animates the day; add buildings:on to colour the 3D buildings by the clock)
 Keep each directive on its own line; the rest of your reply should read normally without them.`;
 
     // ===== SMART CONTEXT SECTIONS =====
@@ -652,6 +655,30 @@ Keep each directive on its own line; the rest of your reply should read normally
         return 'best_residential';
     }
 
+    /**
+     * True when a question warrants the multi-step Urban Analyst Agent (a
+     * tool-using ReAct loop) rather than the fast single-shot answer. Kept
+     * deliberately narrow — an explicit `/agent` prefix always qualifies, and
+     * otherwise only genuinely multi-step planning asks (find-then-justify,
+     * compare-and-recommend) do, so casual questions stay on the quick path.
+     */
+    function isAgentQuestion(question) {
+        const q = String(question || '').trim();
+        if (/^\/agent\b/i.test(q)) return true;
+        const ql = q.toLowerCase();
+        return (
+            /\bstep[-\s]?by[-\s]?step\b/.test(ql)
+            || (/\bwhere\s+should\b/.test(ql) && /\b(why|then|and\s+(then|compare|recommend|why))\b/.test(ql))
+            || (/\bcompare\b/.test(ql) && /\b(recommend|suggest|which\s+is\s+best|and\s+why|decide|pick)\b/.test(ql))
+            || (/\brecommend\b/.test(ql) && /\bwhy\b/.test(ql))
+        );
+    }
+
+    /** Strip a leading `/agent` command prefix from a question. */
+    function stripAgentPrefix(question) {
+        return String(question || '').replace(/^\/agent\b\s*/i, '').trim();
+    }
+
     // ===== CITY-LEVEL SCAN (optimized) =====
     // Batches of 8, cell caching, faster processing
     async function cityScan(question, onStatus) {
@@ -929,6 +956,65 @@ Keep each directive on its own line; the rest of your reply should read normally
         }
     }
 
+    /**
+     * Run one full model turn and resolve to the complete reply string — the
+     * primitive the Urban Analyst Agent's loop awaits. Unlike ask(), it does
+     * NOT touch the response cache or _conversationHistory (the agent owns its
+     * own message list), and it accepts a canonical `messages` array, flattening
+     * it to a prompt transcript for the Ollama (prompt-only) path.
+     *
+     * Reuses the module-level AbortController so the existing Stop button
+     * (DISHA.cancel()) aborts an in-flight agent turn too.
+     */
+    async function complete({ system, messages }) {
+        return (await completeTurn({ system, messages })).text;
+    }
+
+    /**
+     * complete() plus native function-calling: with `tools` (an OpenAI tools
+     * array) on an OpenAI-type provider, resolves to `{ text, toolCalls }` where
+     * toolCalls is `[{id, name, arguments}]` (arguments = raw JSON string). On
+     * Ollama, or without tools, toolCalls is always []. `toolChoice` is passed
+     * through ('auto' by default; 'none' for a tools-off synthesis turn).
+     */
+    async function completeTurn({ system, messages, tools, toolChoice }) {
+        const provider = DISHAProviders.getActive();
+        if (!provider) throw new Error('No AI provider available');
+
+        if (_abortController) _abortController.abort();
+        _abortController = new AbortController();
+        const signal = _abortController.signal;
+
+        let toolCalls = [];
+        try {
+            let text;
+            if (provider.type === 'ollama') {
+                const transcript = (messages || [])
+                    .map(m => `${m.role === 'assistant' ? 'DISHA' : 'User'}: ${m.content}`)
+                    .join('\n\n');
+                text = await DISHAProviders.stream({
+                    system, prompt: `${transcript}\n\nDISHA:`, onToken: () => {}, signal,
+                });
+            } else {
+                text = await DISHAProviders.stream({
+                    system, messages: messages || [], onToken: () => {}, signal,
+                    tools, toolChoice, onToolCalls: (calls) => { toolCalls = calls; },
+                });
+            }
+            // DISHAProviders.stream swallows AbortError (returns ''); surface it so
+            // the agent loop stops cleanly on Stop instead of treating '' as a
+            // final-but-empty turn and firing another request.
+            if (signal.aborted) {
+                const err = new Error('cancelled');
+                err.name = 'AbortError';
+                throw err;
+            }
+            return { text, toolCalls };
+        } finally {
+            _abortController = null;
+        }
+    }
+
     /** Abort the in-flight streaming request, if any. */
     function cancel() {
         if (_abortController) {
@@ -966,6 +1052,7 @@ Keep each directive on its own line; the rest of your reply should read normally
         const suggestions = [];
         suggestions.push('Give me a full urban intelligence briefing');
         suggestions.push('What should be built here? Development recommendations');
+        suggestions.push('Give me a 3D tour of this city');
 
         if ((scores.livability?.value || 0) > 60) {
             suggestions.push('Rate this area for residential living');
@@ -1061,11 +1148,17 @@ Keep each directive on its own line; the rest of your reply should read normally
         cityScan,
         buildCityScanContext,
         ask,
+        complete,
+        completeTurn,
         cancel,
         getSuggestions,
         offlineSummary,
         clearHistory,
         isConnected,
-        getAQICategory
+        getAQICategory,
+        isAgentQuestion,
+        stripAgentPrefix,
+        languageDirective: _languageDirective,
+        SYSTEM_PROMPT
     };
 })();

@@ -84,3 +84,28 @@ describe('DataFetcher.rankedToGeoJSON()', () => {
         expect(DF.rankedToGeoJSON(null).features).toHaveLength(0);
     });
 });
+
+describe('DataFetcher.exportToCSV on partial data', () => {
+    it('does not throw when categories are missing and still writes the scores', () => {
+        const blobs = [];
+        const origCreate = URL.createObjectURL, origRevoke = URL.revokeObjectURL;
+        URL.createObjectURL = (b) => { blobs.push(b); return 'blob:x'; };
+        URL.revokeObjectURL = () => {};
+        const origClick = HTMLAnchorElement.prototype.click;
+        HTMLAnchorElement.prototype.click = () => {};
+        try {
+            expect(() => DataFetcher.exportToCSV({ scores: { walk: { value: 61, label: 'Walkability' } } }, 'x.csv')).not.toThrow();
+            expect(() => DataFetcher.exportToCSV(null, 'y.csv')).not.toThrow();
+        } finally {
+            URL.createObjectURL = origCreate; URL.revokeObjectURL = origRevoke;
+            HTMLAnchorElement.prototype.click = origClick;
+        }
+        expect(blobs.length).toBe(2);
+        // jsdom's Blob has no text(); read it through FileReader.
+        return new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsText(blobs[0]); })
+            .then(t => {
+                expect(t).toContain('Category,Feature Key,Feature Name,Count');
+                expect(t).toContain('"Score","walk","Walkability",61');
+            });
+    });
+});

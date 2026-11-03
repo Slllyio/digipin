@@ -1,0 +1,74 @@
+name: Pipeline steward — data health report & issue
+
+# Supervises the self-refreshing data: re-runs the scraper quality contracts,
+# checks every snapshot's freshness, and measures drift (row count, per-field
+# null rate) against the previous run. Commits data/steward/{report.json,
+# report.md,state.json} and mirrors the report into ONE tracking issue
+# (label: pipeline-steward), which it updates while anything is degraded and
+# closes once everything is healthy. Pure standard library + jsonschema.
+
+on:
+  schedule:
+    - cron: "40 */6 * * *"   # every 6 hours, offset from the scrapers and triage
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  steward:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: pipeline-steward
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Optional: full JSON Schema validation. Without it the quality contract
+      # falls back to required-field + enum checks.
+      - run: pip install jsonschema
+
+      - name: Check pipeline health
+        run: python -m pipeline.steward
+
+      - name: Commit report
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/steward
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(steward): refresh pipeline health report"
+          for attempt in 1 2 3; do
+            git pull --rebase --quiet && git push && exit 0
+            sleep $((attempt * 5))
+          done
+          exit 1
+
+      - name: Sync tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: "Pipeline Steward: data pipeline health"
+        run: |
+          status=$(python -c "import json; print(json.load(open('data/steward/report.json'))['status'])")
+          num=$(gh issue list --label pipeline-steward --state open --json number --jq '.[0].number // empty')
+          if [ "$status" = "fail" ] || [ "$status" = "warn" ]; then
+            gh label create pipeline-steward --color D93F0B \
+              --description "Opened and closed by the Pipeline Steward workflow" 2>/dev/null || true
+            if [ -n "$num" ]; then
+              gh issue edit "$num" --body-file data/steward/report.md
+            else
+              gh issue create --title "$TITLE" --label pipeline-steward --body-file data/steward/report.md
+            fi
+          elif [ -n "$num" ]; then
+            gh issue comment "$num" --body "All pipeline checks pass as of $(date -u +%Y-%m-%dT%H:%MZ). Closing."
+            gh issue close "$num"
+          fi

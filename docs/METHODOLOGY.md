@@ -16,7 +16,7 @@ the browser and its parity-pinned Python port `pipeline/scores/composite.py`
 ## The cell model
 
 Every location resolves to a **DIGIPIN cell** — a fixed grid square from the
-DIGIPIN addressing scheme. Levels used: **6 ≈ 244 m**, **7 ≈ 61 m**. Features are
+DIGIPIN addressing scheme. Levels used: **6 ≈ 978 m**, **7 ≈ 245 m** (sizes: [DIGIPIN_LEVELS.md](DIGIPIN_LEVELS.md)). Features are
 counted within a **400 m disc around the cell centre** (the live app uses an
 Overpass `(around:400)` query; the precompute pipeline reproduces the same disc).
 A 400 m disc (~50 ha) is the neighbourhood a person experiences on foot, which is

@@ -1,0 +1,1 @@
+{"version":1,"dataset":"bus_stop_heat","region":"guna","level":7,"fields":["stops","hot_bare_stops","stop_lst_c","stop_canopy_pct","shelter_priority"],"cells":["35F5K96"],"columns":{"stops":[1],"hot_bare_stops":[1],"stop_lst_c":[44.7],"stop_canopy_pct":[4.6],"shelter_priority":[129202]}}

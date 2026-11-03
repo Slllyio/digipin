@@ -23,6 +23,7 @@ const AreaAggregate = (() => {
     let _abort = null;
     let _drawing = false;
     let _start = null;
+    let _lastRect = null;
 
     // ---------- pure helpers ----------
     /** Axis-aligned rect {west,south,east,north} from two {lat,lng} corners. */
@@ -137,6 +138,7 @@ const AreaAggregate = (() => {
         _drawing = false;
         if (_map.dragPan) _map.dragPan.enable();
         const rect = rectFromPoints(_start, { lat: e.lngLat.lat, lng: e.lngLat.lng });
+        _lastRect = rect;
         _setRect(rect);
         _runAggregate(rect);
     }
@@ -217,7 +219,12 @@ const AreaAggregate = (() => {
         }
         el.innerHTML = `<div style="font-weight:600;font-size:14px;margin-bottom:8px;color:${pal.primary};">Area summary</div>`
             + body
+            + (_lastRect && typeof InsightsPanel !== 'undefined' && InsightsPanel.setArea
+                ? `<button type="button" data-intel style="margin-top:8px;width:100%;padding:5px 8px;border-radius:6px;cursor:pointer;`
+                    + `border:1px solid ${pal.border};background:transparent;color:${pal.primary};font:inherit;">◎ What stands out here</button>` : '')
             + `<div style="margin-top:8px;color:${pal.sub};font-size:10px;">Drag on the map to select another area.</div>`;
+        const go = el.querySelector('[data-intel]');
+        if (go) go.addEventListener('click', () => InsightsPanel.setArea({ bbox: { ..._lastRect }, label: 'Your dragged area' }));
     }
     function _removeBox() { const el = document.getElementById(BOX_ID); if (el) el.remove(); }
 

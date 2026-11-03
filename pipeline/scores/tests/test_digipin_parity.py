@@ -17,6 +17,12 @@ DISPATCH = {
     "decode": digipin.decode,
     "decode_partial": digipin.decode_partial,
     "format_pin": digipin.format_pin,
+    "cell_degrees": digipin.cell_degrees,
+    "to_index": digipin.to_index,
+    "from_index": digipin.from_index,
+    "parent": digipin.parent,
+    "children": digipin.children,
+    "neighbors": digipin.neighbors,
 }
 
 

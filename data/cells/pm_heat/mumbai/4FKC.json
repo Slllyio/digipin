@@ -1,0 +1,1 @@
+{"version":1,"dataset":"pm_heat","region":"mumbai","level":7,"fields":["pm_lst_c","pm_scenes"],"cells":["4FKC6TT","4FKCT66","4FKCT6T","4FKCT77","4FKCT78","4FKCT88","4FKCTT6","4FKCTT7","4FKCTT8","4FKCTTT"],"columns":{"pm_lst_c":[36.5,34.5,33.0,28.2,35.3,34.3,37.2,36.4,34.2,38.0],"pm_scenes":[6,9,6,2,4,9,19,12,13,18]}}

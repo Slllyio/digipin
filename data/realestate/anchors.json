@@ -1,0 +1,16 @@
+{
+  "source": "National Housing Bank RESIDEX press release, Oct-Dec 2025 (Q3 FY26), HPI @ Assessment Prices, year-on-year change",
+  "url": "https://www.nhb.org.in/wp-content/uploads/2026/03/National-Press-Release-RESIDEX-Dec25-DV002.pdf",
+  "period": "2025-Q4",
+  "national_50_city_yoy_pct": 5.0,
+  "cities": {
+    "ahmedabad": {"hpi_yoy_pct": 6.8},
+    "bengaluru": {"hpi_yoy_pct": 12.7},
+    "chennai": {"hpi_yoy_pct": 8.2},
+    "hyderabad": {"hpi_yoy_pct": 3.2},
+    "kolkata": {"hpi_yoy_pct": 6.7},
+    "mumbai": {"hpi_yoy_pct": 3.7},
+    "pune": {"hpi_yoy_pct": 3.5}
+  },
+  "note": "Cities not named in the release use the 50-city composite. Add circle rates or guidance values here (per colony / ward) to calibrate the relative land-value index to rupees."
+}

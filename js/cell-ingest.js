@@ -289,7 +289,37 @@ const CellIngest = (() => {
         });
     }
 
+    /**
+     * Ranked Text2Map results → ingestible rows. Every answer becomes its own
+     * layer (the source scores are never touched): rank 1 = best, `score` is
+     * the weighted 0-100 value. Results without a usable position are skipped.
+     */
+    function rowsFromRanking(results) {
+        return (results || [])
+            .filter(r => r && (r.code || (Number.isFinite(r.lat) && Number.isFinite(r.lng))))
+            .map((r, i) => {
+                const row = { rank: i + 1, score: Math.round(Number(r.score) * 10) / 10 };
+                if (r.code) row.digipin = String(r.code);
+                if (Number.isFinite(r.lat)) { row.lat = r.lat; row.lng = r.lng; }
+                if (r.area) row.area = String(r.area);
+                return row;
+            });
+    }
+
+    /** Layer name for a saved ranking: the question, no dots (they read as file extensions). */
+    function rankingName(question) {
+        const q = String(question || '').replace(/[.?!]+/g, ' ').replace(/\s+/g, ' ').trim();
+        return 'Ranking ' + (q.length > 40 ? q.slice(0, 40).trim() + '…' : q || 'result');
+    }
+
+    /** Register a ranking as a cell-store layer; returns the spec. */
+    function saveRanking(results, question) {
+        const rows = rowsFromRanking(results);
+        return ingestRows(rows, rankingName(question));
+    }
+
     return {
+        rowsFromRanking, rankingName, saveRanking,
         parseCSV, readRows, slug, locationColumns, inferFields, toRecords, autoLevel,
         ingestRows, ingestFile, rebin, isRebinnable, pickFile, wireDropTarget,
     };

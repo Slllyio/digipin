@@ -37,14 +37,16 @@ const RealtimeGrowth = (() => {
 
     /** Read the COG at `url` and return its per-band values at lat/lng, or null. */
     async function _readCog(url, lat, lng) {
-        // Uses georaster.browser.bundle.min.js loaded by index.html.
+        // georaster is a CDN library loaded on first use (js/lazy-libs.js).
         // Returns Array<number> (one value per band) or null on failure.
         try {
-            if (typeof parseGeoraster !== 'function') return null;
+            const parse = typeof LazyLibs !== 'undefined' ? await LazyLibs.load('georaster')
+                : (typeof parseGeoraster === 'function' ? parseGeoraster : null);
+            if (typeof parse !== 'function') return null;
             const resp = await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(15000) });
             if (!resp.ok) return null;
             const buf = await resp.arrayBuffer();
-            const gr = await parseGeoraster(buf);
+            const gr = await parse(buf);
             const [px, py] = gr.toCanvasCoords([lng, lat]);
             if (px < 0 || py < 0 || px >= gr.width || py >= gr.height) return null;
             const out = [];

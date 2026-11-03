@@ -1,0 +1,41 @@
+{
+ "figure_of_merit": 0.0507,
+ "kappa": 0.5115,
+ "demand_per_step": 165,
+ "horizon": 2035,
+ "urban_px_2016": 342,
+ "urban_px_2023": 453,
+ "grid_level": 8,
+ "pixels": 21609,
+ "cells": {
+  "cells": 1346,
+  "built_2016_pct": {
+   "mean": 4.52,
+   "p50": 0.16,
+   "p99": 40.77,
+   "min": 0.0,
+   "max": 51.78
+  },
+  "built_2023_pct": {
+   "mean": 5.84,
+   "p50": 0.44,
+   "p99": 42.82,
+   "min": 0.0,
+   "max": 51.98
+  },
+  "built_change_pp": {
+   "mean": 1.32,
+   "p50": 0.03,
+   "p99": 12.54,
+   "min": -4.61,
+   "max": 31.9
+  },
+  "urban_2035_pct": {
+   "mean": 7.44,
+   "p50": 0.28,
+   "p99": 88.73,
+   "min": 0.0,
+   "max": 100.0
+  }
+ }
+}

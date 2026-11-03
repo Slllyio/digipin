@@ -296,9 +296,38 @@ const DISHAProviders = (() => {
 
     // ===== STREAMING: OPENAI-COMPATIBLE (SSE) =====
 
+    /**
+     * Fold one SSE chunk's `delta.tool_calls` into the accumulator. Native tool
+     * calls stream as fragments keyed by `index`: the first fragment carries the
+     * id and function name, later ones append to `function.arguments`. Pure.
+     */
+    function mergeToolCallDeltas(acc, deltas) {
+        for (const d of (deltas || [])) {
+            const i = Number.isInteger(d.index) ? d.index : acc.length;
+            const cur = acc[i] || (acc[i] = { id: '', name: '', arguments: '' });
+            if (d.id) cur.id = d.id;
+            if (d.function?.name && !cur.name) cur.name = d.function.name;
+            if (d.function?.arguments) cur.arguments += d.function.arguments;
+        }
+        return acc;
+    }
+
+    /**
+     * OpenAI-compatible streaming chat. With `tools` (an OpenAI tools array),
+     * the request enables native function-calling and any tool calls the model
+     * makes are reported once, at the end, via `onToolCalls([{id,name,arguments}])`
+     * — `arguments` is the raw JSON string. The resolved value stays the text.
+     */
     async function streamOpenAI(params) {
-        const { system, messages, onToken, onDone, signal } = params;  // onError handled by the stream() wrapper
+        const { system, messages, onToken, onDone, signal, tools, toolChoice, onToolCalls } = params;  // onError handled by the stream() wrapper
         const apiKey = getApiKey();
+        const toolCalls = [];
+        const finish = (text) => {
+            const calls = toolCalls.filter(Boolean).filter(c => c.name);
+            if (onToolCalls && calls.length) onToolCalls(calls);
+            if (onDone) onDone(text);
+            return text;
+        };
 
         const resp = await fetch(`${_activeProvider.baseUrl}/chat/completions`, {
             method: 'POST',
@@ -315,7 +344,8 @@ const DISHAProviders = (() => {
                 stream: true,
                 temperature: 0.3,
                 top_p: 0.9,
-                max_tokens: 4096
+                max_tokens: 4096,
+                ...(tools && tools.length ? { tools, tool_choice: toolChoice || 'auto' } : {})
             }),
             signal
         });
@@ -343,24 +373,22 @@ const DISHAProviders = (() => {
                 if (!trimmed || !trimmed.startsWith('data:')) continue;
 
                 const data = trimmed.slice(5).trim();
-                if (data === '[DONE]') {
-                    if (onDone) onDone(fullResponse);
-                    return fullResponse;
-                }
+                if (data === '[DONE]') return finish(fullResponse);
 
                 try {
                     const parsed = JSON.parse(data);
-                    const content = parsed.choices?.[0]?.delta?.content;
+                    const delta = parsed.choices?.[0]?.delta;
+                    const content = delta?.content;
                     if (content) {
                         fullResponse += content;
                         onToken(content);
                     }
+                    if (delta?.tool_calls) mergeToolCallDeltas(toolCalls, delta.tool_calls);
                 } catch { /* skip malformed SSE */ }
             }
         }
 
-        if (onDone) onDone(fullResponse);
-        return fullResponse;
+        return finish(fullResponse);
     }
 
     // ===== UNIFIED STREAM =====
@@ -418,6 +446,7 @@ const DISHAProviders = (() => {
         getMaxContext,
         getApiKey,
         getBuiltins,
+        mergeToolCallDeltas,
         stream
     };
 })();

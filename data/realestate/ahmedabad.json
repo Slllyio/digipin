@@ -1,0 +1,119 @@
+{
+  "region": "ahmedabad",
+  "anchor": {
+    "hpi_yoy_pct": 6.8,
+    "scope": "city",
+    "source": "National Housing Bank RESIDEX press release, Oct-Dec 2025 (Q3 FY26), HPI @ Assessment Prices, year-on-year change",
+    "period": "2025-Q4"
+  },
+  "land_value": {
+    "cells": 5865,
+    "p10": 70.2,
+    "p50": 96.6,
+    "p90": 124.1,
+    "p99": 158.1,
+    "spread_p90_p10": 1.77,
+    "mean_abs_premium_pct": {
+      "jobs": 3.0,
+      "metro": 0.9,
+      "amenity": 8.1,
+      "neigh": 12.1,
+      "green": 1.4,
+      "risk": 3.6,
+      "noise": 1.5
+    },
+    "inputs_missing": []
+  },
+  "supply": {
+    "base_far": 2.7,
+    "new_floor_km2_2016_2023": 51.71,
+    "vacant_km2": 13.45,
+    "headroom_km2": 293.0,
+    "hotspots": [
+      {
+        "digipin": "3KLJ368",
+        "new_floor_m2": 89811,
+        "build_rate": 233172,
+        "vacant_ha": 1.47,
+        "far_now": 1.0,
+        "headroom_m2": 68513,
+        "urban_2035_pct": 28.4
+      },
+      {
+        "digipin": "J6T688F",
+        "new_floor_m2": 81330,
+        "build_rate": 211014,
+        "far_now": 0.83,
+        "headroom_m2": 77979,
+        "urban_2035_pct": 25.1
+      },
+      {
+        "digipin": "3KLKJ7J",
+        "new_floor_m2": 79688,
+        "build_rate": 206684,
+        "far_now": 0.18,
+        "headroom_m2": 85223,
+        "urban_2035_pct": 69.7
+      },
+      {
+        "digipin": "J6T7T46",
+        "new_floor_m2": 78641,
+        "build_rate": 204057,
+        "far_now": 0.4,
+        "headroom_m2": 82554,
+        "urban_2035_pct": 15.8
+      },
+      {
+        "digipin": "3KL3L86",
+        "new_floor_m2": 77981,
+        "build_rate": 202372,
+        "vacant_ha": 3.78,
+        "far_now": 0.09,
+        "headroom_m2": 15948,
+        "urban_2035_pct": 24.5
+      },
+      {
+        "digipin": "3KLK325",
+        "new_floor_m2": 77547,
+        "build_rate": 201127,
+        "far_now": 0.28,
+        "headroom_m2": 41188,
+        "urban_2035_pct": 99.4
+      },
+      {
+        "digipin": "3KLK9JJ",
+        "new_floor_m2": 71180,
+        "build_rate": 184666,
+        "far_now": 2.43,
+        "headroom_m2": 14050,
+        "urban_2035_pct": 77.0
+      },
+      {
+        "digipin": "3KLJ3L7",
+        "new_floor_m2": 68836,
+        "build_rate": 178701,
+        "vacant_ha": 3.33,
+        "far_now": 0.33,
+        "headroom_m2": 49359,
+        "urban_2035_pct": 9.0
+      },
+      {
+        "digipin": "3KL3LP6",
+        "new_floor_m2": 68244,
+        "build_rate": 177069,
+        "far_now": 1.06,
+        "headroom_m2": 55081,
+        "urban_2035_pct": 29.8
+      },
+      {
+        "digipin": "3KLJ34T",
+        "new_floor_m2": 64167,
+        "build_rate": 166586,
+        "vacant_ha": 3.37,
+        "far_now": 0.08,
+        "headroom_m2": 43306,
+        "urban_2035_pct": 15.9
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@ on:
   # Redeploy after the precompute job commits a fresh tile (its GITHUB_TOKEN
   # push doesn't trigger the push event above), so new scores reach Pages.
   workflow_run:
-    workflows: ["Precompute scores (Indore)"]
+    workflows: ["Precompute scores"]
     types: [completed]
 
 permissions:
@@ -26,6 +26,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # The cell store's GeoParquet copies (CellStore.sql / DuckDB-WASM) are
+      # not in git; build them from the committed JSON before publishing.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate cell-store GeoParquet
+        run: |
+          pip install pyarrow
+          python -m pipeline.cells.parquet
+      # app.html loads ~130 local modules one <script> at a time, which is
+      # right for development but costs a slow link most of its first load.
+      # Bundle them into one file for the published copy only (app.html and
+      # sw.js are rewritten here, never in git): docs/QA_LOG.md has the numbers.
+      - name: Bundle app scripts
+        run: python scripts/build_bundle.py
       - name: Stage static site
         # Upload only the deployable static site, not the whole repo. Uploading
         # `.` tars ~760 MB (.git ~174M, node_modules ~105M, extras ~481M of promo

@@ -1,0 +1,1143 @@
+{
+  "region": "guna",
+  "total_segments": 102,
+  "graph_nodes": 109,
+  "graph_edges": 98,
+  "bridge_count": 101,
+  "los_distribution": {
+    "A": 52,
+    "B": 8,
+    "F": 16,
+    "E": 5,
+    "D": 7,
+    "C": 14
+  },
+  "top_bottlenecks": [
+    {
+      "osm_id": 906125538,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.033299,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.656,
+      "lng": 77.28975
+    },
+    {
+      "osm_id": 906125535,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.033129,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65468,
+      "lng": 77.28802
+    },
+    {
+      "osm_id": 906125537,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.033129,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65651,
+      "lng": 77.29033
+    },
+    {
+      "osm_id": 906125536,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.03262,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.6525,
+      "lng": 77.28537
+    },
+    {
+      "osm_id": 906125542,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.03262,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65769,
+      "lng": 77.29159
+    },
+    {
+      "osm_id": 906125533,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.03177,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65053,
+      "lng": 77.28369
+    },
+    {
+      "osm_id": 906125541,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.03177,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65772,
+      "lng": 77.29161
+    },
+    {
+      "osm_id": 906125534,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.030581,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64921,
+      "lng": 77.2824
+    },
+    {
+      "osm_id": 906125540,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.030581,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65882,
+      "lng": 77.29275
+    },
+    {
+      "osm_id": 906125531,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.029052,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64866,
+      "lng": 77.28172
+    },
+    {
+      "osm_id": 906125539,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.029052,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.66447,
+      "lng": 77.29764
+    },
+    {
+      "osm_id": 906125532,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.027183,
+      "los_grade": "E",
+      "congestion_risk": 95,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64789,
+      "lng": 77.2806
+    },
+    {
+      "osm_id": 908135166,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.027183,
+      "los_grade": "E",
+      "congestion_risk": 95,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.66785,
+      "lng": 77.30337
+    },
+    {
+      "osm_id": 909114640,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.026504,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64814,
+      "lng": 77.31805
+    },
+    {
+      "osm_id": 906450516,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.024975,
+      "los_grade": "D",
+      "congestion_risk": 87,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64481,
+      "lng": 77.27802
+    },
+    {
+      "osm_id": 908135167,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.024975,
+      "los_grade": "D",
+      "congestion_risk": 87,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.67015,
+      "lng": 77.31293
+    },
+    {
+      "osm_id": 906450517,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.022426,
+      "los_grade": "D",
+      "congestion_risk": 78,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.63836,
+      "lng": 77.27408
+    },
+    {
+      "osm_id": 908154472,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.022426,
+      "los_grade": "D",
+      "congestion_risk": 78,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.67532,
+      "lng": 77.32279
+    },
+    {
+      "osm_id": 909983407,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.021407,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65151,
+      "lng": 77.31989
+    },
+    {
+      "osm_id": 908036065,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.019538,
+      "los_grade": "C",
+      "congestion_risk": 68,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.63535,
+      "lng": 77.27218
+    }
+  ],
+  "critical_links": [
+    {
+      "osm_id": 207099511,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.011213,
+      "los_grade": "B",
+      "congestion_risk": 47,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64697,
+      "lng": 77.3167
+    },
+    {
+      "osm_id": 906125531,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.029052,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64866,
+      "lng": 77.28172
+    },
+    {
+      "osm_id": 906125532,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.027183,
+      "los_grade": "E",
+      "congestion_risk": 95,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64789,
+      "lng": 77.2806
+    },
+    {
+      "osm_id": 906125533,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.03177,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65053,
+      "lng": 77.28369
+    },
+    {
+      "osm_id": 906125534,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.030581,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64921,
+      "lng": 77.2824
+    },
+    {
+      "osm_id": 906125535,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.033129,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65468,
+      "lng": 77.28802
+    },
+    {
+      "osm_id": 906125536,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.03262,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.6525,
+      "lng": 77.28537
+    },
+    {
+      "osm_id": 906125537,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.033129,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65651,
+      "lng": 77.29033
+    },
+    {
+      "osm_id": 906125538,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.033299,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.656,
+      "lng": 77.28975
+    },
+    {
+      "osm_id": 906125539,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.029052,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.66447,
+      "lng": 77.29764
+    },
+    {
+      "osm_id": 906125540,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.030581,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65882,
+      "lng": 77.29275
+    },
+    {
+      "osm_id": 906125541,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.03177,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65772,
+      "lng": 77.29161
+    },
+    {
+      "osm_id": 906125542,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.03262,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65769,
+      "lng": 77.29159
+    },
+    {
+      "osm_id": 906450516,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.024975,
+      "los_grade": "D",
+      "congestion_risk": 87,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64481,
+      "lng": 77.27802
+    },
+    {
+      "osm_id": 906450517,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.022426,
+      "los_grade": "D",
+      "congestion_risk": 78,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.63836,
+      "lng": 77.27408
+    },
+    {
+      "osm_id": 908036063,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.012742,
+      "los_grade": "B",
+      "congestion_risk": 45,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.63371,
+      "lng": 77.27114
+    },
+    {
+      "osm_id": 908036064,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.01631,
+      "los_grade": "C",
+      "congestion_risk": 57,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.6339,
+      "lng": 77.27126
+    },
+    {
+      "osm_id": 908036065,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.019538,
+      "los_grade": "C",
+      "congestion_risk": 68,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.63535,
+      "lng": 77.27218
+    },
+    {
+      "osm_id": 908135166,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.027183,
+      "los_grade": "E",
+      "congestion_risk": 95,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.66785,
+      "lng": 77.30337
+    },
+    {
+      "osm_id": 908135167,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.024975,
+      "los_grade": "D",
+      "congestion_risk": 87,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.67015,
+      "lng": 77.31293
+    },
+    {
+      "osm_id": 908154472,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.022426,
+      "los_grade": "D",
+      "congestion_risk": 78,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.67532,
+      "lng": 77.32279
+    },
+    {
+      "osm_id": 909003613,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.011213,
+      "los_grade": "B",
+      "congestion_risk": 47,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64638,
+      "lng": 77.32709
+    },
+    {
+      "osm_id": 909028765,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.014271,
+      "los_grade": "D",
+      "congestion_risk": 82,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.66211,
+      "lng": 77.32687
+    },
+    {
+      "osm_id": 909028766,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.019368,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65626,
+      "lng": 77.32284
+    },
+    {
+      "osm_id": 909114639,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.014271,
+      "los_grade": "D",
+      "congestion_risk": 82,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64805,
+      "lng": 77.3181
+    },
+    {
+      "osm_id": 909114640,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.026504,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64814,
+      "lng": 77.31805
+    },
+    {
+      "osm_id": 909114645,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.011213,
+      "los_grade": "B",
+      "congestion_risk": 47,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.647,
+      "lng": 77.31602
+    },
+    {
+      "osm_id": 909592092,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.011213,
+      "los_grade": "C",
+      "congestion_risk": 64,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65073,
+      "lng": 77.31165
+    },
+    {
+      "osm_id": 909592093,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.016989,
+      "los_grade": "E",
+      "congestion_risk": 97,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64883,
+      "lng": 77.31608
+    },
+    {
+      "osm_id": 909983407,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.021407,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65151,
+      "lng": 77.31989
+    },
+    {
+      "osm_id": 909983408,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.016989,
+      "los_grade": "E",
+      "congestion_risk": 97,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.66172,
+      "lng": 77.32661
+    },
+    {
+      "osm_id": 909983409,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.019368,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.65684,
+      "lng": 77.32335
+    },
+    {
+      "osm_id": 910337106,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.019368,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64806,
+      "lng": 77.3178
+    },
+    {
+      "osm_id": 910337107,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.014271,
+      "los_grade": "D",
+      "congestion_risk": 82,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.6507,
+      "lng": 77.31173
+    },
+    {
+      "osm_id": 910337108,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.016989,
+      "los_grade": "E",
+      "congestion_risk": 97,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.64963,
+      "lng": 77.31406
+    },
+    {
+      "osm_id": 910738801,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.01631,
+      "los_grade": "C",
+      "congestion_risk": 57,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.67588,
+      "lng": 77.32436
+    },
+    {
+      "osm_id": 910738802,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.019538,
+      "los_grade": "C",
+      "congestion_risk": 68,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.67579,
+      "lng": 77.32412
+    },
+    {
+      "osm_id": 910780631,
+      "name": "Guna Bypass",
+      "highway": "trunk",
+      "betweenness": 0.012742,
+      "los_grade": "B",
+      "congestion_risk": 45,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.67702,
+      "lng": 77.32862
+    },
+    {
+      "osm_id": 1055641671,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.011213,
+      "los_grade": "C",
+      "congestion_risk": 64,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 24.66266,
+      "lng": 77.32726
+    }
+  ],
+  "demand_model": {
+    "zones": 89,
+    "origins": 71,
+    "peak_pcu_total_trips": 9019,
+    "roads_los_e_f": 3,
+    "roads_los_d": 2,
+    "roads_total": 102,
+    "roads_los_e_f_by_period": {
+      "am": 3,
+      "pm": 3,
+      "mid": 0
+    },
+    "hourly": {
+      "share_pct": [
+        0.6,
+        0.4,
+        0.3,
+        0.3,
+        0.5,
+        1.1,
+        2.4,
+        4.4,
+        7.0,
+        9.0,
+        7.6,
+        5.6,
+        5.0,
+        4.8,
+        4.6,
+        4.8,
+        5.4,
+        7.0,
+        8.8,
+        7.8,
+        5.6,
+        3.6,
+        2.2,
+        1.2
+      ],
+      "mix": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0.8,
+          0,
+          0.2
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0.8,
+          0.2
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "periods": [
+        "am",
+        "pm",
+        "mid"
+      ],
+      "period_share": {
+        "am": 0.09,
+        "pm": 0.08800000000000001,
+        "mid": 0.048
+      },
+      "bpr": [
+        0.15,
+        4
+      ],
+      "max_slowdown": 4.0,
+      "los_bands": [
+        0.35,
+        0.55,
+        0.75,
+        0.9,
+        1.0
+      ]
+    },
+    "assumptions": {
+      "trips_per_capita": 0.9,
+      "pcu_per_trip": 0.37,
+      "peak_share": 0.09,
+      "beta_per_min": 0.1,
+      "mid_beta_per_min": 0.15
+    }
+  },
+  "road_flood": {
+    "very_high": 0.0,
+    "high": 4.3,
+    "river_flood": 0.0,
+    "total": 57.7,
+    "pct_very_high": 0.0,
+    "pct_high_or_worse": 7.4
+  },
+  "noise_air": {
+    "residents_total": 300935,
+    "residents_near_modelled_roads": 200675,
+    "residents_lden_ge_53": 165525,
+    "residents_lden_ge_65": 28220,
+    "nox_t_day": 0.16,
+    "co2_t_day": 38.4,
+    "nox_vs_s5p_no2_spearman_l5": -0.17,
+    "l5_cells_compared": 8,
+    "assumptions": {
+      "veh_per_pcu": 1.4,
+      "heavy_pct": 5.0,
+      "share_18h": 0.968,
+      "ef_g_per_vkm": {
+        "nox": 0.45,
+        "pm25": 0.025,
+        "co2": 110.0
+      },
+      "reach_m": 300.0,
+      "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
+    }
+  },
+  "emergency_access": {
+    "hospitals": 20,
+    "pct_within_10_night": 93.8,
+    "pct_within_10_am": 93.4,
+    "pct_within_10_pm": 93.5,
+    "pct_over_20_peak": 0.1,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 0,
+    "rail_stations": 1,
+    "pct_within_10_walk_metro": 0.0,
+    "pct_within_10_walk_any": 10.5,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 0,
+    "chargers_by_source": {},
+    "parking": 0,
+    "fuel": 11,
+    "chargers_per_lakh": 0.0,
+    "pct_vkm_within_2km": 0.0,
+    "pct_pop_within_2km": 0.0
+  },
+  "cycling": {
+    "lowstress_km": 485,
+    "cycleway_km": 0,
+    "highstress_km": 42,
+    "islands": 153,
+    "islands_over_5_km2": 2,
+    "largest_island_km2": 12.9,
+    "pct_residents_small_island": 24.9,
+    "pct_residents_no_lowstress_street": 0.8,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 42,
+    "pct_main_km_on_long_gaps": 24.3,
+    "median_gap_m": 89,
+    "crosswalks_mapped": 0,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 10,
+      "logistics": 1,
+      "wholesale": 1
+    },
+    "truck_trips_day": 58,
+    "gateway_nodes": 29,
+    "road_km_500_trucks_day": 0.0,
+    "busiest_truck_roads": [],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 89,
+    "pop_mean_jobs_car_pct": 100.0,
+    "pop_mean_jobs_transit_pct": 56.9,
+    "stations": 1,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 1,
+    "stops_with_heat_data": 1,
+    "pct_hot_bare": 100.0,
+    "pct_riders_at_hot_bare": 100.0,
+    "median_stop_lst_c": 44.7,
+    "top_stops": [
+      {
+        "digipin": "35F5K96",
+        "name": "Guna Bus Stop",
+        "lon": 77.30648,
+        "lat": 24.64346,
+        "residents_5min": 13962,
+        "lst_c": 44.7,
+        "canopy_pct": 4.6,
+        "priority": 129202
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 1
+    }
+  },
+  "parking": {
+    "cells": 261,
+    "demand_ecs": 11285,
+    "lots_mapped": 0,
+    "official_lot_spaces": 0,
+    "pct_demand_in_overflow": 2.1,
+    "overflow_ecs": 95,
+    "hotspots": [
+      {
+        "digipin": "35F5KJL",
+        "demand_ecs": 37,
+        "supply_ecs": 6,
+        "pressure": 5.68
+      },
+      {
+        "digipin": "35F5K83",
+        "demand_ecs": 45,
+        "supply_ecs": 14,
+        "pressure": 3.12
+      },
+      {
+        "digipin": "35F53M4",
+        "demand_ecs": 22,
+        "supply_ecs": 8,
+        "pressure": 2.61
+      },
+      {
+        "digipin": "35F5K32",
+        "demand_ecs": 43,
+        "supply_ecs": 33,
+        "pressure": 1.33
+      },
+      {
+        "digipin": "35F5K8P",
+        "demand_ecs": 25,
+        "supply_ecs": 21,
+        "pressure": 1.22
+      },
+      {
+        "digipin": "35F4682",
+        "demand_ecs": 26,
+        "supply_ecs": 23,
+        "pressure": 1.1
+      },
+      {
+        "digipin": "35F5K37",
+        "demand_ecs": 39,
+        "supply_ecs": 37,
+        "pressure": 1.04
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 71,
+    "pop_mean_trip_km": 3.13,
+    "co2_kg_resident_day": 0.102,
+    "co2_kt_year": 11.1,
+    "inner_fifth_trip_km": 2.48,
+    "outer_fifth_trip_km": 4.26,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
+  }
+}

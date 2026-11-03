@@ -69,12 +69,12 @@ describe('Theme.mapStyleUrl() / gridColors()', () => {
 });
 
 describe('Theme.palette() — JS-surface colours', () => {
-    it('returns blue-interactive / coral-brand paper colours for light', () => {
+    it('returns charcoal-interactive / coral-brand paper colours for light (Aino app)', () => {
         const p = T.palette('light');
-        expect(p.primary).toBe('#0099ff');        // Aino blue — interactive primary
+        expect(p.primary).toBe('#292929');        // Aino charcoal — interactive primary
         expect(p.brand).toBe('#ff673d');          // Aino coral — brand/headlines
         expect(p.ink).toBe('#292929');
-        expect(p.inkOnPrimary).toBe('#ffffff');   // readable label on blue
+        expect(p.inkOnPrimary).toBe('#ffffff');   // readable label on charcoal
         expect(p.surfaceSolid).toBe('#ffffff');   // clean white card (Aino)
     });
 
@@ -95,7 +95,7 @@ describe('Theme.palette() — JS-surface colours', () => {
 
     it('follows the persisted theme with no argument', () => {
         T.set('light');
-        expect(T.palette().primary).toBe('#0099ff');
+        expect(T.palette().primary).toBe('#292929');
         T.set('dark');
         expect(T.palette().primary).toBe('#00f5ff');
     });

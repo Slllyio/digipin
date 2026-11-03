@@ -2036,12 +2036,19 @@ const DataFetcher = (() => {
             const safe = /^\s*[=+\-@]/.test(v) ? `'${v}` : v;
             return `"${safe.replace(/"/g, '""')}"`;
         };
+        // A cell whose feature fetch failed (offline, upstream refused) still
+        // has scores — export what there is instead of throwing on undefined.
         let csv = 'Category,Feature Key,Feature Name,Count\n';
-        for (const [, cat] of Object.entries(data.categories)) {
-            for (const [featKey, feat] of Object.entries(cat.features)) {
-                if (feat.count > 0) {
+        for (const [, cat] of Object.entries((data && data.categories) || {})) {
+            for (const [featKey, feat] of Object.entries((cat && cat.features) || {})) {
+                if (feat && feat.count > 0) {
                     csv += `${cell(cat.name)},${cell(featKey)},${cell(feat.label)},${feat.count}\n`;
                 }
+            }
+        }
+        for (const [key, sc] of Object.entries((data && data.scores) || {})) {
+            if (sc && typeof sc.value === 'number') {
+                csv += `${cell('Score')},${cell(key)},${cell(sc.label || key)},${sc.value}\n`;
             }
         }
         const blob = new Blob([csv], { type: 'text/csv' });

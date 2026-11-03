@@ -1,0 +1,307 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Reject unresolved merge-conflict markers
+      run: |
+        if git grep -nE '^(<{7}|={7}|>{7}) ' -- ':!node_modules' ':!*.lock' ; then
+          echo "::error::Unresolved Git conflict markers detected — see lines above."
+          exit 1
+        fi
+
+    - name: Reject orphaned js/*.js modules
+      run: python scripts/check-orphan-js.py
+      # 2026-05-25 live-smoke pass found 8 js/*.js files committed but never
+      # loaded by any <script> tag — entire features (NDMA alerts, IMD,
+      # quakes, flood) shipped dark. This guard makes that class of bug
+      # impossible to re-introduce without an explicit allowlist marker.
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: npm install
+      # No webpack step — this is a static PWA with no bundler.
+
+    - name: Vitest (frontend unit + regression)
+      run: npx vitest run
+
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install test deps
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+        pip install -r scrapers/requirements.txt
+        pip install -r pipeline/scores/requirements.txt
+        pip install -r pipeline/cells/requirements.txt
+
+    - name: Pytest (scrapers + smoke)
+      run: pytest -q
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    # Proven green on CI (the dev sandbox can't reach the MapLibre / Carto CDNs,
+    # so this can only run here) — now blocking like the other jobs.
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+
+    - name: Set up Python (serve.py webServer)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: npm install
+
+    # The browser comes from cdn.playwright.dev, which has failed a run on its
+    # own (a TLS certificate for the wrong host, 2026-10-21). The download is
+    # cached per Playwright version and retried, so a CDN outage only costs a
+    # run its cache miss, not its result.
+    - name: Playwright version
+      id: pw
+      run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Playwright Chromium
+      id: pw-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-chromium-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+    - name: Install Playwright Chromium
+      if: steps.pw-cache.outputs.cache-hit != 'true'
+      run: |
+        for i in 1 2 3; do
+          npx playwright install --with-deps chromium && exit 0
+          echo "::warning::Playwright browser download failed (attempt $i)"; sleep $((i * 20))
+        done
+        exit 1
+
+    - name: Install Chromium system libraries (browser from cache)
+      if: steps.pw-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps chromium
+
+    - name: "Browser suite (Playwright: smoke, journeys, resilience, perf budgets)"
+      run: npx playwright test
+      env:
+        CI: 'true'
+        PW_SKIP_SOAK: '1'   # the soak has its own job below
+
+    # On a red run keep what Playwright wrote: error-context.md per failure and
+    # the trace of the retry (trace: on-first-retry), so a flake can be read
+    # after the fact instead of guessed at.
+    - name: Upload Playwright results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-results
+        path: test-results/
+        retention-days: 7
+        if-no-files-found: ignore
+
+  # The soak (two rounds over the six big cities with 3D on and a cell
+  # selected: no errors, no leak) takes ~10 min on the runner's software GL,
+  # so it runs beside e2e-smoke instead of after it.
+  e2e-soak:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+
+    - name: Set up Python (serve.py webServer)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Playwright version
+      id: pw
+      run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Playwright Chromium
+      id: pw-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-chromium-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+    - name: Install Playwright Chromium
+      if: steps.pw-cache.outputs.cache-hit != 'true'
+      run: |
+        for i in 1 2 3; do
+          npx playwright install --with-deps chromium && exit 0
+          echo "::warning::Playwright browser download failed (attempt $i)"; sleep $((i * 20))
+        done
+        exit 1
+
+    - name: Install Chromium system libraries (browser from cache)
+      if: steps.pw-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps chromium
+
+    - name: "Soak (Playwright: two rounds over six cities with 3D on)"
+      run: npx playwright test tests/playwright/soak.spec.js
+      env:
+        CI: 'true'
+        PW_ONLY_SOAK: '1'
+
+    - name: Upload Playwright results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-results-soak
+        path: test-results/
+        retention-days: 7
+        if-no-files-found: ignore
+
+  # The published site is the bundled tree (deploy.yml runs
+  # scripts/build_bundle.py), so boot, offline shell, core workflows and the
+  # perf budgets are checked on that tree too, in the same real Chromium.
+  e2e-bundled:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+
+    - name: Set up Python (bundler + serve.py webServer)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: npm install
+
+    # The browser comes from cdn.playwright.dev, which has failed a run on its
+    # own (a TLS certificate for the wrong host, 2026-10-21). The download is
+    # cached per Playwright version and retried, so a CDN outage only costs a
+    # run its cache miss, not its result.
+    - name: Playwright version
+      id: pw
+      run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Playwright Chromium
+      id: pw-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-chromium-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+    - name: Install Playwright Chromium
+      if: steps.pw-cache.outputs.cache-hit != 'true'
+      run: |
+        for i in 1 2 3; do
+          npx playwright install --with-deps chromium && exit 0
+          echo "::warning::Playwright browser download failed (attempt $i)"; sleep $((i * 20))
+        done
+        exit 1
+
+    - name: Install Chromium system libraries (browser from cache)
+      if: steps.pw-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps chromium
+
+    - name: Bundle app scripts (as deploy.yml does)
+      run: python scripts/build_bundle.py
+
+    - name: "Browser suite on the bundled tree (smoke, offline, workflows, a11y, perf)"
+      run: npx playwright test tests/playwright/smoke.spec.js tests/playwright/offline.spec.js tests/playwright/workflows.spec.js tests/playwright/a11y.spec.js tests/playwright/perf.spec.js
+      env:
+        CI: 'true'
+
+    - name: Upload Playwright results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-results-bundled
+        path: test-results/
+        retention-days: 7
+        if-no-files-found: ignore
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: ESLint
+      run: npx eslint .
+
+    - name: Verify golden score fixtures are up to date
+      # The JS *-score.js models are the source of truth; the Python ports are
+      # pinned to these fixtures. Fail if the JS changed without regenerating.
+      run: |
+        npm run golden:scores
+        git diff --exit-code -- pipeline/scores/golden \
+          || { echo "::error::golden fixtures are stale — run 'npm run golden:scores' and commit"; exit 1; }
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    # Informational PWA / performance audit. Non-blocking: it pulls live CDN
+    # assets (MapLibre, Carto basemap) which the dev sandbox can't reach, so it
+    # can only run here and scores vary with network.
+    continue-on-error: true
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python (static server)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Serve the app
+      run: |
+        python serve.py 8000 &
+        for i in $(seq 1 20); do curl -sf http://localhost:8000 >/dev/null && break; sleep 1; done
+
+    - name: Lighthouse audit
+      uses: treosh/lighthouse-ci-action@v12
+      with:
+        urls: http://localhost:8000
+        uploadArtifacts: true
+        temporaryPublicStorage: true

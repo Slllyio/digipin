@@ -92,8 +92,18 @@ describe('CellStore catalog + load', () => {
         expect(CS.datasets().map(d => d.id)).toContain('traffic');
         expect(CS.field(CS.get('traffic'), 'los').type).toBe('category');
         const row = await CS.rowAt('traffic', 22.7196, 75.8577);
-        expect(row).toEqual({ digipin: DigiPin.format(CODE), risk: 80, los: 'F' });
+        expect(row).toEqual({ digipin: DigiPin.format(CODE), level: 7, risk: 80, los: 'F' });
         expect(await CS.rowAt('traffic', 22.9, 75.99)).toBeNull();
+    });
+
+    it('versions region files by the catalog build stamp (no stamp, no query)', async () => {
+        globalThis.fetch = mockFetch([['catalog.json', { ...CATALOG, generated: '2026-10-20T19:37:12Z' }]]);
+        await CS.init();
+        expect(CS.tableUrl({ json: 'traffic/indore_pilot.json' }))
+            .toBe('data/cells/traffic/indore_pilot.json?v=2026-10-20T19%3A37%3A12Z');
+        globalThis.fetch = mockFetch([['catalog.json', { ...CATALOG, generated: undefined }]]);
+        await CS.init();
+        expect(CS.tableUrl({ json: 'a.json' })).toBe('data/cells/a.json');
     });
 
     it('honours a cellsBase override', async () => {
@@ -160,5 +170,146 @@ describe('CellStore SQL view wiring', () => {
         expect(s.view).toBe('traffic');
         expect(s.file).toBe('traffic__indore_pilot.parquet');
         expect(s.url).toMatch(/^https?:\/\/.*data\/cells\/traffic\/indore_pilot\.parquet$/);
+    });
+});
+
+describe('CellStore sharded regions', () => {
+    const A = CS.cellCode(7, 22.7196, 75.8577);           // e.g. 34PLL..
+    const B = CS.cellCode(7, 22.75, 75.90);
+    const SH = {
+        ...SPEC, id: 'sharded',
+        regions: [{
+            name: 'indore_pilot', bbox: { south: 22.5, west: 75.6, north: 22.9, east: 76.0 },
+            json: 'sharded/indore_pilot/{prefix}.json',
+            shards: { prefixLen: 4, keys: [A.slice(0, 4), B.slice(0, 4)] },
+        }],
+    };
+    const docA = { level: 7, cells: [A], columns: { risk: [10], los: ['A'] } };
+    const docB = { level: 7, cells: [B], columns: { risk: [90], los: ['F'] } };
+
+    it('expands the {prefix} template into one part per shard', async () => {
+        globalThis.fetch = mockFetch([['catalog.json', { version: 1, datasets: [SH] }]]);
+        await CS.init();
+        const parts = CS.regionParts(SH.regions[0]);
+        expect(parts.map(p => p.key)).toEqual(SH.regions[0].shards.keys);
+        expect(parts[0].url).toBe(`data/cells/sharded/indore_pilot/${A.slice(0, 4)}.json`);
+        expect(CS.regionParts({ name: 'x', json: 'd/x.json' })).toEqual([{ key: '', url: 'data/cells/d/x.json' }]);
+    });
+
+    it('rowAt fetches only the shard holding the cell', async () => {
+        const f = mockFetch([
+            ['catalog.json', { version: 1, datasets: [SH] }],
+            [`/${A.slice(0, 4)}.json`, docA], [`/${B.slice(0, 4)}.json`, docB],
+        ]);
+        globalThis.fetch = f;
+        await CS.init();
+        const row = await CS.rowAt('sharded', 22.7196, 75.8577);
+        expect(row).toMatchObject({ risk: 10, los: 'A' });
+        const urls = f.mock.calls.map(c => String(c[0]));
+        expect(urls.some(u => u.endsWith(`/${A.slice(0, 4)}.json`))).toBe(true);
+        if (A.slice(0, 4) !== B.slice(0, 4)) expect(urls.some(u => u.endsWith(`/${B.slice(0, 4)}.json`))).toBe(false);
+        expect(await CS.rowAt('sharded', 12.9, 77.6)).toBeNull();   // outside the region bbox: no fetch
+    });
+
+    it('loadCells returns just the shards overlapping the prefixes; load returns all', async () => {
+        globalThis.fetch = mockFetch([
+            ['catalog.json', { version: 1, datasets: [SH] }],
+            [`/${A.slice(0, 4)}.json`, docA], [`/${B.slice(0, 4)}.json`, docB],
+        ]);
+        await CS.init();
+        const part = await CS.loadCells('sharded', [A.slice(0, 5)]);
+        expect(part.cells).toContain(A);
+        if (A.slice(0, 4) !== B.slice(0, 4)) expect(part.cells).not.toContain(B);
+        const coarse = await CS.loadCells('sharded', [A.slice(0, 1)]);   // a coarse prefix covers both
+        expect(coarse.cells.sort()).toEqual([A, B].sort());
+        expect((await CS.load('sharded')).cells.sort()).toEqual([A, B].sort());
+    });
+
+    it('reports parts that did not load (not 404s) and refetches them on the next load', async () => {
+        let bDown = true;
+        globalThis.fetch = vi.fn(async (url) => {
+            const u = String(url);
+            if (u.includes('catalog.json')) return new Response(JSON.stringify({ version: 1, datasets: [SH] }), { status: 200 });
+            if (u.includes(`/${A.slice(0, 4)}.json`)) return new Response(JSON.stringify(docA), { status: 200 });
+            if (u.includes(`/${B.slice(0, 4)}.json`)) {
+                if (bDown) throw new TypeError('Failed to fetch');
+                return new Response(JSON.stringify(docB), { status: 200 });
+            }
+            return new Response('nf', { status: 404 });
+        });
+        await CS.init();
+        const t1 = await CS.load('sharded');
+        expect(t1.cells).toEqual([A]);
+        expect(CS.lastLoad('sharded')).toEqual({ parts: 1, of: 2, unreachable: 1 });
+        expect(CS.failedParts()).toEqual([{ url: `data/cells/sharded/indore_pilot/${B.slice(0, 4)}.json`, reason: 'network' }]);
+        bDown = false;
+        const t2 = await CS.load('sharded');           // degraded table was not kept
+        expect(t2.cells.length).toBe(2);
+        expect(CS.lastLoad('sharded')).toEqual({ parts: 0, of: 2, unreachable: 0 });
+        expect(CS.failedParts()).toEqual([]);
+    });
+
+    it('counts an unpublished (404) part as a gap, not a failure', async () => {
+        globalThis.fetch = mockFetch([
+            ['catalog.json', { version: 1, datasets: [SH] }],
+            [`/${A.slice(0, 4)}.json`, docA],
+        ]);
+        await CS.init();
+        const t = await CS.load('sharded');
+        expect(t.cells).toEqual([A]);
+        expect(CS.lastLoad('sharded')).toEqual({ parts: 1, of: 2, unreachable: 0 });
+        expect(CS.failedParts()).toEqual([]);
+        expect(await CS.load('sharded')).toBe(t);     // kept: nothing to refetch
+    });
+
+    it('evicts least-recently-used decoded parts past the cell budget and refetches on demand', async () => {
+        const f = mockFetch([
+            ['catalog.json', { version: 1, datasets: [SH] }],
+            [`/${A.slice(0, 4)}.json`, docA], [`/${B.slice(0, 4)}.json`, docB],
+        ]);
+        globalThis.fetch = f;
+        window.DIGIPIN_CONFIG = { partByteBudget: JSON.stringify(docB).length + 1 };   // room for one part
+        await CS.init();
+        const t = await CS.load('sharded');
+        expect(t.cells.length).toBe(2);
+        const st = CS.cacheStats();
+        expect(st.budget).toBe(JSON.stringify(docB).length + 1);
+        expect(st.parts).toBe(1);                // one of the two parts was dropped
+        const before = f.mock.calls.length;
+        await CS.loadCells('sharded', [A.slice(0, 1)]);   // needs both parts again
+        expect(f.mock.calls.length).toBe(before + 1);     // exactly the evicted one is refetched
+        expect(CS.cacheStats().parts).toBe(1);
+        delete window.DIGIPIN_CONFIG;
+    });
+});
+
+describe('CellStore.coversCity() / datasetsFor()', () => {
+    const MULTI = { ...SPEC, id: 'multi', regions: [
+        { name: 'indore_pilot', json: 'm/indore_pilot.json', bbox: { west: 75.6, south: 22.5, east: 76.0, north: 22.9 } },
+        { name: 'x', json: 'm/x.json', bbox: { west: 77.3, south: 23.18, east: 77.52, north: 23.32 } },
+    ] };
+    beforeEach(async () => {
+        globalThis.fetch = mockFetch([['catalog.json', { version: 1, datasets: [SPEC, MULTI] }]]);
+        await CS.init();
+    });
+
+    it('matches a city by region name or by a region bbox holding its centre', () => {
+        expect(CS.coversCity(MULTI, { region: 'indore_pilot' })).toBe(true);
+        expect(CS.coversCity(MULTI, { region: 'bhopal', lat: 23.26, lng: 77.41 })).toBe(true);
+        expect(CS.coversCity(MULTI, { region: 'pune', lat: 18.52, lng: 73.86 })).toBe(false);
+        expect(CS.coversCity(SPEC, { region: 'pune', lat: 18.52, lng: 73.86 })).toBe(false);
+    });
+
+    it('lists only datasets with data for the city; null city lists everything', () => {
+        expect(CS.datasetsFor({ region: 'bhopal', lat: 23.26, lng: 77.41 }).map(d => d.id)).toEqual(['multi']);
+        expect(CS.datasetsFor({ region: 'indore_pilot' }).map(d => d.id)).toEqual(['traffic', 'multi']);
+        expect(CS.datasetsFor(null).length).toBe(2);
+    });
+
+    it('always lists datasets dropped on the map', () => {
+        CS.register({ id: 'drop', title: 'D', level: 8, fields: [{ key: 'v', label: 'V', type: 'number', agg: 'sum' }] },
+            { level: 8, cells: ['34PLLMPK'], columns: { v: [1] } });
+        expect(CS.datasetsFor({ region: 'pune', lat: 18.52, lng: 73.86 }).map(d => d.id)).toEqual(['drop']);
+        CS.unregister('drop');
     });
 });

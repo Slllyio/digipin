@@ -26,7 +26,7 @@ The frontend already auto-discovers any region from `coverage.json`
 (`js/precomputed-scores.js`), so a newly-built city lights up with no app
 changes.
 
-## City registry (level 6 ≈ 244 m)
+## City registry (level 6 ≈ 978 m)
 
 | Region | Geofabrik zone | L6 cells | ~JSON |
 |---|---|---:|---:|
@@ -38,16 +38,28 @@ changes.
 | chennai | southern-zone | 726 | ~40 KB |
 | pune | western-zone | 700 | ~39 KB |
 | bhopal | central-zone | 442 | ~24 KB |
-| **8 cities** | | **~11.0k** | **~0.6 MB** |
+| jaipur | northern-zone | 624 | |
+| lucknow | northern-zone | 529 | |
+| ahmedabad | western-zone | 504 | |
+| kolkata | eastern-zone | 480 | |
+| guna | central-zone | 100 | |
+| **13 cities** | | **~14.2k** | |
 
-Level 7 (~61 m) is ~167k cells / ~9 MB total — still trivial to host. Storage is
+Level 7 (~245 m) is ~167k cells / ~9 MB total — still trivial to host. Storage is
 not a constraint; CI compute + raster inputs are.
 
 ## Build one city
 
 Via CI (preferred): **Actions → Precompute scores → Run workflow**, set
-`region` (e.g. `pune`) and `level` (6). The job resolves the extract/clip/DEM,
-builds, smoke-checks, and commits `data/scores/pune/` + updates `coverage.json`.
+`region` to `all` (the default) or a space-separated subset such as
+`delhi mumbai`, and `level` (6). The job runs `build_cities.py` (one zonal
+download per Geofabrik zone), smoke-checks every tile, and commits
+`data/scores/<region>/` + the merged `coverage.json` back to the branch it ran
+on. Pushes to `main` that touch the scoring code, and the monthly cron, rebuild
+all registered cities.
+
+The city dropdown in the app marks every city whose region is in
+`coverage.json` as "· scored", so new tiles show up there with no app change.
 
 Locally (to verify before CI):
 

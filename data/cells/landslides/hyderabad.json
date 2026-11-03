@@ -1,0 +1,1 @@
+{"version":1,"dataset":"landslides","region":"hyderabad","level":7,"fields":["landslides","landslide_deaths"],"cells":["422242J","422352C","422592P"],"columns":{"landslides":[1,1,1],"landslide_deaths":[1,2,0]}}

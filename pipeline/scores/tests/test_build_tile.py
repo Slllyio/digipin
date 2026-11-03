@@ -106,6 +106,24 @@ def test_build_pmtiles_produces_valid_archive(tmp_path, fixture_osm):
         assert "scores" in [layer.get("id") for layer in (vl or [])]
 
 
+        # The choropleth colours by score properties, so they must survive the
+        # tiler's property filter (it defaults to a building-only allowlist).
+        import gzip
+        import mapbox_vector_tile as mvt
+        from pmtiles.reader import all_tiles
+        from pmtiles.tile import Compression
+        props = None
+        for _zxy, data in all_tiles(MmapSource(f)):
+            if header.get("tile_compression") == Compression.GZIP:
+                data = gzip.decompress(data)
+            feats = mvt.decode(data).get("scores", {}).get("features", [])
+            if feats:
+                props = feats[0]["properties"]
+                break
+        assert props is not None, "no score features found in any tile"
+        assert "code" in props and "livability" in props
+
+
 def test_smoke_check_validates_pmtiles(tmp_path, fixture_osm):
     pytest.importorskip("geopandas")
     pytest.importorskip("pmtiles")
@@ -126,3 +144,24 @@ def test_smoke_check_rejects_corrupt_pmtiles(tmp_path, fixture_osm):
 def test_unknown_region_raises(tmp_path):
     with pytest.raises(ValueError, match="unknown region"):
         build_tile.build("atlantis", level=5, out_dir=str(tmp_path))
+
+
+def test_shard_prefix_scales_with_level():
+    assert build_tile.shard_prefix_for(5) == 2
+    assert build_tile.shard_prefix_for(6) == 2
+    assert build_tile.shard_prefix_for(7) == 3
+    assert build_tile.shard_prefix_for(8) == 4
+
+
+def test_smoke_check_rejects_near_empty_grid(tmp_path):
+    # A wrong-zone extract leaves a handful of stray features: a few distinct
+    # rows over hundreds of cells must fail, not ship as a "scored" city.
+    out = tmp_path / "scores"
+    build_tile.build("bhopal", level=6, out_dir=str(out))   # 442 cells, no pbf
+    shard = next((out / "bhopal").glob("*.json"))
+    rows = json.loads(shard.read_text())
+    for i, code in enumerate(list(rows)[:3]):
+        rows[code] = [min(100, v + i + 1) for v in rows[code]]
+    shard.write_text(json.dumps(rows))
+    with pytest.raises(smoke_check.SmokeFailure, match="near-empty"):
+        smoke_check.check(out, region="bhopal")

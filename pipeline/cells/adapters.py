@@ -6,6 +6,7 @@ never new rendering code. Three shapes exist in the repo today:
 
   * score shards    data/scores/<region>/<prefix>.json  {code: [v1..vN]}
   * regular grids   data/{traffic,safety}/<region>/*_grid.json (row-major, row 0 = north)
+  * rasters         any single/multi-band GeoTIFF in EPSG:4326 (``raster_records``)
   * points / rows   any CSV or GeoJSON (see ``pipeline.cells.ingest``)
 """
 from __future__ import annotations
@@ -13,6 +14,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Callable, Iterator, Optional
+
+from pipeline._lib import digipin, grid as cell_grid
 
 
 def score_shard_records(scores_root, region: str) -> tuple[list, Iterator[dict]]:
@@ -62,4 +65,74 @@ def grid_records(grid: dict, keys: list,
                 continue
             rec["lat"] = lat
             rec["lng"] = b["west"] + (x + 0.5) * dx
+            yield rec
+
+
+def _finite(v) -> Optional[float]:
+    v = float(v)
+    return v if v == v and v not in (float("inf"), float("-inf")) else None
+
+
+def raster_records(path, bands: dict, level: int,
+                   derive: Optional[dict] = None,
+                   keep: Optional[Callable[[dict], bool]] = None) -> Iterator[dict]:
+    """Records sampling a GeoTIFF (EPSG:4326) into DIGIPIN cells at ``level``.
+
+    bands   {key: 1-based band index}: the raw values each record carries.
+    derive  {key: fn(record) -> value}: computed after reading, e.g. unit
+            conversion or a change between two years. A derived key may
+            overwrite a band key.
+    keep    filter applied to the finished record (keeps the store sparse).
+
+    Resolution is handled automatically. When pixels are finer than cells, one
+    record per pixel centre is emitted, so ``bin_records`` with ``agg="mean"``
+    gives the zonal mean (``"sum"`` for counts like population). When pixels
+    are coarser, one record per cell centre samples the pixel underneath, so
+    every cell gets a value instead of one cell in sixteen.
+    Non-finite / nodata pixels become None.
+    """
+    import rasterio
+
+    with rasterio.open(path) as r:
+        arrays = {k: r.read(int(b)) for k, b in bands.items()}
+        nodata = r.nodata
+        t = r.transform
+        h, w = r.height, r.width
+        west, south, east, north = r.bounds
+
+    def value(arr, row, col):
+        v = _finite(arr[row, col])
+        return None if v is None or (nodata is not None and v == nodata) else v
+
+    def finish(rec):
+        for k, fn in (derive or {}).items():
+            try:
+                rec[k] = fn(rec)
+            except (TypeError, ValueError, ZeroDivisionError):
+                rec[k] = None
+        return rec if keep is None or keep(rec) else None
+
+    cell_deg = (digipin.BOUNDS["maxLat"] - digipin.BOUNDS["minLat"]) / 4 ** level
+    if abs(t.a) <= cell_deg:
+        for row in range(h):
+            lat = t.f + (row + 0.5) * t.e
+            for col in range(w):
+                rec = {k: value(a, row, col) for k, a in arrays.items()}
+                rec["lat"], rec["lng"] = lat, t.c + (col + 0.5) * t.a
+                rec = finish(rec)
+                if rec is not None:
+                    yield rec
+        return
+
+    bbox = {"west": west, "south": south, "east": east, "north": north}
+    for cell in cell_grid.cells_for_bbox(bbox, level):
+        lat, lng = cell["center"]["lat"], cell["center"]["lng"]
+        col = int((lng - t.c) / t.a)
+        row = int((lat - t.f) / t.e)
+        if not (0 <= row < h and 0 <= col < w):
+            continue
+        rec = {k: value(a, row, col) for k, a in arrays.items()}
+        rec["digipin"] = cell["code"]
+        rec = finish(rec)
+        if rec is not None:
             yield rec

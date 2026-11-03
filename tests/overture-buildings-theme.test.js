@@ -57,13 +57,13 @@ describe('OvertureBuildings Aino-theme rendering', () => {
         // Grounded: base is min_height (no +100 float offset)
         expect(JSON.stringify(paint['fill-extrusion-base'])).not.toContain('100');
         // Cool near-white volume + MapLibre vertical gradient shading
-        expect(JSON.stringify(paint['fill-extrusion-color'])).toContain('#f3f5f7');
+        expect(JSON.stringify(paint['fill-extrusion-color'])).toContain('#fbfaf8');
         expect(paint['fill-extrusion-vertical-gradient']).toBe(true);
         // A directional "sun" is set so the volumes read as a lit model
         expect(map._calls.setLight).toBeTruthy();
         expect(map._calls.setLight.anchor).toBe('map');
-        // Glowing edges stay hidden — the light model is a clean white solid
-        expect(map._visibility[EDGE_LAYER_ID]).toBe('none');
+        // Aino's fine warm-grey footprint lines (not the dark theme's cyan glow)
+        expect(map._visibility[EDGE_LAYER_ID]).toBe('visible');
     });
 
     it('under dark theme grounds a translucent cyan-glass twin with glowing edges', () => {

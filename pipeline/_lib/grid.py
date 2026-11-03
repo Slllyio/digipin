@@ -19,8 +19,8 @@ from typing import Optional
 from pipeline._lib import digipin
 
 # DIGIPIN level -> approximate cell edge length, for picking an analysis grid.
-# (India span ~36 deg / 4**k, ~111 km/deg.)  level 8 ~ 15 m, 7 ~ 60 m, 6 ~ 240 m.
-LEVEL_APPROX_METRES = {3: 15600, 4: 3900, 5: 975, 6: 244, 7: 61, 8: 15}
+# (India span 36 deg / 4**k, ~111.3 km/deg.)  level 6 ~ 978 m, 7 ~ 245 m, 8 ~ 61 m.
+LEVEL_APPROX_METRES = {3: 62600, 4: 15700, 5: 3900, 6: 978, 7: 245, 8: 61, 9: 15, 10: 4}
 
 
 def _clamp(v, lo, hi):

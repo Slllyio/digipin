@@ -41,6 +41,12 @@ _REGIONS: Final[dict[str, tuple[float, float, float, float]]] = {
     "hyderabad":  (78.30, 17.30, 78.60, 17.55),
     "chennai":    (80.13, 12.90, 80.32, 13.18),
     "delhi":      (76.84, 28.40, 77.35, 28.88),
+    # Phase 2: the remaining cities in the app's city picker.
+    "guna":       (77.27, 24.60, 77.35, 24.68),
+    "jaipur":     (75.70, 26.80, 75.92, 27.00),
+    "ahmedabad":  (72.48, 22.95, 72.68, 23.12),
+    "lucknow":    (80.85, 26.75, 81.05, 26.95),
+    "kolkata":    (88.28, 22.45, 88.45, 22.65),
     "india_full": INDIA_FULL,
 }
 
@@ -56,6 +62,11 @@ _GEOFABRIK_ZONE: Final[dict[str, str]] = {
     "hyderabad":    "southern-zone",
     "chennai":      "southern-zone",
     "delhi":        "northern-zone",
+    "guna":         "central-zone",
+    "jaipur":       "northern-zone",  # Rajasthan
+    "ahmedabad":    "western-zone",   # Gujarat
+    "lucknow":      "central-zone",   # Uttar Pradesh (Geofabrik puts UP in central)
+    "kolkata":      "eastern-zone",   # West Bengal
 }
 
 _GEOFABRIK_BASE = "https://download.geofabrik.de/asia/india"

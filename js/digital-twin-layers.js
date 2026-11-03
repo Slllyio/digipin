@@ -306,10 +306,10 @@ const DigitalTwinLayers = (() => {
                 'fill-extrusion-color': [
                     'interpolate', ['linear'],
                     ['to-number', ['get', 'area_in_meters'], 80],
-                    0, '#f3f5f7',
-                    150, '#e9edf0',
-                    600, '#dce1e6',
-                    2000, '#ccd2d9'
+                    0, '#fbfaf8',
+                    150, '#f2f1ee',
+                    600, '#e7e6e2',
+                    2000, '#d9d8d4'
                 ],
                 'fill-extrusion-height': [
                     '+', 5,
@@ -808,7 +808,7 @@ const DigitalTwinLayers = (() => {
             const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
             if (light && def.type === 'fill-extrusion') {
                 try {
-                    _map.setLight({ anchor: 'map', position: [1.4, 210, 38], color: '#ffffff', intensity: 0.45 });
+                    _map.setLight({ anchor: 'map', position: [1.4, 210, 42], color: '#ffffff', intensity: 0.2 });
                 } catch { /* older MapLibre without setLight — vertical gradient still applies */ }
             }
         } else {

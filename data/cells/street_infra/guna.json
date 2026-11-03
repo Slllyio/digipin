@@ -1,0 +1,1 @@
+{"version":1,"dataset":"street_infra","region":"guna","level":7,"fields":["toilets","drinking_water","hydrants","gates","benches","bins","atms","telecom_towers"],"cells":["35F4756","35F5K2F"],"columns":{"toilets":[0,0],"drinking_water":[0,1],"hydrants":[0,0],"gates":[1,0],"benches":[0,0],"bins":[0,0],"atms":[0,0],"telecom_towers":[0,0]}}

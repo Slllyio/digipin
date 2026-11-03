@@ -53,6 +53,30 @@ test.describe('accessibility', () => {
     expect(focused.href).toBe('#map');
   });
 
+  test('Intel and Agents take focus on open and hand it back on Escape', async ({ page }) => {
+    for (const [btn, dlg] of [['btn-insights', 'insights-dialog'], ['btn-agents', 'agents-dialog']]) {
+      await page.focus(`#${btn}`);
+      await page.keyboard.press('Enter');
+      await page.waitForFunction(id => {
+        const d = document.getElementById(id);
+        return d && d.classList.contains('open') && d.contains(document.activeElement);
+      }, dlg, { timeout: 30_000 });
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(([b, id]) => {
+        const d = document.getElementById(id);
+        return !d.classList.contains('open') && document.activeElement && document.activeElement.id === b;
+      }, [btn, dlg], { timeout: 10_000 });
+    }
+  });
+
+  test('a collapsed sidebar keeps its queries out of the tab order', async ({ page }) => {
+    await page.evaluate(() => {
+      const s = document.getElementById('sidebar');
+      if (!s.classList.contains('collapsed')) document.getElementById('sidebar-toggle').click();
+    });
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('#sidebar .sidebar-content')).visibility === 'hidden', null, { timeout: 5_000 });
+  });
+
   test('toolbar tool buttons are keyboard-reachable', async ({ page }) => {
     for (const id of ['btn-dt-layers', 'btn-compare', 'btn-bookmarks', 'btn-saved-views']) {
       const tabindex = await page.locator(`#${id}`).getAttribute('tabindex');

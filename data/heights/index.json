@@ -1,0 +1,145 @@
+[
+ {
+  "region": "ahmedabad",
+  "bbox": [
+   72.47968,
+   22.94995,
+   72.68018,
+   23.12024
+  ],
+  "file": "data/heights/ahmedabad_heights_digipin.json",
+  "cells": 80281
+ },
+ {
+  "region": "bengaluru",
+  "bbox": [
+   77.44989,
+   12.8299,
+   77.78003,
+   13.14026
+  ],
+  "file": "data/heights/bengaluru_heights_digipin.json",
+  "cells": 210698
+ },
+ {
+  "region": "bhopal",
+  "bbox": [
+   77.29993,
+   23.17957,
+   77.5202,
+   23.32019
+  ],
+  "file": "data/heights/bhopal_heights_digipin.json",
+  "cells": 46097
+ },
+ {
+  "region": "chennai",
+  "bbox": [
+   80.12946,
+   12.89966,
+   80.32007,
+   13.18036
+  ],
+  "file": "data/heights/chennai_heights_digipin.json",
+  "cells": 108760
+ },
+ {
+  "region": "delhi",
+  "bbox": [
+   76.8396,
+   28.39972,
+   77.35046,
+   28.88037
+  ],
+  "file": "data/heights/delhi_heights_digipin.json",
+  "cells": 353754
+ },
+ {
+  "region": "guna",
+  "bbox": [
+   77.26971,
+   24.59955,
+   77.35046,
+   24.6803
+  ],
+  "file": "data/heights/guna_heights_digipin.json",
+  "cells": 6740
+ },
+ {
+  "region": "hyderabad",
+  "bbox": [
+   78.29968,
+   17.29968,
+   78.60016,
+   17.55017
+  ],
+  "file": "data/heights/hyderabad_heights_digipin.json",
+  "cells": 166482
+ },
+ {
+  "region": "indore_pilot",
+  "bbox": [
+   75.59979,
+   22.49951,
+   76.00024,
+   22.90051
+  ],
+  "file": "data/heights/indore_pilot_heights_digipin.json",
+  "cells": 109434
+ },
+ {
+  "region": "jaipur",
+  "bbox": [
+   75.69977,
+   26.79956,
+   75.92004,
+   27.00006
+  ],
+  "file": "data/heights/jaipur_heights_digipin.json",
+  "cells": 92420
+ },
+ {
+  "region": "kolkata",
+  "bbox": [
+   88.27966,
+   22.44952,
+   88.4505,
+   22.65002
+  ],
+  "file": "data/heights/kolkata_heights_digipin.json",
+  "cells": 91232
+ },
+ {
+  "region": "lucknow",
+  "bbox": [
+   80.84961,
+   26.74957,
+   81.05011,
+   26.95007
+  ],
+  "file": "data/heights/lucknow_heights_digipin.json",
+  "cells": 87639
+ },
+ {
+  "region": "mumbai",
+  "bbox": [
+   72.7796,
+   18.88995,
+   72.99054,
+   19.27008
+  ],
+  "file": "data/heights/mumbai_heights_digipin.json",
+  "cells": 84973
+ },
+ {
+  "region": "pune",
+  "bbox": [
+   73.74969,
+   18.42963,
+   73.9903,
+   18.64001
+  ],
+  "file": "data/heights/pune_heights_digipin.json",
+  "cells": 100312
+ }
+]
