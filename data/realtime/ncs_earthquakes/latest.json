@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-03T09:01:05Z",
+  "generated_at_iso": "2026-11-03T17:02:16Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-03 22:14:26|27.411,92.297",
+      "magnitude": 3.4,
+      "origin_time": "2026-11-03 22:14:26",
+      "latitude": 27.411,
+      "longitude": 92.297,
+      "depth_km": 10.0,
+      "region": "West Kameng, Arunachal Pradesh",
+      "location": "45km ESE of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 20:49:00|27.786,87.177",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-03 20:49:00",
+      "latitude": 27.786,
+      "longitude": 87.177,
+      "depth_km": 10.0,
+      "region": "Nepal",
+      "location": "112km WNW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 19:02:35|36.690,71.338",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-03 19:02:35",
+      "latitude": 36.69,
+      "longitude": 71.338,
+      "depth_km": 184.0,
+      "region": "Afghanistan",
+      "location": "83km ESE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-03 11:05:46|37.940,73.599",
       "magnitude": 4.6,
@@ -1617,39 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tibet",
       "location": "483km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 01:08:02|31.942,93.701",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-24 01:08:02",
-      "latitude": 31.942,
-      "longitude": 93.701,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "448km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 22:36:23|26.031,95.478",
-      "magnitude": 4.8,
-      "origin_time": "2026-10-23 22:36:23",
-      "latitude": 26.031,
-      "longitude": 95.478,
-      "depth_km": 115.0,
-      "region": "Myanmar",
-      "location": "101km ESE of Mokokchung, Nagaland, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 20:48:47|32.453,93.102",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-23 20:48:47",
-      "latitude": 32.453,
-      "longitude": 93.102,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "520km NNW of Basar, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
