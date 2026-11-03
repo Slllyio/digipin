@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-03T01:48:49Z",
+  "generated_at_iso": "2026-11-03T09:01:05Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-03 11:05:46|37.940,73.599",
+      "magnitude": 4.6,
+      "origin_time": "2026-11-03 11:05:46",
+      "latitude": 37.94,
+      "longitude": 73.599,
+      "depth_km": 95.0,
+      "region": "Tajikistan",
+      "location": "284km ENE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 10:53:46|23.848,94.333",
+      "magnitude": 4.9,
+      "origin_time": "2026-11-03 10:53:46",
+      "latitude": 23.848,
+      "longitude": 94.333,
+      "depth_km": 112.0,
+      "region": "Myanmar",
+      "location": "91km SE of Moirang, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-03 07:26:14|25.546,90.696",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-03 07:26:14",
+      "latitude": 25.546,
+      "longitude": 90.696,
+      "depth_km": 10.0,
+      "region": "East Garo Hills, Meghalaya",
+      "location": "49km E of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-03 06:43:16|28.038,93.115",
       "magnitude": 3.0,
@@ -1617,39 +1650,6 @@
       "depth_km": 10.0,
       "region": "China",
       "location": "520km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 20:39:14|32.418,93.695",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-23 20:39:14",
-      "latitude": 32.418,
-      "longitude": 93.695,
-      "depth_km": 12.0,
-      "region": "Tibet",
-      "location": "499km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 20:11:16|32.780,94.017",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-23 20:11:16",
-      "latitude": 32.78,
-      "longitude": 94.017,
-      "depth_km": 13.0,
-      "region": "China",
-      "location": "529km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-23 19:44:05|33.054,93.746",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-23 19:44:05",
-      "latitude": 33.054,
-      "longitude": 93.746,
-      "depth_km": 100.0,
-      "region": "China",
-      "location": "565km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
