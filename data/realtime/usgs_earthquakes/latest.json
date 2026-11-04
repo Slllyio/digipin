@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-11-04T09:51:53Z",
-  "count": 10,
+  "generated_at_iso": "2026-11-04T17:45:06Z",
+  "count": 6,
   "records": [
     {
       "id": "us7000tvwj",
@@ -60,7 +60,7 @@
       "place": "9 km N of Delta, B.C., MX",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci41572064",
       "tsunami": 0,
-      "significance": 539
+      "significance": 540
     },
     {
       "id": "us7000tvs3",
@@ -73,54 +73,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvs3",
       "tsunami": 0,
       "significance": 416
-    },
-    {
-      "id": "us7000tvie",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-03T16:48:13.110000+00:00",
-      "latitude": 24.1441,
-      "longitude": 141.6725,
-      "depth_km": 139.456,
-      "place": "Volcano Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvie",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000tva7",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-03T15:37:51.082000+00:00",
-      "latitude": -0.2295,
-      "longitude": 123.1532,
-      "depth_km": 136.685,
-      "place": "85 km S of Gorontalo, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tva7",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tv5i",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-03T13:34:06.694000+00:00",
-      "latitude": -58.819,
-      "longitude": -26.3766,
-      "depth_km": 152.036,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv5i",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tv51",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-03T11:03:47.340000+00:00",
-      "latitude": 34.3254,
-      "longitude": 26.5713,
-      "depth_km": 45.662,
-      "place": "101 km SSE of Palekastro, Greece",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv51",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
