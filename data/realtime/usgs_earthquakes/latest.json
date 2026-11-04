@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-11-04T02:32:46Z",
-  "count": 13,
+  "generated_at_iso": "2026-11-04T09:51:53Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us7000tvwj",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-04T07:40:12.288000+00:00",
+      "latitude": 4.3895,
+      "longitude": 127.0325,
+      "depth_km": 49.074,
+      "place": "207 km ESE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvwj",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us7000tvuv",
       "magnitude": 4.6,
@@ -48,7 +60,7 @@
       "place": "9 km N of Delta, B.C., MX",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci41572064",
       "tsunami": 0,
-      "significance": 535
+      "significance": 539
     },
     {
       "id": "us7000tvs3",
@@ -109,54 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv51",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000tv4i",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-11-03T09:13:14.972000+00:00",
-      "latitude": 3.7386,
-      "longitude": -75.7198,
-      "depth_km": 10.0,
-      "place": "24 km NNW of Rioblanco, Colombia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv4i",
-      "tsunami": 0,
-      "significance": 511
-    },
-    {
-      "id": "us7000tv3q",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-03T05:40:18.064000+00:00",
-      "latitude": 35.6591,
-      "longitude": 140.648,
-      "depth_km": 52.267,
-      "place": "6 km S of Asahi, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv3q",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tv3l",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-03T05:23:44.068000+00:00",
-      "latitude": 23.6023,
-      "longitude": 94.7089,
-      "depth_km": 116.353,
-      "place": "31 km E of Mawlaik, Burma (Myanmar)",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv3l",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tv2p",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-03T03:13:12.330000+00:00",
-      "latitude": 53.0409,
-      "longitude": 159.7384,
-      "depth_km": 75.58,
-      "place": "74 km E of Petropavlovsk-Kamchatsky, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv2p",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
