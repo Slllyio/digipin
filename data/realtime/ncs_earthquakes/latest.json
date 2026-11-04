@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-11-03T22:18:45Z",
+  "generated_at_iso": "2026-11-04T02:32:48Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-04 06:45:07|36.407,70.766",
+      "magnitude": 3.8,
+      "origin_time": "2026-11-04 06:45:07",
+      "latitude": 36.407,
+      "longitude": 70.766,
+      "depth_km": 188.0,
+      "region": "Afghanistan",
+      "location": "79km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-04 06:21:14|39.240,73.313",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-04 06:21:14",
+      "latitude": 39.24,
+      "longitude": 73.313,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "339km NE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-04 05:57:23|36.602,70.350",
+      "magnitude": 3.3,
+      "origin_time": "2026-11-04 05:57:23",
+      "latitude": 36.602,
+      "longitude": 70.35,
+      "depth_km": 200.0,
+      "region": "Afghanistan",
+      "location": "58km SSW of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-04 04:20:37|39.341,73.266",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-04 04:20:37",
+      "latitude": 39.341,
+      "longitude": 73.266,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "344km NE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-04 04:03:30|37.267,71.839",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-04 04:03:30",
+      "latitude": 37.267,
+      "longitude": 71.839,
+      "depth_km": 170.0,
+      "region": "Tajikistan",
+      "location": "115km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-04 03:43:50|39.191,73.450",
+      "magnitude": 3.3,
+      "origin_time": "2026-11-04 03:43:50",
+      "latitude": 39.191,
+      "longitude": 73.45,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "344km NE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-04 03:24:36|39.372,73.296",
       "magnitude": 3.9,
@@ -1584,72 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tibet",
       "location": "102km WNW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 15:59:38|28.014,87.300",
-      "magnitude": 3.6,
-      "origin_time": "2026-10-24 15:59:38",
-      "latitude": 28.014,
-      "longitude": 87.3,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "115km NW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 15:46:28|23.232,93.847",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-24 15:46:28",
-      "latitude": 23.232,
-      "longitude": 93.847,
-      "depth_km": 92.0,
-      "region": "Myanmar",
-      "location": "58km ESE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 15:36:44|21.867,95.697",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-24 15:36:44",
-      "latitude": 21.867,
-      "longitude": 95.697,
-      "depth_km": 10.0,
-      "region": "Myanmar",
-      "location": "26km W of Burma, Myanmar",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 14:09:59|32.532,93.723",
-      "magnitude": 5.4,
-      "origin_time": "2026-10-24 14:09:59",
-      "latitude": 32.532,
-      "longitude": 93.723,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "510km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 10:09:56|39.768,75.918",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-24 10:09:56",
-      "latitude": 39.768,
-      "longitude": 75.918,
-      "depth_km": 10.0,
-      "region": "Xinjiang",
-      "location": "363km SSE of Bishkek, Kyrgyzstan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 09:25:54|34.180,94.818",
-      "magnitude": 4.4,
-      "origin_time": "2026-10-24 09:25:54",
-      "latitude": 34.18,
-      "longitude": 94.818,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "672km N of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

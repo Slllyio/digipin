@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-03T22:18:10Z",
-  "count": 11,
+  "generated_at_iso": "2026-11-04T02:32:46Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us7000tvuv",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-04T00:32:59.774000+00:00",
+      "latitude": -19.2691,
+      "longitude": -177.5052,
+      "depth_km": 556.459,
+      "place": "Fiji region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvuv",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tvu9",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-03T22:50:33.435000+00:00",
+      "latitude": 39.294,
+      "longitude": 73.3725,
+      "depth_km": 10.0,
+      "place": "99 km ESE of Kyzyl-Eshme, Kyrgyzstan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvu9",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tvtj",
       "magnitude": 5.2,
@@ -24,7 +48,7 @@
       "place": "9 km N of Delta, B.C., MX",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci41572064",
       "tsunami": 0,
-      "significance": 530
+      "significance": 535
     },
     {
       "id": "us7000tvs3",
@@ -96,7 +120,7 @@
       "place": "24 km NNW of Rioblanco, Colombia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tv4i",
       "tsunami": 0,
-      "significance": 510
+      "significance": 511
     },
     {
       "id": "us7000tv3q",
