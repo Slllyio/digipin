@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-04T17:45:09Z",
+  "generated_at_iso": "2026-11-04T22:54:59Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-05 00:24:49|36.335,70.812",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-05 00:24:49",
+      "latitude": 36.335,
+      "longitude": 70.812,
+      "depth_km": 200.0,
+      "region": "Afghanistan",
+      "location": "88km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-04 23:23:03|27.497,92.063",
+      "magnitude": 2.7,
+      "origin_time": "2026-11-04 23:23:03",
+      "latitude": 27.497,
+      "longitude": 92.063,
+      "depth_km": 5.0,
+      "region": "West Kameng, Arunachal Pradesh",
+      "location": "20km ESE of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-04 20:20:57|39.497,73.149",
       "magnitude": 3.7,
@@ -1628,28 +1650,6 @@
       "depth_km": 15.0,
       "region": "Tibet",
       "location": "121km NNW of Lachung, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 21:17:06|20.075,72.964",
-      "magnitude": 2.4,
-      "origin_time": "2026-10-24 21:17:06",
-      "latitude": 20.075,
-      "longitude": 72.964,
-      "depth_km": 6.0,
-      "region": "Palghar, Maharashtra",
-      "location": "86km W of Nashik, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-24 20:23:50|20.093,72.962",
-      "magnitude": 2.1,
-      "origin_time": "2026-10-24 20:23:50",
-      "latitude": 20.093,
-      "longitude": 72.962,
-      "depth_km": 5.0,
-      "region": "Palghar, Maharashtra",
-      "location": "87km W of Nashik, Maharashtra, India",
       "review_status": "Reviewed"
     }
   ]
