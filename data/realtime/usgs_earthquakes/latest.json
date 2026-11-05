@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-05T03:09:23Z",
-  "count": 3,
+  "generated_at_iso": "2026-11-05T10:54:39Z",
+  "count": 5,
   "records": [
+    {
+      "id": "us7000tw7b",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-05T10:09:33.723000+00:00",
+      "latitude": 49.2594,
+      "longitude": 147.7534,
+      "depth_km": 554.419,
+      "place": "Sea of Okhotsk",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw7b",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tw76",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-05T09:22:32.714000+00:00",
+      "latitude": -3.4641,
+      "longitude": 32.149,
+      "depth_km": 10.0,
+      "place": "19 km NNW of Masumbwe, Tanzania",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw76",
+      "tsunami": 0,
+      "significance": 408
+    },
+    {
+      "id": "nc75462637",
+      "magnitude": 4.96,
+      "origin_time_utc": "2026-11-05T04:56:01.430000+00:00",
+      "latitude": 40.4253349304199,
+      "longitude": -125.627166748047,
+      "depth_km": 2.14000010490417,
+      "place": "114 km W of Petrolia, CA",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75462637",
+      "tsunami": 0,
+      "significance": 424
+    },
     {
       "id": "us7000tw43",
       "magnitude": 4.6,
@@ -25,18 +61,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw3k",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000tvwj",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-04T07:40:12.288000+00:00",
-      "latitude": 4.3895,
-      "longitude": 127.0325,
-      "depth_km": 49.074,
-      "place": "207 km ESE of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvwj",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
