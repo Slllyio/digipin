@@ -1,18 +1,18 @@
 {
-  "generated_at_iso": "2026-11-04T22:54:55Z",
-  "count": 4,
+  "generated_at_iso": "2026-11-05T03:09:23Z",
+  "count": 3,
   "records": [
     {
       "id": "us7000tw43",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-04T21:24:25.643000+00:00",
-      "latitude": -25.3174,
-      "longitude": 179.8078,
-      "depth_km": 508.132,
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-04T21:24:24.646000+00:00",
+      "latitude": -25.2286,
+      "longitude": 179.8797,
+      "depth_km": 502.294,
       "place": "south of the Fiji Islands",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw43",
       "tsunami": 0,
-      "significance": 385
+      "significance": 326
     },
     {
       "id": "us7000tw3k",
@@ -37,18 +37,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvwj",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us7000tvuv",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-04T00:32:59.774000+00:00",
-      "latitude": -19.2691,
-      "longitude": -177.5052,
-      "depth_km": 556.459,
-      "place": "Fiji region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tvuv",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
