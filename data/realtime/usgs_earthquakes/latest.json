@@ -1,14 +1,50 @@
 {
-  "generated_at_iso": "2026-11-05T18:31:24Z",
+  "generated_at_iso": "2026-11-05T23:50:44Z",
   "count": 8,
   "records": [
     {
+      "id": "us7000twd4",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-05T23:04:57.395000+00:00",
+      "latitude": 53.5527,
+      "longitude": -162.9503,
+      "depth_km": 16.134,
+      "place": "147 km SSE of False Pass, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twd4",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000twcy",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-05T22:34:48.173000+00:00",
+      "latitude": -23.5322,
+      "longitude": 179.9392,
+      "depth_km": 523.445,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twcy",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000twaq",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-05T18:05:43.367000+00:00",
+      "latitude": 37.9934,
+      "longitude": 141.2636,
+      "depth_km": 87.44,
+      "place": "36 km E of Watari, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twaq",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
       "id": "us7000tw8r",
       "magnitude": 6.1,
-      "origin_time_utc": "2026-11-05T17:21:45.897000+00:00",
-      "latitude": -21.1692,
-      "longitude": -178.6458,
-      "depth_km": 540.789,
+      "origin_time_utc": "2026-11-05T17:21:45.305000+00:00",
+      "latitude": -21.1984,
+      "longitude": -178.7145,
+      "depth_km": 535.0,
       "place": "Fiji region",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw8r",
       "tsunami": 0,
@@ -60,43 +96,7 @@
       "place": "111 km W of Petrolia, CA",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75462637",
       "tsunami": 0,
-      "significance": 430
-    },
-    {
-      "id": "us7000tw43",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-04T21:24:24.646000+00:00",
-      "latitude": -25.2286,
-      "longitude": 179.8797,
-      "depth_km": 502.294,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw43",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tw3n",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-04T20:06:06.968000+00:00",
-      "latitude": -1.4064,
-      "longitude": 88.0827,
-      "depth_km": 10.0,
-      "place": "South Indian Ocean",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw3n",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tw3k",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-04T19:55:26.313000+00:00",
-      "latitude": 12.6311,
-      "longitude": -87.1544,
-      "depth_km": 159.022,
-      "place": "2 km W of Chinandega, Nicaragua",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw3k",
-      "tsunami": 0,
-      "significance": 312
+      "significance": 432
     }
   ]
 }
