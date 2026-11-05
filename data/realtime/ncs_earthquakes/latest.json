@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-05T10:54:44Z",
+  "generated_at_iso": "2026-11-05T18:31:30Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-05 22:26:26|35.587,78.130",
+      "magnitude": 5.0,
+      "origin_time": "2026-11-05 22:26:26",
+      "latitude": 35.587,
+      "longitude": 78.13,
+      "depth_km": 164.0,
+      "region": "Xinjiang",
+      "location": "167km NNE of Leh, Laddakh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-05 19:54:57|9.170,74.393",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-05 19:54:57",
+      "latitude": 9.17,
+      "longitude": 74.393,
+      "depth_km": 10.0,
+      "region": "Laccadive Sea",
+      "location": "178km NE of Minicoy, Lakshsdweep Island, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-05 18:33:20|28.386,77.258",
+      "magnitude": 2.9,
+      "origin_time": "2026-11-05 18:33:20",
+      "latitude": 28.386,
+      "longitude": 77.258,
+      "depth_km": 5.0,
+      "region": "Faridabad, Haryana",
+      "location": "6km WSW of Faridabad, Haryana, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-05 08:27:23|24.851,95.345",
       "magnitude": 3.8,
@@ -1617,39 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tibet",
       "location": "411km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 04:38:08|36.315,71.701",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-25 04:38:08",
-      "latitude": 36.315,
-      "longitude": 71.701,
-      "depth_km": 107.0,
-      "region": "Pakistan",
-      "location": "134km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 03:42:32|36.451,70.118",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-25 03:42:32",
-      "latitude": 36.451,
-      "longitude": 70.118,
-      "depth_km": 226.0,
-      "region": "Afghanistan",
-      "location": "81km SSW of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 02:21:34|35.131,69.284",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-25 02:21:34",
-      "latitude": 35.131,
-      "longitude": 69.284,
-      "depth_km": 70.0,
-      "region": "Afghanistan",
-      "location": "64km N of Kabul , Afghanistan",
       "review_status": "Reviewed"
     }
   ]

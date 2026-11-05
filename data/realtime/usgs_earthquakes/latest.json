@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-05T10:54:39Z",
-  "count": 5,
+  "generated_at_iso": "2026-11-05T18:31:24Z",
+  "count": 8,
   "records": [
+    {
+      "id": "us7000tw8r",
+      "magnitude": 6.1,
+      "origin_time_utc": "2026-11-05T17:21:45.897000+00:00",
+      "latitude": -21.1692,
+      "longitude": -178.6458,
+      "depth_km": 540.789,
+      "place": "Fiji region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw8r",
+      "tsunami": 0,
+      "significance": 572
+    },
+    {
+      "id": "us7000tw8p",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-05T16:56:25.875000+00:00",
+      "latitude": 35.6318,
+      "longitude": 77.9399,
+      "depth_km": 76.944,
+      "place": "130 km NE of Thang, India",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw8p",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us7000tw7b",
       "magnitude": 4.8,
@@ -24,19 +48,19 @@
       "place": "19 km NNW of Masumbwe, Tanzania",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw76",
       "tsunami": 0,
-      "significance": 408
+      "significance": 410
     },
     {
       "id": "nc75462637",
       "magnitude": 4.96,
-      "origin_time_utc": "2026-11-05T04:56:01.430000+00:00",
-      "latitude": 40.4253349304199,
-      "longitude": -125.627166748047,
-      "depth_km": 2.14000010490417,
-      "place": "114 km W of Petrolia, CA",
+      "origin_time_utc": "2026-11-05T04:56:02.670000+00:00",
+      "latitude": 40.4073333333333,
+      "longitude": -125.585333333333,
+      "depth_km": 10.0,
+      "place": "111 km W of Petrolia, CA",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75462637",
       "tsunami": 0,
-      "significance": 424
+      "significance": 430
     },
     {
       "id": "us7000tw43",
@@ -49,6 +73,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw43",
       "tsunami": 0,
       "significance": 326
+    },
+    {
+      "id": "us7000tw3n",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-04T20:06:06.968000+00:00",
+      "latitude": -1.4064,
+      "longitude": 88.0827,
+      "depth_km": 10.0,
+      "place": "South Indian Ocean",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw3n",
+      "tsunami": 0,
+      "significance": 312
     },
     {
       "id": "us7000tw3k",
