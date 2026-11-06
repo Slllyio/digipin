@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-11-05T23:50:45Z",
+  "generated_at_iso": "2026-11-06T05:11:25Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-06 07:41:32|32.326,93.406",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-06 07:41:32",
+      "latitude": 32.326,
+      "longitude": 93.406,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "498km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-06 06:59:46|32.719,76.123",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-06 06:59:46",
+      "latitude": 32.719,
+      "longitude": 76.123,
+      "depth_km": 15.0,
+      "region": "Chamba, Himachal Pradesh",
+      "location": "58km NNW of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-06 06:44:39|17.970,94.711",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-06 06:44:39",
+      "latitude": 17.97,
+      "longitude": 94.711,
+      "depth_km": 10.0,
+      "region": "Myanmar",
+      "location": "199km NW of Yangon, Myanmar",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-06 06:16:46|16.452,77.414",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-06 06:16:46",
+      "latitude": 16.452,
+      "longitude": 77.414,
+      "depth_km": 5.0,
+      "region": "Narayanpet, Telengana",
+      "location": "154km SW of Hyderabad, Telangana, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-05 22:26:26|35.587,78.130",
       "magnitude": 5.0,
@@ -1606,50 +1650,6 @@
       "depth_km": 10.0,
       "region": "China",
       "location": "509km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 13:52:23|30.951,93.099",
-      "magnitude": 3.6,
-      "origin_time": "2026-10-25 13:52:23",
-      "latitude": 30.951,
-      "longitude": 93.099,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "364km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 12:51:44|29.574,80.292",
-      "magnitude": 3.7,
-      "origin_time": "2026-10-25 12:51:44",
-      "latitude": 29.574,
-      "longitude": 80.292,
-      "depth_km": 11.0,
-      "region": "Pithoragarh, Uttarakhand",
-      "location": "7km E of Pithoragarh, Uttarakhand, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 05:53:32|27.151,89.696",
-      "magnitude": 2.5,
-      "origin_time": "2026-10-25 05:53:32",
-      "latitude": 27.151,
-      "longitude": 89.696,
-      "depth_km": 17.0,
-      "region": "Bhutan",
-      "location": "36km S of Thimphu, Bhutan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 05:48:06|31.403,93.078",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-25 05:48:06",
-      "latitude": 31.403,
-      "longitude": 93.078,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "411km NNW of Basar, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

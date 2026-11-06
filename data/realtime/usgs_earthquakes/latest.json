@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-05T23:50:44Z",
-  "count": 8,
+  "generated_at_iso": "2026-11-06T05:11:22Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us7000tweq",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-06T02:35:25.631000+00:00",
+      "latitude": 53.6347,
+      "longitude": -162.9502,
+      "depth_km": 27.963,
+      "place": "139 km SSE of False Pass, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tweq",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tweb",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-06T01:37:39.847000+00:00",
+      "latitude": -19.3647,
+      "longitude": 168.7529,
+      "depth_km": 83.271,
+      "place": "58 km WNW of Isangel, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tweb",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000twdd",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-06T00:02:25.016000+00:00",
+      "latitude": -5.9168,
+      "longitude": 146.6624,
+      "depth_km": 97.804,
+      "place": "96 km NNW of Lae, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twdd",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000twd4",
       "magnitude": 4.6,
@@ -85,18 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw76",
       "tsunami": 0,
       "significance": 410
-    },
-    {
-      "id": "nc75462637",
-      "magnitude": 4.96,
-      "origin_time_utc": "2026-11-05T04:56:02.670000+00:00",
-      "latitude": 40.4073333333333,
-      "longitude": -125.585333333333,
-      "depth_km": 10.0,
-      "place": "111 km W of Petrolia, CA",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75462637",
-      "tsunami": 0,
-      "significance": 432
     }
   ]
 }
