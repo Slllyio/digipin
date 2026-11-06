@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-11-06T19:53:48Z",
-  "count": 9,
+  "generated_at_iso": "2026-11-06T23:57:02Z",
+  "count": 8,
   "records": [
+    {
+      "id": "us7000twmr",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-06T19:07:01.269000+00:00",
+      "latitude": -1.2393,
+      "longitude": 120.4589,
+      "depth_km": 10.0,
+      "place": "36 km WNW of Poso, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twmr",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000twhq",
       "magnitude": 4.5,
@@ -24,7 +36,7 @@
       "place": "144 km SE of Hasaki, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twg9",
       "tsunami": 0,
-      "significance": 585
+      "significance": 587
     },
     {
       "id": "us7000twfu",
@@ -83,30 +95,6 @@
       "depth_km": 97.804,
       "place": "96 km NNW of Lae, Papua New Guinea",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twdd",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000twd4",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-05T23:04:57.395000+00:00",
-      "latitude": 53.5527,
-      "longitude": -162.9503,
-      "depth_km": 16.134,
-      "place": "147 km SSE of False Pass, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twd4",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000twcy",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-05T22:34:48.173000+00:00",
-      "latitude": -23.5322,
-      "longitude": 179.9392,
-      "depth_km": 523.445,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twcy",
       "tsunami": 0,
       "significance": 326
     }

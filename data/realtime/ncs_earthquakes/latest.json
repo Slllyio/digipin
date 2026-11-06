@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-06T19:53:49Z",
+  "generated_at_iso": "2026-11-06T23:57:05Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-07 03:52:52|25.744,95.507",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-07 03:52:52",
+      "latitude": 25.744,
+      "longitude": 95.507,
+      "depth_km": 10.0,
+      "region": "Myanmar",
+      "location": "118km ESE of Mokokchung, Nagaland, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-07 02:45:39|37.836,72.872",
+      "magnitude": 3.4,
+      "origin_time": "2026-11-07 02:45:39",
+      "latitude": 37.836,
+      "longitude": 72.872,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "220km ENE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-06 21:08:50|36.310,71.329",
       "magnitude": 3.8,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tibet",
       "location": "481km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-26 03:31:41|32.065,93.728",
-      "magnitude": 4.5,
-      "origin_time": "2026-10-26 03:31:41",
-      "latitude": 32.065,
-      "longitude": 93.728,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "460km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-26 01:04:07|25.461,91.407",
-      "magnitude": 2.6,
-      "origin_time": "2026-10-26 01:04:07",
-      "latitude": 25.461,
-      "longitude": 91.407,
-      "depth_km": 10.0,
-      "region": "South West Khasi Hills, Meghalaya",
-      "location": "38km WNW of Cherrapunjee, Meghalaya, India",
       "review_status": "Reviewed"
     }
   ]
