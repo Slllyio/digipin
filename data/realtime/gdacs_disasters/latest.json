@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-11-06T12:57:39Z",
+  "generated_at_iso": "2026-11-06T19:53:49Z",
   "count": 234,
   "records": [
     {
@@ -25,15 +25,15 @@
       "event_label": "Tropical Cyclone",
       "alert_score": 1.0,
       "alert_level": "Green",
-      "title": "Green notification for tropical cyclone THIRTYONE-26. Population affected by Category 1 (120 km/h) wind speeds or higher is 0  (0 in Tropical Storm).",
-      "description": "From 06/11/2026 to 06/11/2026, a Tropical Depression (maximum wind speed of 185 km/h) THIRTYONE-26 was active in NWPacific. The cyclone affects these countries: Japan (vulnerability Low). Estimated population affected by category 1 (120 km/h) wind speeds or higher is 0  (0 in tropical storm).",
+      "title": "Green notification for tropical cyclone THIRTYONE-26. Population affected by Category 1 (120 km/h) wind speeds or higher is 2127 .",
+      "description": "From 06/11/2026 to 06/11/2026, a Tropical Depression (maximum wind speed of 185 km/h) THIRTYONE-26 was active in NWPacific. The cyclone affects these countries: Japan (vulnerability Low). Estimated population affected by category 1 (120 km/h) wind speeds or higher is 2127 .",
       "country": "Japan",
       "published_utc": "Fri, 06 Nov 2026 07:50:41 GMT",
       "latitude": null,
       "longitude": null,
       "url": "http://www.gdacs.org/report.aspx?eventtype=TC&eventid=1001347",
       "glide_number": "",
-      "population_affected": "Population affected by Category 1 (120 km/h) wind speeds or higher is 0 (3113 in Tropical Storm)",
+      "population_affected": "Population affected by Category 1 (120 km/h) wind speeds or higher is 2127",
       "tags": []
     },
     {

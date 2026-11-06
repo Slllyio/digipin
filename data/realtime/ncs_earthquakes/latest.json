@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-06T12:57:39Z",
+  "generated_at_iso": "2026-11-06T19:53:49Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-06 21:08:50|36.310,71.329",
+      "magnitude": 3.8,
+      "origin_time": "2026-11-06 21:08:50",
+      "latitude": 36.31,
+      "longitude": 71.329,
+      "depth_km": 118.0,
+      "region": "Afghanistan",
+      "location": "112km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-06 19:50:01|30.107,80.553",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-06 19:50:01",
+      "latitude": 30.107,
+      "longitude": 80.553,
+      "depth_km": 10.0,
+      "region": "Pithoragarh, Uttarakhand",
+      "location": "66km NNE of Pithoragarh, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-06 17:37:44|15.769,77.985",
       "magnitude": 2.3,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "South West Khasi Hills, Meghalaya",
       "location": "38km WNW of Cherrapunjee, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 23:14:22|36.157,71.240",
-      "magnitude": 5.5,
-      "origin_time": "2026-10-25 23:14:22",
-      "latitude": 36.157,
-      "longitude": 71.24,
-      "depth_km": 129.0,
-      "region": "Afghanistan",
-      "location": "121km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 22:16:47|32.869,94.059",
-      "magnitude": 4.5,
-      "origin_time": "2026-10-25 22:16:47",
-      "latitude": 32.869,
-      "longitude": 94.059,
-      "depth_km": 15.0,
-      "region": "China",
-      "location": "538km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
