@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-11-06T05:11:25Z",
+  "generated_at_iso": "2026-11-06T12:57:39Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-06 17:37:44|15.769,77.985",
+      "magnitude": 2.3,
+      "origin_time": "2026-11-06 17:37:44",
+      "latitude": 15.769,
+      "longitude": 77.985,
+      "depth_km": 5.0,
+      "region": "Kurnool, Andhra Pradesh",
+      "location": "170km ENE of Hampi, Karnataka, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-06 15:45:31|31.430,78.202",
+      "magnitude": 2.0,
+      "origin_time": "2026-11-06 15:45:31",
+      "latitude": 31.43,
+      "longitude": 78.202,
+      "depth_km": 5.0,
+      "region": "Kinnaur, Himachal Pradesh",
+      "location": "81km NNW of Uttarkashi, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-06 11:48:03|23.807,92.552",
+      "magnitude": 3.3,
+      "origin_time": "2026-11-06 11:48:03",
+      "latitude": 23.807,
+      "longitude": 92.552,
+      "depth_km": 22.0,
+      "region": "Mamit, Mizoram",
+      "location": "16km WNW of Aizawal,Mizoram,India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-06 10:56:04|36.408,70.697",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-06 10:56:04",
+      "latitude": 36.408,
+      "longitude": 70.697,
+      "depth_km": 202.0,
+      "region": "Afghanistan",
+      "location": "78km S of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-06 07:41:32|32.326,93.406",
       "magnitude": 4.2,
@@ -22,6 +66,17 @@
       "depth_km": 15.0,
       "region": "Chamba, Himachal Pradesh",
       "location": "58km NNW of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-06 06:55:26|29.803,81.940",
+      "magnitude": 3.7,
+      "origin_time": "2026-11-06 06:55:26",
+      "latitude": 29.803,
+      "longitude": 81.94,
+      "depth_km": 11.0,
+      "region": "Nepal",
+      "location": "168km E of Pithoragarh, Uttarakhand, India",
       "review_status": "Reviewed"
     },
     {
@@ -1595,61 +1650,6 @@
       "depth_km": 15.0,
       "region": "China",
       "location": "538km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 20:55:46|32.685,93.925",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-25 20:55:46",
-      "latitude": 32.685,
-      "longitude": 93.925,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "521km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 17:47:06|32.060,93.531",
-      "magnitude": 3.8,
-      "origin_time": "2026-10-25 17:47:06",
-      "latitude": 32.06,
-      "longitude": 93.531,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "466km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 17:25:33|31.609,93.249",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-25 17:25:33",
-      "latitude": 31.609,
-      "longitude": 93.249,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "426km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 16:56:00|32.488,93.997",
-      "magnitude": 5.9,
-      "origin_time": "2026-10-25 16:56:00",
-      "latitude": 32.488,
-      "longitude": 93.997,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "498km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-25 16:54:15|32.568,93.920",
-      "magnitude": 5.2,
-      "origin_time": "2026-10-25 16:54:15",
-      "latitude": 32.568,
-      "longitude": 93.92,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "509km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

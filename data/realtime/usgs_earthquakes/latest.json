@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-06T05:11:22Z",
-  "count": 10,
+  "generated_at_iso": "2026-11-06T12:57:39Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000twg9",
+      "magnitude": 6.1,
+      "origin_time_utc": "2026-11-06T10:39:27.869000+00:00",
+      "latitude": 34.9677,
+      "longitude": 142.1175,
+      "depth_km": 29.0,
+      "place": "144 km SE of Hasaki, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twg9",
+      "tsunami": 0,
+      "significance": 581
+    },
+    {
+      "id": "us7000twfu",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-06T08:14:08.319000+00:00",
+      "latitude": -18.7543,
+      "longitude": 169.2644,
+      "depth_km": 246.521,
+      "place": "87 km N of Isangel, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twfu",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000twfk",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-06T06:28:26.156000+00:00",
+      "latitude": 5.2999,
+      "longitude": 125.0977,
+      "depth_km": 35.0,
+      "place": "41 km SW of Balangonan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twfk",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000tweq",
       "magnitude": 4.7,
@@ -97,30 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw8p",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us7000tw7b",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-05T10:09:33.723000+00:00",
-      "latitude": 49.2594,
-      "longitude": 147.7534,
-      "depth_km": 554.419,
-      "place": "Sea of Okhotsk",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw7b",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tw76",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-05T09:22:32.714000+00:00",
-      "latitude": -3.4641,
-      "longitude": 32.149,
-      "depth_km": 10.0,
-      "place": "19 km NNW of Masumbwe, Tanzania",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tw76",
-      "tsunami": 0,
-      "significance": 410
     }
   ]
 }
