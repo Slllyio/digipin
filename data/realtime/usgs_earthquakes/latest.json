@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-07T05:15:47Z",
+  "generated_at_iso": "2026-11-07T11:51:41Z",
   "count": 5,
   "records": [
+    {
+      "id": "us7000twrq",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-11-07T11:07:43.355000+00:00",
+      "latitude": 36.1884,
+      "longitude": 141.4404,
+      "depth_km": 31.748,
+      "place": "74 km NE of Hasaki, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrq",
+      "tsunami": 0,
+      "significance": 469
+    },
+    {
+      "id": "us7000twqw",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-07T07:14:10.868000+00:00",
+      "latitude": -57.9579,
+      "longitude": -25.8023,
+      "depth_km": 103.682,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twqw",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000twqm",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-06T22:37:54.867000+00:00",
+      "latitude": 13.5679,
+      "longitude": 144.9932,
+      "depth_km": 113.394,
+      "place": "11 km ENE of Yigo Village, Guam",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twqm",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000twmr",
       "magnitude": 4.8,
@@ -25,42 +61,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twhq",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000twg9",
-      "magnitude": 6.1,
-      "origin_time_utc": "2026-11-06T10:39:27.869000+00:00",
-      "latitude": 34.9677,
-      "longitude": 142.1175,
-      "depth_km": 29.0,
-      "place": "144 km SE of Hasaki, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twg9",
-      "tsunami": 0,
-      "significance": 588
-    },
-    {
-      "id": "us7000twfu",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-06T08:14:08.319000+00:00",
-      "latitude": -18.7543,
-      "longitude": 169.2644,
-      "depth_km": 246.521,
-      "place": "87 km N of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twfu",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000twfk",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-06T06:28:26.156000+00:00",
-      "latitude": 5.2999,
-      "longitude": 125.0977,
-      "depth_km": 35.0,
-      "place": "41 km SW of Balangonan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twfk",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }

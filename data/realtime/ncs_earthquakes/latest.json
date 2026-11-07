@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-07T05:15:49Z",
+  "generated_at_iso": "2026-11-07T11:51:43Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-07 13:56:34|18.943,73.068",
+      "magnitude": 2.4,
+      "origin_time": "2026-11-07 13:56:34",
+      "latitude": 18.943,
+      "longitude": 73.068,
+      "depth_km": 5.0,
+      "region": "Raigad, Maharashtra",
+      "location": "24km SE of Mumbai, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-07 13:40:25|18.395,73.807",
+      "magnitude": 2.1,
+      "origin_time": "2026-11-07 13:40:25",
+      "latitude": 18.395,
+      "longitude": 73.807,
+      "depth_km": 5.0,
+      "region": "Pune, Maharashtra",
+      "location": "14km SSW of Pune, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-07 05:50:00|33.785,82.035",
       "magnitude": 3.7,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Nepal",
       "location": "17km WNW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-26 06:06:13|36.851,73.141",
-      "magnitude": 3.6,
-      "origin_time": "2026-10-26 06:06:13",
-      "latitude": 36.851,
-      "longitude": 73.141,
-      "depth_km": 15.0,
-      "region": "Pakistan",
-      "location": "231km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-26 05:07:35|24.863,94.915",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-26 05:07:35",
-      "latitude": 24.863,
-      "longitude": 94.915,
-      "depth_km": 115.0,
-      "region": "Myanmar",
-      "location": "44km E of Ukhrul, Manipur, India",
       "review_status": "Reviewed"
     }
   ]
