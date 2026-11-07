@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-07T17:26:24Z",
+  "generated_at_iso": "2026-11-07T21:01:17Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-08 02:07:35|29.499,70.492",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-08 02:07:35",
+      "latitude": 29.499,
+      "longitude": 70.492,
+      "depth_km": 10.0,
+      "region": "Pakistan",
+      "location": "320km WNW of Bikaner, Rajasthan, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-08 00:21:53|24.942,93.834",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-08 00:21:53",
+      "latitude": 24.942,
+      "longitude": 93.834,
+      "depth_km": 15.0,
+      "region": "Kangpokpi, Manipur",
+      "location": "17km NW of Imphal, Manipur, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-07 22:22:12|37.078,71.234",
       "magnitude": 3.3,
@@ -1628,28 +1650,6 @@
       "depth_km": 15.0,
       "region": "China",
       "location": "641km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-26 11:52:59|25.514,90.723",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-26 11:52:59",
-      "latitude": 25.514,
-      "longitude": 90.723,
-      "depth_km": 5.0,
-      "region": "East Garo Hills, Meghalaya",
-      "location": "52km E of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-26 11:15:51|26.849,68.767",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-26 11:15:51",
-      "latitude": 26.849,
-      "longitude": 68.767,
-      "depth_km": 77.0,
-      "region": "Pakistan",
-      "location": "428km W of Jodhpur, Rajasthan, India",
       "review_status": "Reviewed"
     }
   ]
