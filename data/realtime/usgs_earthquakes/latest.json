@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-07T11:51:41Z",
-  "count": 5,
+  "generated_at_iso": "2026-11-07T17:26:20Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us7000twt0",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-11-07T16:04:35.125000+00:00",
+      "latitude": 34.8611,
+      "longitude": 137.691,
+      "depth_km": 38.081,
+      "place": "10 km NW of Hamakita, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twt0",
+      "tsunami": 0,
+      "significance": 485
+    },
+    {
+      "id": "us7000twss",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-07T15:22:50.149000+00:00",
+      "latitude": -19.7402,
+      "longitude": 14.6467,
+      "depth_km": 8.035,
+      "place": "77 km NNW of Khorixas, Namibia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twss",
+      "tsunami": 0,
+      "significance": 370
+    },
+    {
+      "id": "us7000twsp",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-07T15:05:45.113000+00:00",
+      "latitude": -20.8363,
+      "longitude": -178.7119,
+      "depth_km": 571.898,
+      "place": "Fiji region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twsp",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000twrt",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-07T11:35:38.338000+00:00",
+      "latitude": -18.2483,
+      "longitude": -12.9445,
+      "depth_km": 10.0,
+      "place": "southern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrt",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000twrq",
       "magnitude": 5.5,
@@ -12,7 +60,31 @@
       "place": "74 km NE of Hasaki, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrq",
       "tsunami": 0,
-      "significance": 469
+      "significance": 473
+    },
+    {
+      "id": "us7000twrp",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-07T10:53:12.299000+00:00",
+      "latitude": -21.6011,
+      "longitude": -68.6413,
+      "depth_km": 110.716,
+      "place": "57 km SW of Ollagüe, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrp",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000twrh",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-07T09:47:33.240000+00:00",
+      "latitude": 0.0075,
+      "longitude": 125.7691,
+      "depth_km": 38.531,
+      "place": "156 km ESE of Modisi, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrh",
+      "tsunami": 0,
+      "significance": 340
     },
     {
       "id": "us7000twqw",
@@ -36,7 +108,7 @@
       "place": "11 km ENE of Yigo Village, Guam",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twqm",
       "tsunami": 0,
-      "significance": 326
+      "significance": 327
     },
     {
       "id": "us7000twmr",
@@ -49,18 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twmr",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000twhq",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-06T15:26:58.080000+00:00",
-      "latitude": 34.3043,
-      "longitude": 26.4987,
-      "depth_km": 40.657,
-      "place": "101 km SSE of Palekastro, Greece",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twhq",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
