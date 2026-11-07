@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-06T23:57:03Z",
+  "generated_at_iso": "2026-11-07T05:15:48Z",
   "count": 100,
   "records": [
+    {
+      "id": "1794027056065008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 07 Nov 2026 04:51:40 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794027056065008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1794025392809007",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightning is very likely to occur at isolated places over Chengalpattu, Chennai, Kancheepuram, Kanniyakumari, Mayiladuthurai, Nagapattinam, Ramanathapuram, Thiruvallur, Thiruvarur, Thoothukkudi, Tirunelveli in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 07 Nov 2026 04:23:16 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794025392809007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1794005552935041",
       "headline": "Moderate Rain with Thunderstorm and Lightning is very likely to occur at a few places over Chennai, Kanchipuram, Mayiladuthurai, Nagapattinam, Thiruvallur, Thiruvarur, Karaikal, Pondicherry in next 3 hours.",
@@ -1076,28 +1098,6 @@
       "area": "",
       "published_utc": "Thu, 05 Nov 2026 10:23:17 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793874169393008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793873940763008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 05 Nov 2026 10:19:54 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793873940763008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793873533012008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 05 Nov 2026 10:12:44 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793873533012008",
       "severity": "Minor",
       "category": "Other",
       "tags": []

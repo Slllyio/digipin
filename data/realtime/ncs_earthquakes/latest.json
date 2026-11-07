@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-06T23:57:05Z",
+  "generated_at_iso": "2026-11-07T05:15:49Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-07 05:50:00|33.785,82.035",
+      "magnitude": 3.7,
+      "origin_time": "2026-11-07 05:50:00",
+      "latitude": 33.785,
+      "longitude": 82.035,
+      "depth_km": 110.0,
+      "region": "Tibet",
+      "location": "310km ENE of Hanley, Jammu & Kashmir, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-07 03:52:52|25.744,95.507",
       "magnitude": 3.5,
@@ -1639,17 +1650,6 @@
       "depth_km": 115.0,
       "region": "Myanmar",
       "location": "44km E of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-26 04:34:07|32.404,94.409",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-26 04:34:07",
-      "latitude": 32.404,
-      "longitude": 94.409,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "481km N of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
