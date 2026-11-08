@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-07T21:01:15Z",
+  "generated_at_iso": "2026-11-08T00:34:38Z",
   "count": 100,
   "records": [
+    {
+      "id": "1794092253939007",
+      "headline": "Light Rain is likely to occur at isolated places over Tiruvannamalai in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 07 Nov 2026 22:57:36 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794092253939007",
+      "severity": "Minor",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794091633711041",
+      "headline": "Light to Moderate Rain with thunderstorm and lightning  is likely to occur at isolated places over Coimbatore,Cuddalore,Mayiladuthurai,Nagapattinam,Pudukkottai,Ramanathapuram,Sivaganga,Thanjavur,The Nilgiris,Thiruvarur,Thoothukkudi,Tirunelveli,Viluppuram,Virudhunagar, Karaikal,Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 07 Nov 2026 22:50:21 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794091633711041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794091641881008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 07 Nov 2026 22:48:04 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794091641881008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1794091630396007",
+      "headline": "Light to Moderate Rain with thunderstorm and lightning  is likely to occur at isolated places over Coimbatore,Cuddalore,Mayiladuthurai,Nagapattinam,Pudukkottai,Ramanathapuram,Sivaganga,Thanjavur,The Nilgiris,Thiruvarur,Thoothukkudi,Tirunelveli,Viluppuram,Virudhunagar, Karaikal,Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 07 Nov 2026 22:47:14 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794091630396007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794091258962007",
+      "headline": "Moderate Rain with thunderstorm and lightning  is likely to occur at isolated places over Chengalpattu, Chennai, Kancheepuram, Thiruvallur in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 07 Nov 2026 22:41:01 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794091258962007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1794080067377008",
       "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
@@ -1043,61 +1098,6 @@
       "area": "",
       "published_utc": "Fri, 06 Nov 2026 07:06:30 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793948749824008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793948244063008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 06:57:57 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793948244063008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793945089315008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 06:05:23 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793945089315008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793944481988008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 05:55:26 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793944481988008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793944156592008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 05:50:06 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793944156592008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793943984206008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 05:46:52 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793943984206008",
       "severity": "Minor",
       "category": "Other",
       "tags": []

@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-07T21:01:15Z",
-  "count": 12,
+  "generated_at_iso": "2026-11-08T00:34:28Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us7000twus",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-07T23:27:09.444000+00:00",
+      "latitude": -15.6837,
+      "longitude": -172.9847,
+      "depth_km": 10.0,
+      "place": "91 km ENE of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twus",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000twur",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-07T23:25:35.852000+00:00",
+      "latitude": 6.706,
+      "longitude": 123.6541,
+      "depth_km": 607.007,
+      "place": "41 km WSW of Gadung, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twur",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000twun",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-11-07T23:17:06.073000+00:00",
+      "latitude": 7.3411,
+      "longitude": -36.9727,
+      "depth_km": 10.0,
+      "place": "central Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twun",
+      "tsunami": 0,
+      "significance": 536
+    },
+    {
+      "id": "us7000twu1",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-07T20:55:38.512000+00:00",
+      "latitude": -3.905,
+      "longitude": 128.5121,
+      "depth_km": 136.656,
+      "place": "43 km ESE of Ambon, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twu1",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000twtv",
       "magnitude": 4.5,
@@ -36,7 +84,7 @@
       "place": "10 km NW of Hamakita, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twt0",
       "tsunami": 0,
-      "significance": 492
+      "significance": 498
     },
     {
       "id": "us7000twsy",
@@ -133,18 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twqw",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000twqm",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-06T22:37:54.867000+00:00",
-      "latitude": 13.5679,
-      "longitude": 144.9932,
-      "depth_km": 113.394,
-      "place": "11 km ENE of Yigo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twqm",
-      "tsunami": 0,
-      "significance": 327
     }
   ]
 }
