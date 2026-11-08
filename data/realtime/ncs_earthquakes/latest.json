@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-08T13:53:17Z",
+  "generated_at_iso": "2026-11-08T18:39:06Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-08 23:42:28|20.912,86.996",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-08 23:42:28",
+      "latitude": 20.912,
+      "longitude": 86.996,
+      "depth_km": 10.0,
+      "region": "Bay of Bengal",
+      "location": "139km ENE of Bhubaneswar, Odisha, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-08 20:30:13|32.774,76.245",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-08 20:30:13",
+      "latitude": 32.774,
+      "longitude": 76.245,
+      "depth_km": 10.0,
+      "region": "Chamba, Himachal Pradesh",
+      "location": "62km N of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-08 14:17:14|20.932,79.214",
       "magnitude": 2.6,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Bay of Bengal",
       "location": "121km N of Diglipur, Andaman and Nicobar island, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-27 21:27:00|36.352,71.308",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-27 21:27:00",
-      "latitude": 36.352,
-      "longitude": 71.308,
-      "depth_km": 125.0,
-      "region": "Afghanistan",
-      "location": "107km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-27 19:39:06|36.183,70.073",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-27 19:39:06",
-      "latitude": 36.183,
-      "longitude": 70.073,
-      "depth_km": 113.0,
-      "region": "Afghanistan",
-      "location": "110km SSW of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]

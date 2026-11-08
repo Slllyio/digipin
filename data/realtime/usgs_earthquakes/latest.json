@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-08T13:53:13Z",
-  "count": 15,
+  "generated_at_iso": "2026-11-08T18:39:04Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us7000twyd",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-08T16:45:12.938000+00:00",
+      "latitude": 2.5497,
+      "longitude": 128.6755,
+      "depth_km": 224.59,
+      "place": "117 km NE of Tobelo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twyd",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000twyc",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-08T16:33:24.915000+00:00",
+      "latitude": 7.703,
+      "longitude": -36.9451,
+      "depth_km": 10.0,
+      "place": "central Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twyc",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000twxn",
       "magnitude": 4.7,
@@ -24,7 +48,7 @@
       "place": "46 km NW of Huara, Chile",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twxf",
       "tsunami": 0,
-      "significance": 347
+      "significance": 348
     },
     {
       "id": "us7000twx1",
@@ -119,66 +143,6 @@
       "depth_km": 37.054,
       "place": "65 km WSW of Masachapa, Nicaragua",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twtv",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000twt8",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-07T17:17:38.931000+00:00",
-      "latitude": -1.8505,
-      "longitude": -81.1439,
-      "depth_km": 10.0,
-      "place": "45 km NNW of Salinas, Ecuador",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twt8",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000twt0",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-11-07T16:04:35.125000+00:00",
-      "latitude": 34.8611,
-      "longitude": 137.691,
-      "depth_km": 38.081,
-      "place": "10 km NW of Hamakita, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twt0",
-      "tsunami": 0,
-      "significance": 505
-    },
-    {
-      "id": "us7000twsy",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-07T16:01:52.257000+00:00",
-      "latitude": 7.5067,
-      "longitude": -79.921,
-      "depth_km": 10.0,
-      "place": "11 km ESE of Pedasí, Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twsy",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000twss",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-07T15:22:50.149000+00:00",
-      "latitude": -19.7402,
-      "longitude": 14.6467,
-      "depth_km": 8.035,
-      "place": "77 km NNW of Khorixas, Namibia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twss",
-      "tsunami": 0,
-      "significance": 370
-    },
-    {
-      "id": "us7000twsp",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-07T15:05:45.113000+00:00",
-      "latitude": -20.8363,
-      "longitude": -178.7119,
-      "depth_km": 571.898,
-      "place": "Fiji region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twsp",
       "tsunami": 0,
       "significance": 312
     }
