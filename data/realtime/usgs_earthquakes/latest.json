@@ -1,18 +1,42 @@
 {
-  "generated_at_iso": "2026-11-08T06:42:53Z",
-  "count": 18,
+  "generated_at_iso": "2026-11-08T13:53:13Z",
+  "count": 15,
   "records": [
     {
-      "id": "us7000twwc",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-08T06:30:19.447000+00:00",
-      "latitude": 19.2047,
-      "longitude": -67.8523,
-      "depth_km": 30.424,
-      "place": "90 km NE of Punta Cana, Dominican Republic",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twwc",
+      "id": "us7000twxn",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-08T12:29:17.722000+00:00",
+      "latitude": -27.6901,
+      "longitude": 64.443,
+      "depth_km": 10.0,
+      "place": "Southwest Indian Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twxn",
       "tsunami": 0,
-      "significance": 312
+      "significance": 340
+    },
+    {
+      "id": "us7000twxf",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-08T11:58:32.451000+00:00",
+      "latitude": -19.6811,
+      "longitude": -70.0603,
+      "depth_km": 68.785,
+      "place": "46 km NW of Huara, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twxf",
+      "tsunami": 0,
+      "significance": 347
+    },
+    {
+      "id": "us7000twx1",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-08T09:23:35.700000+00:00",
+      "latitude": 39.8647,
+      "longitude": 143.5257,
+      "depth_km": 10.0,
+      "place": "137 km E of Miyako, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twx1",
+      "tsunami": 0,
+      "significance": 340
     },
     {
       "id": "us7000twvb",
@@ -120,7 +144,7 @@
       "place": "10 km NW of Hamakita, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twt0",
       "tsunami": 0,
-      "significance": 503
+      "significance": 505
     },
     {
       "id": "us7000twsy",
@@ -157,66 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twsp",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000twrt",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-07T11:35:38.338000+00:00",
-      "latitude": -18.2483,
-      "longitude": -12.9445,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrt",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000twrq",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-11-07T11:07:43.355000+00:00",
-      "latitude": 36.1884,
-      "longitude": 141.4404,
-      "depth_km": 31.748,
-      "place": "74 km NE of Hasaki, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrq",
-      "tsunami": 0,
-      "significance": 474
-    },
-    {
-      "id": "us7000twrp",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-07T10:53:12.299000+00:00",
-      "latitude": -21.6011,
-      "longitude": -68.6413,
-      "depth_km": 110.716,
-      "place": "57 km SW of Ollagüe, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrp",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000twrh",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-07T09:47:33.240000+00:00",
-      "latitude": 0.0075,
-      "longitude": 125.7691,
-      "depth_km": 38.531,
-      "place": "156 km ESE of Modisi, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twrh",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000twqw",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-07T07:14:10.868000+00:00",
-      "latitude": -57.9579,
-      "longitude": -25.8023,
-      "depth_km": 103.682,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twqw",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
