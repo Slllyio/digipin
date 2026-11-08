@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-08T00:34:28Z",
-  "count": 15,
+  "generated_at_iso": "2026-11-08T06:42:53Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us7000twwc",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-08T06:30:19.447000+00:00",
+      "latitude": 19.2047,
+      "longitude": -67.8523,
+      "depth_km": 30.424,
+      "place": "90 km NE of Punta Cana, Dominican Republic",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twwc",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000twvb",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-08T01:53:16.193000+00:00",
+      "latitude": 32.5014,
+      "longitude": 130.4721,
+      "depth_km": 10.0,
+      "place": "11 km W of Honmachi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twvb",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000twus",
       "magnitude": 5.1,
@@ -27,16 +51,28 @@
       "significance": 369
     },
     {
+      "id": "us7000twuq",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-07T23:22:35.649000+00:00",
+      "latitude": 13.5083,
+      "longitude": -91.4602,
+      "depth_km": 34.237,
+      "place": "77 km SW of La Gomera, Guatemala",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twuq",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
       "id": "us7000twun",
-      "magnitude": 5.9,
-      "origin_time_utc": "2026-11-07T23:17:06.073000+00:00",
-      "latitude": 7.3411,
-      "longitude": -36.9727,
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-11-07T23:17:05.477000+00:00",
+      "latitude": 7.4618,
+      "longitude": -36.8221,
       "depth_km": 10.0,
       "place": "central Mid-Atlantic Ridge",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twun",
       "tsunami": 0,
-      "significance": 536
+      "significance": 518
     },
     {
       "id": "us7000twu1",
@@ -84,7 +120,7 @@
       "place": "10 km NW of Hamakita, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twt0",
       "tsunami": 0,
-      "significance": 498
+      "significance": 503
     },
     {
       "id": "us7000twsy",

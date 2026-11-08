@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-11-08T00:34:38Z",
+  "generated_at_iso": "2026-11-08T06:42:52Z",
   "count": 100,
   "records": [
+    {
+      "id": "1794117725223031",
+      "headline": "Thunderstorm with moderate rainfall  gusty winds speed reaching 40 Kmph is likely at one or two places in the district of Lakshadweep in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 08 Nov 2026 06:02:07 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794117725223031",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794116269177008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 08 Nov 2026 05:38:30 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794116269177008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1794103085005007",
+      "headline": "Light to Moderate Rain with thunderstorm and lightning is likely to occur at most places over Coimbatore, Cuddalore, Mayiladuthurai, Nagapattinam, Namakkal, Pudukkottai, Ramanathapuram, Salem, Sivaganga, Thanjavur, Thiruvarur, Tirunelveli, Viluppuram, Virudhunagar in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 08 Nov 2026 01:58:09 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794103085005007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794102740323007",
+      "headline": "Moderate Rain with thunderstorm and lightning is likely to occur at isolated places over Chengalpattu, Chennai, Kancheepuram, Thiruvallur in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 08 Nov 2026 01:52:22 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794102740323007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1794092253939007",
       "headline": "Light Rain is likely to occur at isolated places over Tiruvannamalai in next 3 hours.",
@@ -1054,50 +1098,6 @@
       "area": "",
       "published_utc": "Fri, 06 Nov 2026 07:30:10 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793950130134008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793949490054008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 07:18:40 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793949490054008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793949027007008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 07:10:59 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793949027007008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793946936079030",
-      "headline": "Thunderstorm accompanied with Lightning and Gusty Winds (30-40 kmph) very likely to occur at isolated places in Bhadradri Kothagudem, Khammam, Nalgonda, Suryapet, Mahabubabad, Rangareddy, Nagarkurnool districts of Telangana - By TGiCCC .",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 07:08:53 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793946936079030",
-      "severity": "Minor",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1793948749824008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 06 Nov 2026 07:06:30 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793948749824008",
       "severity": "Minor",
       "category": "Other",
       "tags": []

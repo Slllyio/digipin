@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-08T00:34:34Z",
+  "generated_at_iso": "2026-11-08T06:42:53Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-08 09:23:24|33.980,88.632",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-08 09:23:24",
+      "latitude": 33.98,
+      "longitude": 88.632,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "699km N of Lachung, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-08 08:52:00|31.068,77.476",
+      "magnitude": 2.7,
+      "origin_time": "2026-11-08 08:52:00",
+      "latitude": 31.068,
+      "longitude": 77.476,
+      "depth_km": 5.0,
+      "region": "Shimla, Himachal Pradesh",
+      "location": "29km E of Shimla, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-08 08:20:10|38.371,73.248",
+      "magnitude": 4.5,
+      "origin_time": "2026-11-08 08:20:10",
+      "latitude": 38.371,
+      "longitude": 73.248,
+      "depth_km": 90.0,
+      "region": "Tajikistan",
+      "location": "276km ENE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-08 05:39:59|24.818,94.932",
       "magnitude": 3.9,
@@ -1617,39 +1650,6 @@
       "depth_km": 8.0,
       "region": "Nagpur, Maharashtra",
       "location": "27km SSE of Nagpur, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-27 15:17:12|22.338,82.513",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-27 15:17:12",
-      "latitude": 22.338,
-      "longitude": 82.513,
-      "depth_km": 7.0,
-      "region": "Korba, Chhattishgarh",
-      "location": "48km NE of Bilaspur, Chhattisgarh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-27 15:05:58|20.962,79.178",
-      "magnitude": 2.3,
-      "origin_time": "2026-10-27 15:05:58",
-      "latitude": 20.962,
-      "longitude": 79.178,
-      "depth_km": 10.0,
-      "region": "Nagpur, Maharashtra",
-      "location": "22km SSE of Nagpur, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-27 14:59:23|31.800,78.221",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-27 14:59:23",
-      "latitude": 31.8,
-      "longitude": 78.221,
-      "depth_km": 5.0,
-      "region": "Kinnaur, Himachal Pradesh",
-      "location": "106km E of Kullu, Himachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
