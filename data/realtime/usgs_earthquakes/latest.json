@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-11-08T18:39:04Z",
-  "count": 12,
+  "generated_at_iso": "2026-11-08T22:29:37Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000twz2",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-08T20:16:30.347000+00:00",
+      "latitude": 38.3782,
+      "longitude": 141.937,
+      "depth_km": 55.699,
+      "place": "43 km E of Onagawa Chō, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twz2",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000twyd",
       "magnitude": 4.6,
@@ -121,30 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twun",
       "tsunami": 0,
       "significance": 518
-    },
-    {
-      "id": "us7000twu1",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-07T20:55:38.512000+00:00",
-      "latitude": -3.905,
-      "longitude": 128.5121,
-      "depth_km": 136.656,
-      "place": "43 km ESE of Ambon, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twu1",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000twtv",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-07T19:55:10.891000+00:00",
-      "latitude": 11.526,
-      "longitude": -87.0544,
-      "depth_km": 37.054,
-      "place": "65 km WSW of Masachapa, Nicaragua",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twtv",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
