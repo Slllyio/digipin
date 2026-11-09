@@ -1,18 +1,102 @@
 {
-  "generated_at_iso": "2026-11-09T01:53:58Z",
-  "count": 7,
+  "generated_at_iso": "2026-11-09T09:07:35Z",
+  "count": 14,
   "records": [
     {
+      "id": "us7000tx2g",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-09T07:04:13.845000+00:00",
+      "latitude": 55.8343,
+      "longitude": 160.9753,
+      "depth_km": 154.988,
+      "place": "54 km S of Klyuchi, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx2g",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tx1p",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-09T05:16:56.823000+00:00",
+      "latitude": -10.912,
+      "longitude": 165.6396,
+      "depth_km": 10.0,
+      "place": "26 km SW of Lata, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx1p",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tx1i",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-09T05:01:53.640000+00:00",
+      "latitude": 36.4941,
+      "longitude": 141.4485,
+      "depth_km": 35.0,
+      "place": "69 km ESE of Takahagi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx1i",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tx1f",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-11-09T04:52:51.519000+00:00",
+      "latitude": 36.2471,
+      "longitude": 141.8299,
+      "depth_km": 24.173,
+      "place": "106 km ENE of Hasaki, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx1f",
+      "tsunami": 0,
+      "significance": 504
+    },
+    {
+      "id": "us7000tx16",
+      "magnitude": 6.4,
+      "origin_time_utc": "2026-11-09T03:34:59.466000+00:00",
+      "latitude": -10.8669,
+      "longitude": 165.5616,
+      "depth_km": 17.0,
+      "place": "30 km WSW of Lata, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx16",
+      "tsunami": 0,
+      "significance": 631
+    },
+    {
+      "id": "us7000tx0x",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-09T02:21:57.196000+00:00",
+      "latitude": -25.1858,
+      "longitude": -176.9956,
+      "depth_km": 136.311,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx0x",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
       "id": "us7000tx0f",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-11-09T00:46:59.721000+00:00",
-      "latitude": -23.6266,
-      "longitude": 179.1054,
-      "depth_km": 538.416,
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-09T00:46:59.021000+00:00",
+      "latitude": -23.6774,
+      "longitude": 179.2119,
+      "depth_km": 535.494,
       "place": "south of the Fiji Islands",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx0f",
       "tsunami": 0,
-      "significance": 432
+      "significance": 400
+    },
+    {
+      "id": "us7000twzn",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-08T22:30:10.325000+00:00",
+      "latitude": -5.0941,
+      "longitude": 151.4884,
+      "depth_km": 120.843,
+      "place": "119 km SW of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twzn",
+      "tsunami": 0,
+      "significance": 340
     },
     {
       "id": "us7000twz2",
@@ -72,7 +156,7 @@
       "place": "46 km NW of Huara, Chile",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twxf",
       "tsunami": 0,
-      "significance": 348
+      "significance": 349
     },
     {
       "id": "us7000twx1",

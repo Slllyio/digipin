@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-09T01:54:05Z",
+  "generated_at_iso": "2026-11-09T09:07:37Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-09 12:25:18|22.561,93.449",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-09 12:25:18",
+      "latitude": 22.561,
+      "longitude": 93.449,
+      "depth_km": 90.0,
+      "region": "Myanmar",
+      "location": "100km S of Champhai, Mizoram, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-09 08:10:33|39.195,73.341",
+      "magnitude": 3.6,
+      "origin_time": "2026-11-09 08:10:33",
+      "latitude": 39.195,
+      "longitude": 73.341,
+      "depth_km": 12.0,
+      "region": "Tajikistan",
+      "location": "337km NE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-09 04:36:49|27.809,90.865",
       "magnitude": 3.1,
@@ -1628,28 +1650,6 @@
       "depth_km": 95.0,
       "region": "Myanmar",
       "location": "55km S of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 04:35:44|26.068,90.417",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-28 04:35:44",
-      "latitude": 26.068,
-      "longitude": 90.417,
-      "depth_km": 5.0,
-      "region": "Goalpara, Assam",
-      "location": "65km NNE of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 02:49:52|36.848,71.167",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-28 02:49:52",
-      "latitude": 36.848,
-      "longitude": 71.167,
-      "depth_km": 95.0,
-      "region": "Afghanistan",
-      "location": "61km ESE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
