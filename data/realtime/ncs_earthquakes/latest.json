@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-09T09:07:37Z",
+  "generated_at_iso": "2026-11-09T19:48:18Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-09 19:59:00|27.396,90.023",
+      "magnitude": 2.6,
+      "origin_time": "2026-11-09 19:59:00",
+      "latitude": 27.396,
+      "longitude": 90.023,
+      "depth_km": 14.0,
+      "region": "Bhutan",
+      "location": "39km ESE of Thimphu, Bhutan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-09 16:03:22|38.038,73.358",
+      "magnitude": 4.3,
+      "origin_time": "2026-11-09 16:03:22",
+      "latitude": 38.038,
+      "longitude": 73.358,
+      "depth_km": 194.0,
+      "region": "Tajikistan",
+      "location": "268km ENE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-09 15:28:57|21.279,79.142",
+      "magnitude": 1.9,
+      "origin_time": "2026-11-09 15:28:57",
+      "latitude": 21.279,
+      "longitude": 79.142,
+      "depth_km": 4.0,
+      "region": "Nagpur, Maharashtra",
+      "location": "15km NNE of Nagpur, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-09 15:03:04|20.470,78.350",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-09 15:03:04",
+      "latitude": 20.47,
+      "longitude": 78.35,
+      "depth_km": 5.0,
+      "region": "Yavatmal, Maharashtra",
+      "location": "107km SW of Nagpur, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-09 14:41:22|33.713,86.192",
+      "magnitude": 4.1,
+      "origin_time": "2026-11-09 14:41:22",
+      "latitude": 33.713,
+      "longitude": 86.192,
+      "depth_km": 180.0,
+      "region": "Tibet",
+      "location": "671km N of Kathmandu, Nepal",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-09 12:25:18|22.561,93.449",
       "magnitude": 3.5,
@@ -1595,61 +1650,6 @@
       "depth_km": 143.0,
       "region": "Afghanistan",
       "location": "89km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 12:37:39|37.311,72.194",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-28 12:37:39",
-      "latitude": 37.311,
-      "longitude": 72.194,
-      "depth_km": 150.0,
-      "region": "Tajikistan",
-      "location": "147km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 11:01:38|38.440,73.464",
-      "magnitude": 4.4,
-      "origin_time": "2026-10-28 11:01:38",
-      "latitude": 38.44,
-      "longitude": 73.464,
-      "depth_km": 115.0,
-      "region": "Tajikistan",
-      "location": "296km ENE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 09:38:33|32.639,95.337",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-28 09:38:33",
-      "latitude": 32.639,
-      "longitude": 95.337,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "500km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 07:56:06|25.544,91.056",
-      "magnitude": 3.1,
-      "origin_time": "2026-10-28 07:56:06",
-      "latitude": 25.544,
-      "longitude": 91.056,
-      "depth_km": 10.0,
-      "region": "West Khasi Hills, Meghalaya",
-      "location": "74km WNW of Cherrapunjee, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 07:29:10|24.443,94.584",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-28 07:29:10",
-      "latitude": 24.443,
-      "longitude": 94.584,
-      "depth_km": 95.0,
-      "region": "Myanmar",
-      "location": "55km S of Ukhrul, Manipur, India",
       "review_status": "Reviewed"
     }
   ]
