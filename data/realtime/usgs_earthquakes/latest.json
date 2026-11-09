@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-11-08T22:29:37Z",
-  "count": 11,
+  "generated_at_iso": "2026-11-09T01:53:58Z",
+  "count": 7,
   "records": [
+    {
+      "id": "us7000tx0f",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-11-09T00:46:59.721000+00:00",
+      "latitude": -23.6266,
+      "longitude": 179.1054,
+      "depth_km": 538.416,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx0f",
+      "tsunami": 0,
+      "significance": 432
+    },
     {
       "id": "us7000twz2",
       "magnitude": 4.5,
@@ -73,66 +85,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twx1",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000twvb",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-08T01:53:16.193000+00:00",
-      "latitude": 32.5014,
-      "longitude": 130.4721,
-      "depth_km": 10.0,
-      "place": "11 km W of Honmachi, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twvb",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000twus",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-07T23:27:09.444000+00:00",
-      "latitude": -15.6837,
-      "longitude": -172.9847,
-      "depth_km": 10.0,
-      "place": "91 km ENE of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twus",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000twur",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-07T23:25:35.852000+00:00",
-      "latitude": 6.706,
-      "longitude": 123.6541,
-      "depth_km": 607.007,
-      "place": "41 km WSW of Gadung, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twur",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000twuq",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-07T23:22:35.649000+00:00",
-      "latitude": 13.5083,
-      "longitude": -91.4602,
-      "depth_km": 34.237,
-      "place": "77 km SW of La Gomera, Guatemala",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twuq",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000twun",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-11-07T23:17:05.477000+00:00",
-      "latitude": 7.4618,
-      "longitude": -36.8221,
-      "depth_km": 10.0,
-      "place": "central Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000twun",
-      "tsunami": 0,
-      "significance": 518
     }
   ]
 }

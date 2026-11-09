@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-08T22:29:37Z",
+  "generated_at_iso": "2026-11-09T01:54:05Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-09 04:36:49|27.809,90.865",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-09 04:36:49",
+      "latitude": 27.809,
+      "longitude": 90.865,
+      "depth_km": 5.0,
+      "region": "Bhutan",
+      "location": "102km WNW of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-09 02:03:26|36.264,71.353",
       "magnitude": 3.4,
@@ -1639,17 +1650,6 @@
       "depth_km": 95.0,
       "region": "Afghanistan",
       "location": "61km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 00:27:54|32.658,93.917",
-      "magnitude": 5.0,
-      "origin_time": "2026-10-28 00:27:54",
-      "latitude": 32.658,
-      "longitude": 93.917,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "518km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
