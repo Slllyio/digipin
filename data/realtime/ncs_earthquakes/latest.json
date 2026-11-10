@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-11-09T19:48:18Z",
+  "generated_at_iso": "2026-11-10T02:32:34Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-10 04:50:49|23.765,93.871",
+      "magnitude": 3.3,
+      "origin_time": "2026-11-10 04:50:49",
+      "latitude": 23.765,
+      "longitude": 93.871,
+      "depth_km": 88.0,
+      "region": "Myanmar",
+      "location": "65km ENE of Champhai, Mizoram, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-10 04:47:48|36.836,69.652",
+      "magnitude": 3.4,
+      "origin_time": "2026-11-10 04:47:48",
+      "latitude": 36.836,
+      "longitude": 69.652,
+      "depth_km": 159.0,
+      "region": "Afghanistan",
+      "location": "85km WSW of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-10 04:45:02|37.241,71.701",
+      "magnitude": 4.1,
+      "origin_time": "2026-11-10 04:45:02",
+      "latitude": 37.241,
+      "longitude": 71.701,
+      "depth_km": 132.0,
+      "region": "Tajikistan",
+      "location": "103km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-10 03:07:37|24.609,95.028",
+      "magnitude": 3.6,
+      "origin_time": "2026-11-10 03:07:37",
+      "latitude": 24.609,
+      "longitude": 95.028,
+      "depth_km": 124.0,
+      "region": "Myanmar",
+      "location": "66km ESE of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-10 02:56:41|36.193,71.118",
+      "magnitude": 3.4,
+      "origin_time": "2026-11-10 02:56:41",
+      "latitude": 36.193,
+      "longitude": 71.118,
+      "depth_km": 95.0,
+      "region": "Afghanistan",
+      "location": "112km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-10 01:44:19|37.284,72.201",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-10 01:44:19",
+      "latitude": 37.284,
+      "longitude": 72.201,
+      "depth_km": 16.0,
+      "region": "Tajikistan",
+      "location": "147km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-09 19:59:00|27.396,90.023",
       "magnitude": 2.6,
@@ -1584,72 +1650,6 @@
       "depth_km": 15.0,
       "region": "China",
       "location": "515km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 22:16:08|27.747,87.743",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-28 22:16:08",
-      "latitude": 27.747,
-      "longitude": 87.743,
-      "depth_km": 10.0,
-      "region": "Nepal",
-      "location": "63km NW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 20:16:42|31.439,93.422",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-28 20:16:42",
-      "latitude": 31.439,
-      "longitude": 93.422,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "403km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 19:59:54|30.863,93.447",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-28 19:59:54",
-      "latitude": 30.863,
-      "longitude": 93.447,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "342km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 18:03:31|36.519,71.386",
-      "magnitude": 4.4,
-      "origin_time": "2026-10-28 18:03:31",
-      "latitude": 36.519,
-      "longitude": 71.386,
-      "depth_km": 191.0,
-      "region": "Afghanistan",
-      "location": "98km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 17:11:31|24.429,83.310",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-28 17:11:31",
-      "latitude": 24.429,
-      "longitude": 83.31,
-      "depth_km": 10.0,
-      "region": "Sonbhadra, Uttar Pradesh",
-      "location": "144km N of Ambikapur, Chhattisgarh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-28 16:06:24|36.462,71.166",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-28 16:06:24",
-      "latitude": 36.462,
-      "longitude": 71.166,
-      "depth_km": 143.0,
-      "region": "Afghanistan",
-      "location": "89km SE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
