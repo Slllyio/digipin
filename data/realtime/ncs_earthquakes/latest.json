@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-10T10:26:51Z",
+  "generated_at_iso": "2026-11-10T18:05:50Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-10 23:18:57|28.426,93.589",
+      "magnitude": 2.9,
+      "origin_time": "2026-11-10 23:18:57",
+      "latitude": 28.426,
+      "longitude": 93.589,
+      "depth_km": 5.0,
+      "region": "Upper Subansiri, Arunachal Pradesh",
+      "location": "118km WNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-10 12:59:39|17.276,73.745",
       "magnitude": 2.3,
@@ -1639,17 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tajikistan",
       "location": "9km S of Dushanbe, Tajikistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-29 06:39:15|36.535,71.316",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-29 06:39:15",
-      "latitude": 36.535,
-      "longitude": 71.316,
-      "depth_km": 228.0,
-      "region": "Afghanistan",
-      "location": "92km SE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]

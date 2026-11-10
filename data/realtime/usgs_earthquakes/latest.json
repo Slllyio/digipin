@@ -1,7 +1,91 @@
 {
-  "generated_at_iso": "2026-11-10T10:26:51Z",
-  "count": 16,
+  "generated_at_iso": "2026-11-10T18:05:44Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us7000txc0",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-10T17:36:49.391000+00:00",
+      "latitude": -8.7206,
+      "longitude": 148.0429,
+      "depth_km": 124.245,
+      "place": "21 km WNW of Popondetta, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txc0",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000txc3",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-10T17:36:28.861000+00:00",
+      "latitude": -20.7528,
+      "longitude": 68.4755,
+      "depth_km": 10.0,
+      "place": "Mid-Indian Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txc3",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000txbj",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-10T15:52:55.256000+00:00",
+      "latitude": -10.8979,
+      "longitude": 165.7366,
+      "depth_km": 48.333,
+      "place": "20 km SSW of Lata, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txbj",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000txbi",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-10T15:51:35.737000+00:00",
+      "latitude": -0.9226,
+      "longitude": 128.7092,
+      "depth_km": 10.0,
+      "place": "140 km ESE of Labuha, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txbi",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000txbc",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-10T15:23:58.586000+00:00",
+      "latitude": 13.6155,
+      "longitude": -90.819,
+      "depth_km": 58.52,
+      "place": "34 km S of Puerto San José, Guatemala",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txbc",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000txb8",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-11-10T14:54:17.647000+00:00",
+      "latitude": 13.5381,
+      "longitude": -90.8798,
+      "depth_km": 35.0,
+      "place": "43 km S of Puerto San José, Guatemala",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txb8",
+      "tsunami": 0,
+      "significance": 488
+    },
+    {
+      "id": "us7000txay",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-10T13:37:53.102000+00:00",
+      "latitude": 64.7124,
+      "longitude": -17.2814,
+      "depth_km": 10.0,
+      "place": "111 km WNW of Höfn, Iceland",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txay",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tx9z",
       "magnitude": 5.0,
@@ -157,42 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx6j",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000tx47",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-09T15:04:33.790000+00:00",
-      "latitude": -28.1856,
-      "longitude": 74.3713,
-      "depth_km": 10.0,
-      "place": "Mid-Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx47",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tx3n",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-09T12:28:18.182000+00:00",
-      "latitude": 37.39,
-      "longitude": 35.5394,
-      "depth_km": 10.0,
-      "place": "17 km NW of İmamoğlu, Turkey",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx3n",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tx3c",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-09T11:25:07.473000+00:00",
-      "latitude": 4.1741,
-      "longitude": 127.7802,
-      "depth_km": 98.292,
-      "place": "271 km N of Tobelo, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx3c",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
