@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-11-10T18:05:44Z",
+  "generated_at_iso": "2026-11-10T23:19:47Z",
   "count": 20,
   "records": [
+    {
+      "id": "us7000txea",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-10T19:54:18.279000+00:00",
+      "latitude": -13.9345,
+      "longitude": 165.5166,
+      "depth_km": 11.705,
+      "place": "207 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txea",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000txc0",
       "magnitude": 5.2,
@@ -12,7 +24,7 @@
       "place": "21 km WNW of Popondetta, Papua New Guinea",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txc0",
       "tsunami": 0,
-      "significance": 416
+      "significance": 417
     },
     {
       "id": "us7000txc3",
@@ -72,7 +84,19 @@
       "place": "43 km S of Puerto San José, Guatemala",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txb8",
       "tsunami": 0,
-      "significance": 488
+      "significance": 490
+    },
+    {
+      "id": "us7000txb6",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-10T14:31:36.388000+00:00",
+      "latitude": -6.9525,
+      "longitude": 106.9355,
+      "depth_km": 101.214,
+      "place": "Java, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txb6",
+      "tsunami": 0,
+      "significance": 340
     },
     {
       "id": "us7000txay",
@@ -183,6 +207,18 @@
       "significance": 449
     },
     {
+      "id": "us7000txa7",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-10T00:11:23.263000+00:00",
+      "latitude": -2.3853,
+      "longitude": 138.6219,
+      "depth_km": 35.0,
+      "place": "224 km W of Abepura, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txa7",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
       "id": "us7000tx7v",
       "magnitude": 4.9,
       "origin_time_utc": "2026-11-09T23:45:26.548000+00:00",
@@ -195,52 +231,16 @@
       "significance": 369
     },
     {
-      "id": "us7000tx7h",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-09T22:03:07.482000+00:00",
-      "latitude": 52.7984,
-      "longitude": 171.6466,
+      "id": "us7000tx9y",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-09T23:40:12.931000+00:00",
+      "latitude": -56.7537,
+      "longitude": -23.8725,
       "depth_km": 10.0,
-      "place": "103 km W of Attu Station, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx7h",
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx9y",
       "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tx6m",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-09T19:27:54.236000+00:00",
-      "latitude": -14.2428,
-      "longitude": 165.9539,
-      "depth_km": 10.0,
-      "place": "149 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx6m",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tx6l",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-09T19:09:47.863000+00:00",
-      "latitude": -23.675,
-      "longitude": -179.9613,
-      "depth_km": 519.944,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx6l",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tx6j",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-09T18:51:45.515000+00:00",
-      "latitude": -10.5301,
-      "longitude": 163.8048,
-      "depth_km": 10.0,
-      "place": "206 km E of Kirakira, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tx6j",
-      "tsunami": 0,
-      "significance": 326
+      "significance": 369
     }
   ]
 }

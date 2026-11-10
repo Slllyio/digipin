@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-10T18:05:50Z",
+  "generated_at_iso": "2026-11-10T23:19:48Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-11 01:21:58|31.255,77.929",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-11 01:21:58",
+      "latitude": 31.255,
+      "longitude": 77.929,
+      "depth_km": 5.0,
+      "region": "Shimla, Himachal Pradesh",
+      "location": "73km ENE of Shimla, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-10 23:18:57|28.426,93.589",
       "magnitude": 2.9,
@@ -1639,17 +1650,6 @@
       "depth_km": 65.0,
       "region": "Afghanistan",
       "location": "74km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-29 07:51:23|38.478,68.770",
-      "magnitude": 3.8,
-      "origin_time": "2026-10-29 07:51:23",
-      "latitude": 38.478,
-      "longitude": 68.77,
-      "depth_km": 10.0,
-      "region": "Tajikistan",
-      "location": "9km S of Dushanbe, Tajikistan",
       "review_status": "Reviewed"
     }
   ]

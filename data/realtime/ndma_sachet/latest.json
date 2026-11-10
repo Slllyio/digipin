@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-10T18:05:49Z",
+  "generated_at_iso": "2026-11-10T23:19:49Z",
   "count": 98,
   "records": [
+    {
+      "id": "1794347190158015",
+      "headline": "Light to Moderate Rain accompanied with Light Thunderstorm and lightning is very likely to occur at a few places over Gomati, Khowai, Sepahijala, West Tripura in next 30 minutes to 1 hour.",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 10 Nov 2026 21:48:28 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794347190158015",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794339839475041",
+      "headline": "Light to Moderate with Thunderstorm and lightning  Rain is likely to occur at isolated places over Mayiladuthurai, Nagapattinam, Ramanathapuram, Karaikal in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 10 Nov 2026 19:46:01 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794339839475041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794339837426007",
+      "headline": "Light to Moderate with Thunderstorm and lightning  Rain is likely to occur at isolated places over Mayiladuthurai, Nagapattinam, Ramanathapuram, Karaikal in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 10 Nov 2026 19:43:59 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794339837426007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1794331057792017",
       "headline": "১০-১১-২০২৬ তারিখ ২২:৪৫ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে পূর্ব মেদিনীপুর ও কোচবিহার জেলার কিছু অংশে হালকা বজ্রপাত ও বিদ্যুৎ চমকসহ হালকা থেকে মাঝারি বৃষ্টিপাতের প্রবল সম্ভাবনা রয়েছে।",
@@ -1043,39 +1076,6 @@
       "area": "",
       "published_utc": "Sat, 07 Nov 2026 11:43:53 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794051788668008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794051286926008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 07 Nov 2026 11:35:18 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794051286926008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794050475897008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 07 Nov 2026 11:21:59 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794050475897008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794049218262006",
-      "headline": "അടുത്ത 3 മണിക്കൂറിൽ കേരളത്തിലെ KTM, EKM ജില്ലകളിൽ ഒറ്റപ്പെട്ടയിടങ്ങളിൽ ഇടിമിന്നലോട് കൂടിയ ഇടത്തരം മഴയ്ക്കും 50 kmph വരെ വേഗതയിൽ ശക്തമായ കാറ്റിനും സാധ്യത. 04:40 PM, 07.11.2026- IMD-KSDMA",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 07 Nov 2026 11:18:39 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794049218262006",
       "severity": "Minor",
       "category": "Other",
       "tags": []
