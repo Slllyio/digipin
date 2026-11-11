@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-11T02:54:43Z",
+  "generated_at_iso": "2026-11-11T10:21:00Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-11 08:08:05|22.571,93.713",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-11 08:08:05",
+      "latitude": 22.571,
+      "longitude": 93.713,
+      "depth_km": 135.0,
+      "region": "Myanmar",
+      "location": "106km SSE of Champhai, Mizoram, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-11 01:21:58|31.255,77.929",
       "magnitude": 2.8,
@@ -1639,17 +1650,6 @@
       "depth_km": 81.0,
       "region": "Myanmar",
       "location": "118km E of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-29 12:05:39|36.487,70.884",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-29 12:05:39",
-      "latitude": 36.487,
-      "longitude": 70.884,
-      "depth_km": 65.0,
-      "region": "Afghanistan",
-      "location": "74km SSE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
