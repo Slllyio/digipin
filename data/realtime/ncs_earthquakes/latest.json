@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-11T10:21:00Z",
+  "generated_at_iso": "2026-11-11T17:58:47Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-11 23:00:25|27.846,86.529",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-11 23:00:25",
+      "latitude": 27.846,
+      "longitude": 86.529,
+      "depth_km": 13.0,
+      "region": "Nepal",
+      "location": "119km E of Kathmandu, Nepal",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-11 21:50:26|31.188,78.007",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-11 21:50:26",
+      "latitude": 31.188,
+      "longitude": 78.007,
+      "depth_km": 10.0,
+      "region": "Shimla, Himachal Pradesh",
+      "location": "65km NW of Uttarkashi, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-11 18:20:48|36.452,70.349",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-11 18:20:48",
+      "latitude": 36.452,
+      "longitude": 70.349,
+      "depth_km": 200.0,
+      "region": "Afghanistan",
+      "location": "74km SSW of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-11 13:57:25|17.626,78.506",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-11 13:57:25",
+      "latitude": 17.626,
+      "longitude": 78.506,
+      "depth_km": 5.0,
+      "region": "Medchal Malkajgiri, Telangana",
+      "location": "26km N of Hyderabad, Telangana, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-11 13:32:58|26.175,91.102",
+      "magnitude": 2.7,
+      "origin_time": "2026-11-11 13:32:58",
+      "latitude": 26.175,
+      "longitude": 91.102,
+      "depth_km": 22.0,
+      "region": "Barpeta, Assam",
+      "location": "63km W of Guwahati, Assam, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-11 08:08:05|22.571,93.713",
       "magnitude": 3.5,
@@ -1595,61 +1650,6 @@
       "depth_km": 10.0,
       "region": "Kulgam, Jammu and Kashmir",
       "location": "52km SSE of Srinagar, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-29 20:46:04|20.389,72.895",
-      "magnitude": 2.6,
-      "origin_time": "2026-10-29 20:46:04",
-      "latitude": 20.389,
-      "longitude": 72.895,
-      "depth_km": 11.0,
-      "region": "Valsad, Gujarat",
-      "location": "87km S of Surat, Gujarat, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-29 17:31:53|35.155,73.525",
-      "magnitude": 4.4,
-      "origin_time": "2026-10-29 17:31:53",
-      "latitude": 35.155,
-      "longitude": 73.525,
-      "depth_km": 10.0,
-      "region": "Pakistan",
-      "location": "145km NNW of Gulmarg, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-29 14:19:47|13.439,91.600",
-      "magnitude": 5.0,
-      "origin_time": "2026-10-29 14:19:47",
-      "latitude": 13.439,
-      "longitude": 91.6,
-      "depth_km": 10.0,
-      "region": "Bay of Bengal",
-      "location": "150km W of Diglipur, Andaman and Nicobar island, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-29 12:29:28|32.177,94.092",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-29 12:29:28",
-      "latitude": 32.177,
-      "longitude": 94.092,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "462km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-29 12:12:45|23.516,94.486",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-29 12:12:45",
-      "latitude": 23.516,
-      "longitude": 94.486,
-      "depth_km": 81.0,
-      "region": "Myanmar",
-      "location": "118km E of Champhai, Mizoram, India",
       "review_status": "Reviewed"
     }
   ]
