@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-11-11T17:58:47Z",
+  "generated_at_iso": "2026-11-12T00:28:25Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-12 04:30:29|27.671,87.987",
+      "magnitude": 4.9,
+      "origin_time": "2026-11-12 04:30:29",
+      "latitude": 27.671,
+      "longitude": 87.987,
+      "depth_km": 73.0,
+      "region": "Nepal",
+      "location": "40km NW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-12 03:47:26|24.571,93.405",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-12 03:47:26",
+      "latitude": 24.571,
+      "longitude": 93.405,
+      "depth_km": 17.0,
+      "region": "Churachandpur, Manipur",
+      "location": "36km W of Bishnupur, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-12 03:39:11|23.530,94.247",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-12 03:39:11",
+      "latitude": 23.53,
+      "longitude": 94.247,
+      "depth_km": 116.0,
+      "region": "Myanmar",
+      "location": "94km E of Champhai, Mizoram, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-12 01:08:00|32.289,78.433",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-12 01:08:00",
+      "latitude": 32.289,
+      "longitude": 78.433,
+      "depth_km": 10.0,
+      "region": "Lahaul and Spiti, Himachal Pradesh",
+      "location": "66km SW of Hanley, Jammu & Kashmir, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-11 23:00:25|27.846,86.529",
       "magnitude": 3.1,
@@ -1606,50 +1650,6 @@
       "depth_km": 10.0,
       "region": "China",
       "location": "459km NE of Changlang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 08:00:32|34.226,70.093",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-30 08:00:32",
-      "latitude": 34.226,
-      "longitude": 70.093,
-      "depth_km": 150.0,
-      "region": "Afghanistan",
-      "location": "89km ESE of Kabul , Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 05:14:05|33.517,75.655",
-      "magnitude": 2.5,
-      "origin_time": "2026-10-30 05:14:05",
-      "latitude": 33.517,
-      "longitude": 75.655,
-      "depth_km": 10.0,
-      "region": "Kishtwar, Jammu and Kashmir",
-      "location": "63km SSE of Pahalgam, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 01:35:47|28.159,77.178",
-      "magnitude": 2.3,
-      "origin_time": "2026-10-30 01:35:47",
-      "latitude": 28.159,
-      "longitude": 77.178,
-      "depth_km": 5.0,
-      "region": "Palwal, Haryana",
-      "location": "31km SSW of Faridabad, Haryana, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 01:00:46|33.628,74.922",
-      "magnitude": 3.6,
-      "origin_time": "2026-10-30 01:00:46",
-      "latitude": 33.628,
-      "longitude": 74.922,
-      "depth_km": 10.0,
-      "region": "Kulgam, Jammu and Kashmir",
-      "location": "52km SSE of Srinagar, Jammu and Kashmir, India",
       "review_status": "Reviewed"
     }
   ]

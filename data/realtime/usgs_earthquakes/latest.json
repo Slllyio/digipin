@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-11-11T17:58:45Z",
-  "count": 12,
+  "generated_at_iso": "2026-11-12T00:28:27Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us7000txpk",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-11T23:00:22.433000+00:00",
+      "latitude": 27.8692,
+      "longitude": 87.8857,
+      "depth_km": 10.0,
+      "place": "73 km NNW of Gyalshing, India",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txpk",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000txpa",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-11T22:03:42.610000+00:00",
+      "latitude": -7.957,
+      "longitude": -13.4059,
+      "depth_km": 10.0,
+      "place": "110 km E of Georgetown, Saint Helena",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txpa",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000txni",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-11T20:45:04.390000+00:00",
+      "latitude": -19.6783,
+      "longitude": -69.3312,
+      "depth_km": 112.957,
+      "place": "41 km SSE of Camiña, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txni",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000txmx",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-11T19:50:21.669000+00:00",
+      "latitude": -23.5023,
+      "longitude": -179.8474,
+      "depth_km": 527.582,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txmx",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000txmq",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-11T19:21:17.374000+00:00",
+      "latitude": -41.5234,
+      "longitude": -74.1759,
+      "depth_km": 34.893,
+      "place": "48 km NW of Ancud, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txmq",
+      "tsunami": 0,
+      "significance": 386
+    },
+    {
+      "id": "us7000txm8",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-11T17:38:22.582000+00:00",
+      "latitude": -6.3288,
+      "longitude": 154.7612,
+      "depth_km": 58.822,
+      "place": "80 km W of Panguna, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txm8",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us7000txjg",
       "magnitude": 5.1,
@@ -133,18 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txfz",
       "tsunami": 1,
       "significance": 340
-    },
-    {
-      "id": "us7000txea",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-10T19:54:18.279000+00:00",
-      "latitude": -13.9345,
-      "longitude": 165.5166,
-      "depth_km": 11.705,
-      "place": "207 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txea",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
