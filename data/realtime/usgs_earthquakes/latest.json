@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-12T16:16:25Z",
-  "count": 11,
+  "generated_at_iso": "2026-11-12T22:22:55Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us7000txwp",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-11-12T22:04:06.729000+00:00",
+      "latitude": -1.5882,
+      "longitude": 149.8877,
+      "depth_km": 10.0,
+      "place": "148 km NW of Kavieng, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txwp",
+      "tsunami": 0,
+      "significance": 518
+    },
+    {
+      "id": "us7000txvw",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-12T20:03:14.062000+00:00",
+      "latitude": 27.2239,
+      "longitude": 104.1911,
+      "depth_km": 10.0,
+      "place": "41 km N of Weining, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txvw",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000txtd",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-12T14:58:32.284000+00:00",
+      "latitude": 1.1216,
+      "longitude": 126.1127,
+      "depth_km": 39.203,
+      "place": "115 km ESE of Bitung, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txtd",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000txsr",
       "magnitude": 4.5,
@@ -73,66 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txpk",
       "tsunami": 0,
       "significance": 327
-    },
-    {
-      "id": "us7000txpa",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-11T22:03:42.425000+00:00",
-      "latitude": -7.9928,
-      "longitude": -13.3536,
-      "depth_km": 10.0,
-      "place": "116 km E of Georgetown, Saint Helena",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txpa",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000txni",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-11T20:45:04.390000+00:00",
-      "latitude": -19.6783,
-      "longitude": -69.3312,
-      "depth_km": 112.957,
-      "place": "41 km SSE of Camiña, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txni",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000txmx",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-11T19:50:21.669000+00:00",
-      "latitude": -23.5023,
-      "longitude": -179.8474,
-      "depth_km": 527.582,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txmx",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000txmq",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-11T19:21:17.374000+00:00",
-      "latitude": -41.5234,
-      "longitude": -74.1759,
-      "depth_km": 34.893,
-      "place": "48 km NW of Ancud, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txmq",
-      "tsunami": 0,
-      "significance": 386
-    },
-    {
-      "id": "us7000txm8",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-11T17:38:22.582000+00:00",
-      "latitude": -6.3288,
-      "longitude": 154.7612,
-      "depth_km": 58.822,
-      "place": "80 km W of Panguna, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txm8",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
