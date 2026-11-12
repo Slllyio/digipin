@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-12T00:28:25Z",
+  "generated_at_iso": "2026-11-12T07:35:57Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-12 11:34:21|27.691,87.940",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-12 11:34:21",
+      "latitude": 27.691,
+      "longitude": 87.94,
+      "depth_km": 60.0,
+      "region": "Nepal",
+      "location": "45km NW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-12 11:24:37|22.256,92.828",
+      "magnitude": 3.6,
+      "origin_time": "2026-11-12 11:24:37",
+      "latitude": 22.256,
+      "longitude": 92.828,
+      "depth_km": 10.0,
+      "region": "Siaha, Mizoram",
+      "location": "114km S of Thenzawl, Mizoram, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-12 04:30:29|27.671,87.987",
       "magnitude": 4.9,
@@ -1628,28 +1650,6 @@
       "depth_km": 6.0,
       "region": "West Kameng, Arunachal Pradesh",
       "location": "69km SE of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 20:15:54|23.580,93.968",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-30 20:15:54",
-      "latitude": 23.58,
-      "longitude": 93.968,
-      "depth_km": 93.0,
-      "region": "Myanmar",
-      "location": "66km ENE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 09:18:54|30.992,99.570",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-30 09:18:54",
-      "latitude": 30.992,
-      "longitude": 99.57,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "459km NE of Changlang, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

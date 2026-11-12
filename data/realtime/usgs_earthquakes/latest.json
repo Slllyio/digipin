@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-12T00:28:27Z",
-  "count": 17,
+  "generated_at_iso": "2026-11-12T07:35:53Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us7000txqx",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-12T04:07:32.379000+00:00",
+      "latitude": 40.3593,
+      "longitude": 143.6115,
+      "depth_km": 33.039,
+      "place": "155 km E of Noda, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txqx",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000txqr",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-11-12T03:45:56.644000+00:00",
+      "latitude": -59.0326,
+      "longitude": -26.0288,
+      "depth_km": 121.557,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txqr",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us7000txqa",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-12T01:18:44.576000+00:00",
+      "latitude": 50.4399,
+      "longitude": 156.6137,
+      "depth_km": 74.47,
+      "place": "43 km SE of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txqa",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000txpk",
       "magnitude": 4.6,
@@ -12,16 +48,16 @@
       "place": "73 km NNW of Gyalshing, India",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txpk",
       "tsunami": 0,
-      "significance": 326
+      "significance": 327
     },
     {
       "id": "us7000txpa",
       "magnitude": 4.9,
-      "origin_time_utc": "2026-11-11T22:03:42.610000+00:00",
-      "latitude": -7.957,
-      "longitude": -13.4059,
+      "origin_time_utc": "2026-11-11T22:03:42.425000+00:00",
+      "latitude": -7.9928,
+      "longitude": -13.3536,
       "depth_km": 10.0,
-      "place": "110 km E of Georgetown, Saint Helena",
+      "place": "116 km E of Georgetown, Saint Helena",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txpa",
       "tsunami": 0,
       "significance": 369
@@ -144,66 +180,6 @@
       "place": "152 km WSW of Merizo Village, Guam",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txi0",
       "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000txhi",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-11T06:21:45.383000+00:00",
-      "latitude": -62.4284,
-      "longitude": 155.0206,
-      "depth_km": 10.0,
-      "place": "Balleny Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txhi",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000txgv",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-11T05:26:28.222000+00:00",
-      "latitude": 44.3915,
-      "longitude": 149.4063,
-      "depth_km": 30.338,
-      "place": "152 km SE of Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txgv",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000txgq",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-11T05:12:08.509000+00:00",
-      "latitude": 38.7563,
-      "longitude": 14.2589,
-      "depth_km": 10.0,
-      "place": "54 km WNW of Malfa, Italy",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txgq",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000txgg",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-11T03:56:52.372000+00:00",
-      "latitude": 36.1492,
-      "longitude": 142.185,
-      "depth_km": 10.0,
-      "place": "130 km ENE of Hasaki, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txgg",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000txfz",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-11T01:45:27.859000+00:00",
-      "latitude": 49.0876,
-      "longitude": -127.6912,
-      "depth_km": 10.0,
-      "place": "130 km W of Tofino, Canada",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txfz",
-      "tsunami": 1,
       "significance": 340
     }
   ]
