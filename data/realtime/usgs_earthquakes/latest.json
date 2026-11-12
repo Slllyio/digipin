@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-12T07:35:53Z",
-  "count": 15,
+  "generated_at_iso": "2026-11-12T16:16:25Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000txsr",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-12T13:27:22.321000+00:00",
+      "latitude": 35.7319,
+      "longitude": 140.5102,
+      "depth_km": 73.353,
+      "place": "3 km E of Tako, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txsr",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000txrk",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-12T08:17:28.440000+00:00",
+      "latitude": 44.4539,
+      "longitude": -129.6205,
+      "depth_km": 10.0,
+      "place": "off the coast of Oregon",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txrk",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000txqx",
       "magnitude": 4.8,
@@ -109,78 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txm8",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us7000txjg",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-11T15:39:25.949000+00:00",
-      "latitude": -56.0247,
-      "longitude": -27.7366,
-      "depth_km": 104.66,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txjg",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000txiz",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-11T12:45:06.171000+00:00",
-      "latitude": -14.5029,
-      "longitude": 167.2586,
-      "depth_km": 149.444,
-      "place": "62 km NNE of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txiz",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000txis",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-11T11:36:51.281000+00:00",
-      "latitude": -22.5427,
-      "longitude": -69.1693,
-      "depth_km": 91.309,
-      "place": "27 km WSW of Calama, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txis",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000txir",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-11T11:32:24.685000+00:00",
-      "latitude": -7.9445,
-      "longitude": 130.2513,
-      "depth_km": 14.704,
-      "place": "Pulau Pulau Tanimbar, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txir",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000txil",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-11T10:57:37.101000+00:00",
-      "latitude": -17.2615,
-      "longitude": 167.9671,
-      "depth_km": 42.696,
-      "place": "64 km NW of Port-Vila, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txil",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000txi0",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-11T08:37:15.449000+00:00",
-      "latitude": 12.8418,
-      "longitude": 143.3322,
-      "depth_km": 137.374,
-      "place": "152 km WSW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txi0",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }

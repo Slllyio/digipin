@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-12T07:35:57Z",
+  "generated_at_iso": "2026-11-12T16:16:29Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-12 19:08:25|13.097,93.379",
+      "magnitude": 3.7,
+      "origin_time": "2026-11-12 19:08:25",
+      "latitude": 13.097,
+      "longitude": 93.379,
+      "depth_km": 10.0,
+      "region": "Andaman Sea",
+      "location": "46km ESE of Diglipur, Andaman and Nicobar island, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-12 17:16:38|24.703,93.453",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-12 17:16:38",
+      "latitude": 24.703,
+      "longitude": 93.453,
+      "depth_km": 10.0,
+      "region": "Noney, Manipur",
+      "location": "32km WNW of Bishnupur, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-12 15:36:52|17.509,73.362",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-12 15:36:52",
+      "latitude": 17.509,
+      "longitude": 73.362,
+      "depth_km": 5.0,
+      "region": "Ratnagiri, Maharashtra",
+      "location": "124km SSW of Pune, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-12 11:34:21|27.691,87.940",
       "magnitude": 3.0,
@@ -30,7 +63,7 @@
       "origin_time": "2026-11-12 04:30:29",
       "latitude": 27.671,
       "longitude": 87.987,
-      "depth_km": 73.0,
+      "depth_km": 23.0,
       "region": "Nepal",
       "location": "40km NW of Yuksom, Sikkim, India",
       "review_status": "Reviewed"
@@ -1617,39 +1650,6 @@
       "depth_km": 10.0,
       "region": "Vikarabad, Telangana",
       "location": "87km WSW of Hyderabad, Telangana, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 22:22:09|32.035,93.122",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-30 22:22:09",
-      "latitude": 32.035,
-      "longitude": 93.122,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "475km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 21:18:58|29.596,80.820",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-30 21:18:58",
-      "latitude": 29.596,
-      "longitude": 80.82,
-      "depth_km": 14.0,
-      "region": "Nepal",
-      "location": "58km E of Pithoragarh, Uttarakhand, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 21:09:12|27.193,92.424",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-30 21:09:12",
-      "latitude": 27.193,
-      "longitude": 92.424,
-      "depth_km": 6.0,
-      "region": "West Kameng, Arunachal Pradesh",
-      "location": "69km SE of Tawang, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

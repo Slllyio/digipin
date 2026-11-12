@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-12T07:36:00Z",
+  "generated_at_iso": "2026-11-12T16:16:33Z",
   "count": 98,
   "records": [
+    {
+      "id": "1794490679196007",
+      "headline": "Light to Moderate Rain is likely to occur at isolated places over Tenkasi, Tirunelveli in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 12 Nov 2026 13:38:01 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794490679196007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794480259134007",
+      "headline": "Light to Moderate Rain is likely to occur at isolated places over Kanniyakumari in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 12 Nov 2026 10:44:21 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794480259134007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794476828676011",
+      "headline": "Avalanche with low danger level is likely to occur above 2800 meters over Ganderbal in next 24 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 12 Nov 2026 10:02:48 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794476828676011",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1794472313619027",
+      "headline": "Very High Forest Fire Risk is likely to occur over forest area near you, in next 7 days.please be safe. Disaster Management Department Ranchi Jharkhand.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 12 Nov 2026 09:04:51 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794472313619027",
+      "severity": "Minor",
+      "category": "Fire",
+      "tags": []
+    },
+    {
+      "id": "1794472313722020",
+      "headline": "Very High Forest Fire Risk is likely to occur over forest area near you, in next 7 days.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 12 Nov 2026 08:31:56 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794472313722020",
+      "severity": "Minor",
+      "category": "Fire",
+      "tags": []
+    },
     {
       "id": "1794464405414038",
       "headline": "Squally weather with strong surface wind 40-50 Kmph gusting to 60 kmph very likely along and off  Andaman and Nicobar coast. Sea conditions are very likely to be  rough. Fishermen are advised not to venture into the Andaman sea till 16-11-2026.",
@@ -1021,61 +1076,6 @@
       "area": "",
       "published_utc": "Tue, 10 Nov 2026 07:48:28 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794296904011007",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794296508016017",
-      "headline": "উত্তর ২৪ পরগনা জেলার কিছু অংশে ১০-১১-২০২৬ তারিখে দুপুর ১:০৯ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে হালকা থেকে মাঝারি বৃষ্টি ও ৩০-৪০ কিমি বেগে দমকা হাওয়া সহ হালকা বজ্রঝড়ের সম্ভাবনা।",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 07:47:08 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794296508016017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794292166171038",
-      "headline": "अगले 24 घंटों में अंडमान एवं निकोबार  द्वीप समूह में एक या दो स्थानों पर गरज और बिजली के साथ भारी  वर्षा (07-11 सेमी) होने की संभावना है। लोगों को सुरक्षित स्थानों पर रहने की सलाह दी जाती है।",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 06:37:33 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794292166171038",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794292052177038",
-      "headline": "Squally weather with strong surface wind 40-50 Kmph gusting to 60 kmph very likely along and off  Andaman and Nicobar coast. Sea conditions are very likely to be  rough. Fishermen are advised not to venture into the Andaman sea till 14-11-2026.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 06:35:55 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794292052177038",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794284752716041",
-      "headline": "Light to moderate  Rain with thunderstorm and lightning  is likely to occur at isolated places over Cuddalore, Mayiladuthurai, Nagapattinam, Pudukkottai, Ramanathapuram, Sivaganga, Tenkasi, Thanjavur, Thiruvarur, Thoothukkudi, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 04:29:25 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794284752716041",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794284750134007",
-      "headline": "Light to moderate  Rain with thunderstorm and lightning  is likely to occur at isolated places over Cuddalore, Mayiladuthurai, Nagapattinam, Pudukkottai, Ramanathapuram, Sivaganga, Tenkasi, Thanjavur, Thiruvarur, Thoothukkudi, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 04:25:53 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794284750134007",
       "severity": "Moderate",
       "category": "Met-Storm",
       "tags": []
