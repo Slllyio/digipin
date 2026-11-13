@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-11-13T02:46:47Z",
-  "count": 11,
+  "generated_at_iso": "2026-11-13T10:31:31Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us7000txz3",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-13T09:55:45.053000+00:00",
+      "latitude": -22.3729,
+      "longitude": 173.4492,
+      "depth_km": 10.0,
+      "place": "southeast of the Loyalty Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txz3",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000txyr",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-13T08:01:57.936000+00:00",
+      "latitude": 7.7821,
+      "longitude": -81.4943,
+      "depth_km": 10.0,
+      "place": "18 km WNW of Río Grande, Panama",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txyr",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000txy5",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-13T04:49:33.549000+00:00",
+      "latitude": -8.262,
+      "longitude": 116.7507,
+      "depth_km": 9.626,
+      "place": "27 km NNE of Labuan Lombok, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txy5",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000txxy",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-13T02:55:03.370000+00:00",
+      "latitude": 18.8925,
+      "longitude": 145.6025,
+      "depth_km": 219.572,
+      "place": "Pagan region, Northern Mariana Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txxy",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000txxv",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-13T02:26:23.505000+00:00",
+      "latitude": -17.9443,
+      "longitude": -178.0523,
+      "depth_km": 527.134,
+      "place": "278 km E of Levuka, Fiji",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txxv",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000txxl",
       "magnitude": 5.0,
@@ -99,40 +159,16 @@
       "significance": 312
     },
     {
-      "id": "us7000txrk",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-12T08:17:28.440000+00:00",
-      "latitude": 44.4539,
-      "longitude": -129.6205,
+      "id": "us7000txs5",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-12T11:16:29.434000+00:00",
+      "latitude": -8.0655,
+      "longitude": 120.9934,
       "depth_km": 10.0,
-      "place": "off the coast of Oregon",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txrk",
+      "place": "83 km NE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txs5",
       "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000txqx",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-12T04:07:32.379000+00:00",
-      "latitude": 40.3593,
-      "longitude": 143.6115,
-      "depth_km": 33.039,
-      "place": "155 km E of Noda, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txqx",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000txqr",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-11-12T03:45:56.644000+00:00",
-      "latitude": -59.0326,
-      "longitude": -26.0288,
-      "depth_km": 121.557,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txqr",
-      "tsunami": 0,
-      "significance": 449
+      "significance": 340
     }
   ]
 }
