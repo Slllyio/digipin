@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-11-13T10:31:31Z",
-  "count": 14,
+  "generated_at_iso": "2026-11-13T18:03:58Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us7000ty1a",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-11-13T16:43:02.131000+00:00",
+      "latitude": -14.9934,
+      "longitude": -75.8807,
+      "depth_km": 10.0,
+      "place": "79 km WSW of Changuillo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty1a",
+      "tsunami": 0,
+      "significance": 520
+    },
+    {
+      "id": "us7000ty16",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-13T16:35:58.400000+00:00",
+      "latitude": 18.5286,
+      "longitude": -69.0533,
+      "depth_km": 136.742,
+      "place": "10 km SW of Guaymate, Dominican Republic",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty16",
+      "tsunami": 0,
+      "significance": 360
+    },
+    {
+      "id": "us7000ty14",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-13T16:17:51.680000+00:00",
+      "latitude": 42.1734,
+      "longitude": 83.6657,
+      "depth_km": 10.0,
+      "place": "79 km NE of Kuqa, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty14",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000ty0s",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-13T14:12:47.843000+00:00",
+      "latitude": -36.4434,
+      "longitude": -97.9785,
+      "depth_km": 10.0,
+      "place": "West Chile Rise",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty0s",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000txzd",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-13T11:18:12.734000+00:00",
+      "latitude": -21.3036,
+      "longitude": -175.8541,
+      "depth_km": 162.78,
+      "place": "59 km WSW of Houma, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txzd",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000txza",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-13T10:55:12.777000+00:00",
+      "latitude": -4.5227,
+      "longitude": -75.3275,
+      "depth_km": 10.0,
+      "place": "86 km NNE of Lagunas, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txza",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000txz3",
       "magnitude": 4.9,
@@ -13,6 +85,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txz3",
       "tsunami": 0,
       "significance": 369
+    },
+    {
+      "id": "us7000txz0",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-13T09:40:47.087000+00:00",
+      "latitude": 8.2136,
+      "longitude": 127.2035,
+      "depth_km": 10.0,
+      "place": "84 km E of Barcelona, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txz0",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us7000txyr",
@@ -133,42 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txvw",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000txtd",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-12T14:58:32.284000+00:00",
-      "latitude": 1.1216,
-      "longitude": 126.1127,
-      "depth_km": 39.203,
-      "place": "115 km ESE of Bitung, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txtd",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000txsr",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-12T13:27:22.321000+00:00",
-      "latitude": 35.7319,
-      "longitude": 140.5102,
-      "depth_km": 73.353,
-      "place": "3 km E of Tako, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txsr",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000txs5",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-12T11:16:29.434000+00:00",
-      "latitude": -8.0655,
-      "longitude": 120.9934,
-      "depth_km": 10.0,
-      "place": "83 km NE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txs5",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
