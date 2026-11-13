@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-11-13T18:03:58Z",
-  "count": 18,
+  "generated_at_iso": "2026-11-13T23:31:56Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us7000ty4w",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-13T22:10:42.124000+00:00",
+      "latitude": -32.746,
+      "longitude": -178.6351,
+      "depth_km": 36.931,
+      "place": "south of the Kermadec Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty4w",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ty4n",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-13T21:19:55.905000+00:00",
+      "latitude": 13.2186,
+      "longitude": -89.4564,
+      "depth_km": 59.125,
+      "place": "33 km SSW of La Libertad, El Salvador",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty4n",
+      "tsunami": 0,
+      "significance": 327
+    },
+    {
+      "id": "us7000ty43",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-13T19:49:21.768000+00:00",
+      "latitude": -1.4671,
+      "longitude": 149.9613,
+      "depth_km": 10.0,
+      "place": "153 km NW of Kavieng, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty43",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000ty3x",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-13T19:43:17.748000+00:00",
+      "latitude": 3.6793,
+      "longitude": -75.5584,
+      "depth_km": 10.0,
+      "place": "9 km WSW of Chaparral, Colombia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty3x",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000ty3q",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-13T19:04:07.703000+00:00",
+      "latitude": -58.962,
+      "longitude": -25.7253,
+      "depth_km": 63.81,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty3q",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000ty3g",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-13T18:55:40.754000+00:00",
+      "latitude": -23.1808,
+      "longitude": 178.9205,
+      "depth_km": 563.277,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty3g",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000ty1a",
       "magnitude": 5.8,
@@ -12,7 +84,7 @@
       "place": "79 km WSW of Changuillo, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty1a",
       "tsunami": 0,
-      "significance": 520
+      "significance": 521
     },
     {
       "id": "us7000ty16",
@@ -24,7 +96,7 @@
       "place": "10 km SW of Guaymate, Dominican Republic",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty16",
       "tsunami": 0,
-      "significance": 360
+      "significance": 363
     },
     {
       "id": "us7000ty14",
@@ -169,54 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txx9",
       "tsunami": 0,
       "significance": 401
-    },
-    {
-      "id": "us7000txwp",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-11-12T22:04:06.729000+00:00",
-      "latitude": -1.5882,
-      "longitude": 149.8877,
-      "depth_km": 10.0,
-      "place": "148 km NW of Kavieng, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txwp",
-      "tsunami": 0,
-      "significance": 518
-    },
-    {
-      "id": "us7000txwi",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-12T21:53:42.535000+00:00",
-      "latitude": 64.6502,
-      "longitude": -17.6047,
-      "depth_km": 10.0,
-      "place": "117 km S of Akureyri, Iceland",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txwi",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000txw9",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-12T21:09:14.685000+00:00",
-      "latitude": -51.4273,
-      "longitude": 139.5909,
-      "depth_km": 10.0,
-      "place": "western Indian-Antarctic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txw9",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000txvw",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-12T20:03:14.062000+00:00",
-      "latitude": 27.2239,
-      "longitude": 104.1911,
-      "depth_km": 10.0,
-      "place": "41 km N of Weining, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txvw",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }

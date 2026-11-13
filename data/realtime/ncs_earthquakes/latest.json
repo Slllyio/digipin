@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-11-13T18:04:19Z",
+  "generated_at_iso": "2026-11-13T23:31:59Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-14 02:42:44|37.032,71.666",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-14 02:42:44",
+      "latitude": 37.032,
+      "longitude": 71.666,
+      "depth_km": 139.0,
+      "region": "Tajikistan",
+      "location": "99km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 02:38:25|33.543,76.407",
+      "magnitude": 3.3,
+      "origin_time": "2026-11-14 02:38:25",
+      "latitude": 33.543,
+      "longitude": 76.407,
+      "depth_km": 15.0,
+      "region": "Kishtwar, Jammu and Kashmir",
+      "location": "103km SW of Alchi(Leh),Ladakh,India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 00:18:09|28.981,88.393",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-14 00:18:09",
+      "latitude": 28.981,
+      "longitude": 88.393,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "147km NNW of Lachung, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 00:14:15|37.428,72.139",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-14 00:14:15",
+      "latitude": 37.428,
+      "longitude": 72.139,
+      "depth_km": 186.0,
+      "region": "Tajikistan",
+      "location": "145km ENE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-13 15:47:21|36.153,68.313",
       "magnitude": 4.1,
@@ -1606,50 +1650,6 @@
       "depth_km": 10.0,
       "region": "Myanmar",
       "location": "31km SE of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-31 07:43:33|26.950,92.638",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-31 07:43:33",
-      "latitude": 26.95,
-      "longitude": 92.638,
-      "depth_km": 17.0,
-      "region": "Sonitpur, Assam",
-      "location": "36km NNW of Tezpur, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-31 06:00:02|25.052,91.394",
-      "magnitude": 3.4,
-      "origin_time": "2026-10-31 06:00:02",
-      "latitude": 25.052,
-      "longitude": 91.394,
-      "depth_km": 25.0,
-      "region": "Bangladesh",
-      "location": "41km SW of Cherrapunjee, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-31 04:07:55|25.997,95.415",
-      "magnitude": 3.3,
-      "origin_time": "2026-10-31 04:07:55",
-      "latitude": 25.997,
-      "longitude": 95.415,
-      "depth_km": 108.0,
-      "region": "Myanmar",
-      "location": "97km ESE of Mokokchung, Nagaland, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-31 03:55:14|31.489,93.116",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-31 03:55:14",
-      "latitude": 31.489,
-      "longitude": 93.116,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "418km NNW of Basar, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
