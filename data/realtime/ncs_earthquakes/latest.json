@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-12T22:22:58Z",
+  "generated_at_iso": "2026-11-13T02:46:48Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-13 04:13:01|26.427,92.582",
+      "magnitude": 3.8,
+      "origin_time": "2026-11-13 04:13:01",
+      "latitude": 26.427,
+      "longitude": 92.582,
+      "depth_km": 30.0,
+      "region": "Nagaon, Assam",
+      "location": "32km SW of Tezpur, Assam, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-13 02:21:46|33.330,75.714",
+      "magnitude": 1.8,
+      "origin_time": "2026-11-13 02:21:46",
+      "latitude": 33.33,
+      "longitude": 75.714,
+      "depth_km": 16.0,
+      "region": "Kishtwar, Jammu and Kashmir",
+      "location": "82km ENE of Katra, Jammu and Kashmir, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-13 00:27:02|30.024,80.294",
       "magnitude": 4.2,
@@ -1628,28 +1650,6 @@
       "depth_km": 7.0,
       "region": "Palghar, Maharashtra",
       "location": "91km W of Nashik, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-31 00:36:04|28.972,95.210",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-31 00:36:04",
-      "latitude": 28.972,
-      "longitude": 95.21,
-      "depth_km": 8.0,
-      "region": "Upper Siang, Arunachal Pradesh",
-      "location": "92km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-30 23:58:41|32.546,94.010",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-30 23:58:41",
-      "latitude": 32.546,
-      "longitude": 94.01,
-      "depth_km": 15.0,
-      "region": "China",
-      "location": "504km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
