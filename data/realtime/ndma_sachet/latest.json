@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-14T16:52:25Z",
+  "generated_at_iso": "2026-11-14T21:05:41Z",
   "count": 98,
   "records": [
+    {
+      "id": "1794682450167028",
+      "headline": "Thunderstorm with Lightning, Light to Moderate Rain with Gusty wind(30-40kmph) is very likely to occur at a few places over Bikaner, Churu, Ganganagar, Hanumangarh, Jodhpur, Nagaur, Phalodi in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 19:56:09 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794682450167028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1794668699487028",
       "headline": "Thunderstorm with Lightning, Light to Moderate Rain with Gusty wind(30-40kmph) is very likely to occur at a few places over Bikaner, Churu, Didwana-Kuchaman, Ganganagar, Hanumangarh, Jaisalmer, Jodhpur, Nagaur, Phalodi in next 3 hours.",
@@ -1067,17 +1078,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794339837426007",
       "severity": "Moderate",
       "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794331057792017",
-      "headline": "১০-১১-২০২৬ তারিখ ২২:৪৫ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে পূর্ব মেদিনীপুর ও কোচবিহার জেলার কিছু অংশে হালকা বজ্রপাত ও বিদ্যুৎ চমকসহ হালকা থেকে মাঝারি বৃষ্টিপাতের প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 17:20:27 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794331057792017",
-      "severity": "Minor",
-      "category": "Other",
       "tags": []
     }
   ]

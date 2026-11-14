@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-14T16:52:31Z",
+  "generated_at_iso": "2026-11-14T21:05:36Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-15 00:38:27|27.295,90.479",
+      "magnitude": 2.4,
+      "origin_time": "2026-11-15 00:38:27",
+      "latitude": 27.295,
+      "longitude": 90.479,
+      "depth_km": 5.0,
+      "region": "Bhutan",
+      "location": "85km ESE of Thimphu, Bhutan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-14 21:28:52|28.083,92.685",
       "magnitude": 3.1,
@@ -1639,17 +1650,6 @@
       "depth_km": 142.0,
       "region": "Xinjiang",
       "location": "413km S of Bishkek, Kyrgyzstan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 01:05:02|24.550,93.439",
-      "magnitude": 3.4,
-      "origin_time": "2026-11-02 01:05:02",
-      "latitude": 24.55,
-      "longitude": 93.439,
-      "depth_km": 25.0,
-      "region": "Churachandpur, Manipur",
-      "location": "33km WSW of Bishnupur, Manipur, India",
       "review_status": "Reviewed"
     }
   ]

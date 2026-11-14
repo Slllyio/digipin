@@ -1,14 +1,50 @@
 {
-  "generated_at_iso": "2026-11-14T16:52:33Z",
-  "count": 20,
+  "generated_at_iso": "2026-11-14T21:05:31Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us7000ty9z",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-14T18:04:01.078000+00:00",
+      "latitude": -22.2364,
+      "longitude": -63.653,
+      "depth_km": 506.268,
+      "place": "24 km S of Yacuiba, Bolivia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9z",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000ty9v",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-14T16:56:39.533000+00:00",
+      "latitude": 5.5982,
+      "longitude": 126.6097,
+      "depth_km": 65.399,
+      "place": "96 km SSE of Pondaguitan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9v",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000ty9n",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-14T16:36:19.635000+00:00",
+      "latitude": -24.049,
+      "longitude": -66.9029,
+      "depth_km": 197.571,
+      "place": "62 km WNW of San Antonio de los Cobres, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9n",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000ty9l",
       "magnitude": 4.9,
-      "origin_time_utc": "2026-11-14T16:04:21.572000+00:00",
-      "latitude": 8.406,
-      "longitude": 126.2174,
-      "depth_km": 147.186,
+      "origin_time_utc": "2026-11-14T16:04:22.205000+00:00",
+      "latitude": 8.3996,
+      "longitude": 126.2112,
+      "depth_km": 154.123,
       "place": "7 km SE of Tagbina, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9l",
       "tsunami": 0,
@@ -193,54 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty4n",
       "tsunami": 0,
       "significance": 327
-    },
-    {
-      "id": "us7000ty43",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-13T19:49:21.768000+00:00",
-      "latitude": -1.4671,
-      "longitude": 149.9613,
-      "depth_km": 10.0,
-      "place": "153 km NW of Kavieng, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty43",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000ty3x",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-13T19:43:17.748000+00:00",
-      "latitude": 3.6793,
-      "longitude": -75.5584,
-      "depth_km": 10.0,
-      "place": "9 km WSW of Chaparral, Colombia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty3x",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000ty3q",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-13T19:04:07.703000+00:00",
-      "latitude": -58.962,
-      "longitude": -25.7253,
-      "depth_km": 63.81,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty3q",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000ty3g",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-13T18:55:40.754000+00:00",
-      "latitude": -23.1808,
-      "longitude": 178.9205,
-      "depth_km": 563.277,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty3g",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
