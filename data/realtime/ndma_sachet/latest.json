@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-11-14T03:34:16Z",
+  "generated_at_iso": "2026-11-14T10:56:44Z",
   "count": 98,
   "records": [
+    {
+      "id": "1794651799602007",
+      "headline": "Light To Moderate  Rain with Light thunderstrom and Lightning is very likely to occur at isolated places over Chengalpattu, Chennai, Kanniyakumari, Thiruvallur in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 10:23:22 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794651799602007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794645298737028",
+      "headline": "Thunderstorm/Lightning, light to moderate rain with wind speed 30-40 Kmph is likely to occur at isolated places over Bikaner, Ganganagar, Hanumangarh, Jaisalmer, Phalodi in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 08:41:42 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794645298737028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794641510931038",
+      "headline": "Squally weather with strong surface wind 40-50 Kmph gusting to 60 kmph very likely along and off  Andaman and Nicobar coast. Sea conditions are very likely to be  rough. Fishermen are advised not to venture into the Andaman sea till 17-11-2026.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 07:45:11 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794641510931038",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1794641379977038",
+      "headline": "Heavy  rain (07-11 cm) accompanied with thunderstorm and lightning are very likely to occur at one or two places over Andaman and Nicobar  Islands in the next 24 hours. People are advised to stay at safe places.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 07:42:55 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794641379977038",
+      "severity": "Severe",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794638215944028",
+      "headline": "Thunderstorm/Lightning with light to moderate rain and strong surface wind 30-40 kmph is likely to occur at isolated places over Bikaner, Ganganagar, Hanumangarh, Jaisalmer, Phalodi in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 06:41:22 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794638215944028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794635684561028",
+      "headline": "Thunderstorm with Lightning/Gusty winds speed 30-40 kmph is likely to occur at isolated places over Bikaner, Churu, Ganganagar, Hanumangarh, Jaisalmer, Jodhpur, Nagaur, Phalodi in next 24 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 06:08:26 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794635684561028",
+      "severity": "Minor",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1794567324681011",
       "headline": "Avalanche with low danger level is likely to occur above 2800 meters over Ganderbal in next 24 hours.",
@@ -1012,72 +1078,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794312226427017",
       "severity": "Severe",
       "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794311595392035",
-      "headline": "Moderate Thunderstorms accompanied with Light to Moderate rain is very likely to occur at isolated places over East Garo Hills, South Garo Hills, West Garo Hills, West Khasi Hills in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 11:53:17 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794311595392035",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794308822062017",
-      "headline": "১০-১১-২০২৬, ১৬:৩৬ থেকে পরবর্তী ২-৩ ঘন্টা পর্যন্ত উত্তর ২৪ পরগনা জেলার কিছু অংশে হালকা বজ্রপাতসহ হালকা থেকে মাঝারি বৃষ্টিপাত অব্যাহত থাকার প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 11:12:14 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794308822062017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794308729412017",
-      "headline": "১০-১১-২০২৬ তারিখ ১৬:৩০ থেকে পরবর্তী ২-৩ ঘন্টা পর্যন্ত দক্ষিণ ২৪ পরগনা জেলার কিছু অংশে হালকা বজ্রপাতসহ হালকা থেকে মাঝারি বৃষ্টিপাত অব্যাহত থাকার প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 11:09:55 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794308729412017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794307008861006",
-      "headline": "അടുത്ത 3 മണിക്കൂറിൽ കേരളത്തിലെ തിരുവനന്തപുരം ജില്ലയിൽ ഒറ്റപ്പെട്ടയിടങ്ങളിൽ ഇടിമിന്നലോട് കൂടിയ ഇടത്തരം മഴയ്ക്കും 50 kmph വരെ വേഗതയിൽ ശക്തമായ കാറ്റിനും സാധ്യത. 04:10 PM,10.11.2026 - IMD-KSDMA",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 10:45:43 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794307008861006",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794307156881007",
-      "headline": "Light to Moderate Rain with Thunderstorm and lightning is likely to occur at isolated places over Nagapattinam, Pudukkottai, Ramanathapuram, Sivaganga, Thanjavur, Thiruvarur in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 10:39:19 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794307156881007",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794305562733017",
-      "headline": "১০-১১-২০২৬ তারিখের ১৫:৪২ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে মুর্শিদাবাদ জেলার কিছু অংশে হালকা বজ্রপাতসহ হালকা থেকে মাঝারি বৃষ্টিপাতের প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 10:15:56 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794305562733017",
-      "severity": "Minor",
-      "category": "Other",
       "tags": []
     }
   ]

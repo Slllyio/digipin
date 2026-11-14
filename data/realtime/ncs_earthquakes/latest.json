@@ -1,7 +1,84 @@
 {
-  "generated_at_iso": "2026-11-14T03:34:16Z",
+  "generated_at_iso": "2026-11-14T10:56:48Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-14 14:43:05|25.749,91.273",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-14 14:43:05",
+      "latitude": 25.749,
+      "longitude": 91.273,
+      "depth_km": 10.0,
+      "region": "Kamrup, Assam",
+      "location": "57km WSW of Nongpoh, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 13:36:01|38.847,70.322",
+      "magnitude": 4.1,
+      "origin_time": "2026-11-14 13:36:01",
+      "latitude": 38.847,
+      "longitude": 70.322,
+      "depth_km": 12.0,
+      "region": "Tajikistan",
+      "location": "137km ENE of Dushanbe, Tajikistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 13:21:07|27.682,87.947",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-14 13:21:07",
+      "latitude": 27.682,
+      "longitude": 87.947,
+      "depth_km": 39.0,
+      "region": "Nepal",
+      "location": "43km NW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 13:09:49|32.998,75.914",
+      "magnitude": 2.9,
+      "origin_time": "2026-11-14 13:09:49",
+      "latitude": 32.998,
+      "longitude": 75.914,
+      "depth_km": 10.0,
+      "region": "Doda, Jammu & Kashmir",
+      "location": "91km E of Katra, Jammu and Kashmir, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 11:42:37|19.269,79.630",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-14 11:42:37",
+      "latitude": 19.269,
+      "longitude": 79.63,
+      "depth_km": 10.0,
+      "region": "Kumuram Bheem Asifabad, Telangana",
+      "location": "106km NNE of Karimnagar, Telangana, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 10:29:27|34.156,76.611",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-14 10:29:27",
+      "latitude": 34.156,
+      "longitude": 76.611,
+      "depth_km": 10.0,
+      "region": "Leh Ladakh, Ladakh",
+      "location": "53km W of Alchi(Leh),Ladakh,India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 09:15:28|21.590,75.552",
+      "magnitude": 4.5,
+      "origin_time": "2026-11-14 09:15:28",
+      "latitude": 21.59,
+      "longitude": 75.552,
+      "depth_km": 10.0,
+      "region": "Khargone, Madhya Pradesh",
+      "location": "129km SSW of Indore, Madhya Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-14 08:48:53|33.009,76.035",
       "magnitude": 3.8,
@@ -11,6 +88,17 @@
       "depth_km": 5.0,
       "region": "Doda, Jammu & Kashmir",
       "location": "91km NNW of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-14 08:31:55|33.003,75.979",
+      "magnitude": 2.7,
+      "origin_time": "2026-11-14 08:31:55",
+      "latitude": 33.003,
+      "longitude": 75.979,
+      "depth_km": 10.0,
+      "region": "Doda, Jammu & Kashmir",
+      "location": "93km NNW of Dharamshala, Himachal Pradesh, India",
       "review_status": "Reviewed"
     },
     {
@@ -1562,94 +1650,6 @@
       "depth_km": 5.0,
       "region": "Dhubri, Assam",
       "location": "78km NNW of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-01 16:33:45|36.226,70.222",
-      "magnitude": 4.5,
-      "origin_time": "2026-11-01 16:33:45",
-      "latitude": 36.226,
-      "longitude": 70.222,
-      "depth_km": 149.0,
-      "region": "Afghanistan",
-      "location": "101km SSW of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-01 15:05:21|30.560,92.919",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-01 15:05:21",
-      "latitude": 30.56,
-      "longitude": 92.919,
-      "depth_km": 15.0,
-      "region": "Tibet",
-      "location": "334km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-01 14:56:35|21.430,79.314",
-      "magnitude": 2.0,
-      "origin_time": "2026-11-01 14:56:35",
-      "latitude": 21.43,
-      "longitude": 79.314,
-      "depth_km": 5.0,
-      "region": "Nagpur, Maharashtra",
-      "location": "39km NE of Nagpur, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-01 14:09:47|28.148,88.204",
-      "magnitude": 3.5,
-      "origin_time": "2026-11-01 14:09:47",
-      "latitude": 28.148,
-      "longitude": 88.204,
-      "depth_km": 12.0,
-      "region": "Tibet",
-      "location": "73km NW of Lachung, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-01 06:12:13|36.658,71.982",
-      "magnitude": 3.5,
-      "origin_time": "2026-11-01 06:12:13",
-      "latitude": 36.658,
-      "longitude": 71.982,
-      "depth_km": 10.0,
-      "region": "Afghanistan",
-      "location": "136km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-01 03:35:44|33.685,86.188",
-      "magnitude": 3.8,
-      "origin_time": "2026-11-01 03:35:44",
-      "latitude": 33.685,
-      "longitude": 86.188,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "668km N of Kathmandu, Nepal",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-31 19:06:11|33.179,91.868",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-31 19:06:11",
-      "latitude": 33.179,
-      "longitude": 91.868,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "622km N of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-31 17:50:05|17.304,74.298",
-      "magnitude": 2.4,
-      "origin_time": "2026-10-31 17:50:05",
-      "latitude": 17.304,
-      "longitude": 74.298,
-      "depth_km": 5.0,
-      "region": "Sangli, Maharashtra",
-      "location": "66km N of Kolhapur, Maharashtra, India",
       "review_status": "Reviewed"
     }
   ]
