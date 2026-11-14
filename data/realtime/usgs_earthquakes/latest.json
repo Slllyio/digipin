@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-14T10:56:43Z",
-  "count": 22,
+  "generated_at_iso": "2026-11-14T16:52:33Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us7000ty9l",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-14T16:04:21.572000+00:00",
+      "latitude": 8.406,
+      "longitude": 126.2174,
+      "depth_km": 147.186,
+      "place": "7 km SE of Tagbina, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9l",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ty90",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-14T13:17:20.799000+00:00",
+      "latitude": -33.0019,
+      "longitude": -178.3404,
+      "depth_km": 12.019,
+      "place": "south of the Kermadec Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty90",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ty8u",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-14T12:28:00.653000+00:00",
+      "latitude": 52.3603,
+      "longitude": 160.2984,
+      "depth_km": 17.439,
+      "place": "137 km SE of Petropavlovsk-Kamchatsky, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty8u",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000ty84",
       "magnitude": 5.5,
@@ -205,66 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty3g",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000ty1a",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-11-13T16:43:02.131000+00:00",
-      "latitude": -14.9934,
-      "longitude": -75.8807,
-      "depth_km": 10.0,
-      "place": "79 km WSW of Changuillo, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty1a",
-      "tsunami": 0,
-      "significance": 521
-    },
-    {
-      "id": "us7000ty16",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-13T16:35:58.400000+00:00",
-      "latitude": 18.5286,
-      "longitude": -69.0533,
-      "depth_km": 136.742,
-      "place": "10 km SW of Guaymate, Dominican Republic",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty16",
-      "tsunami": 0,
-      "significance": 363
-    },
-    {
-      "id": "us7000ty14",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-13T16:17:51.680000+00:00",
-      "latitude": 42.1734,
-      "longitude": 83.6657,
-      "depth_km": 10.0,
-      "place": "79 km NE of Kuqa, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty14",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000ty0s",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-13T14:12:47.843000+00:00",
-      "latitude": -36.4434,
-      "longitude": -97.9785,
-      "depth_km": 10.0,
-      "place": "West Chile Rise",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty0s",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000txzd",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-13T11:18:12.734000+00:00",
-      "latitude": -21.3036,
-      "longitude": -175.8541,
-      "depth_km": 162.78,
-      "place": "59 km WSW of Houma, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000txzd",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }

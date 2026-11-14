@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-11-14T10:56:44Z",
+  "generated_at_iso": "2026-11-14T16:52:25Z",
   "count": 98,
   "records": [
+    {
+      "id": "1794668699487028",
+      "headline": "Thunderstorm with Lightning, Light to Moderate Rain with Gusty wind(30-40kmph) is very likely to occur at a few places over Bikaner, Churu, Didwana-Kuchaman, Ganganagar, Hanumangarh, Jaisalmer, Jodhpur, Nagaur, Phalodi in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 15:08:29 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794668699487028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794666438454028",
+      "headline": "Thunderstorm/Lightning, light to moderate rain with wind speed 30-40 Kmph is likely to occur at isolated places over Bikaner, Jaisalmer, Phalodi in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 14:29:03 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794666438454028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794656207045028",
+      "headline": "Thunderstorm/Lightning, light to moderate rain with wind speed 30-40 Kmph is likely to occur at isolated places over Bikaner, Jaisalmer, Phalodi in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 11:38:32 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794656207045028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794655829652008",
+      "headline": "నవంబర్13సా.4.00 నుంచి నవంబర్15రా. 07.00 గంటల వరకు సముద్రంలో 3-6.2 మీటర్ల ఎత్తులో భారీఅలలు వచ్చే అవకాశం ఉంది.కావున ప్రజలు,మత్స్యకారులు,అప్రమత్తంగాఉండి బీచ్ లకు వెళ్లవద్దు-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 11:31:42 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794655829652008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1794651799602007",
       "headline": "Light To Moderate  Rain with Light thunderstrom and Lightning is very likely to occur at isolated places over Chengalpattu, Chennai, Kanniyakumari, Thiruvallur in next 3 hours.",
@@ -1034,50 +1078,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794331057792017",
       "severity": "Minor",
       "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794313420688035",
-      "headline": "Moderate Thunderstorms accompanied with Light to Moderate rain is very likely to occur at isolated places over East Garo Hills, South Garo Hills, West Garo Hills, West Khasi Hills in next 3 hours. Citizens are advised to be cautious. SDMA, IMD, Shillong.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 12:26:56 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794313420688035",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794312788482017",
-      "headline": "১০-১১-২০২৬ তারিখ ১৭:৩৯ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে হাওড়া জেলার কিছু অংশে হালকা বজ্রপাতসহ হালকা থেকে মাঝারি বৃষ্টিপাতের প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 12:20:43 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794312788482017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794312339554017",
-      "headline": "১০-১১-২০২৬ তারিখ ১৭:৩০ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে মুর্শিদাবাদ ও নদিয়া জেলার কিছু অংশে মাঝারি বজ্রপাতসহ তীব্র বৃষ্টিপাতের প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 12:17:04 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794312339554017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794312226427017",
-      "headline": "Moderate Thunderstorm  lightning accompanied with intense rain. very likely to affect over some parts of Murshidabad, Nadia districts during next 2-3 hours from 17:30, 10-11-2026.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 12:04:08 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794312226427017",
-      "severity": "Severe",
-      "category": "Met-Storm",
       "tags": []
     }
   ]
