@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-14T21:05:41Z",
+  "generated_at_iso": "2026-11-15T01:01:31Z",
   "count": 98,
   "records": [
+    {
+      "id": "1794702917634028",
+      "headline": "Thunderstorm with Lightning, Light to Moderate Rain with Gusty wind(30-40kmph) is very likely to occur at a few places over Bikaner, Churu, Didwana-Kuchaman, Jhunjhunu, Jodhpur, Nagaur, Phalodi, Sikar in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 15 Nov 2026 00:50:17 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794702917634028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794691906311028",
+      "headline": "Thunderstorm with Lightning, Light to Moderate Rain with Gusty wind(30-40kmph) is very likely to occur at a few places over Bikaner, Churu, Didwana-Kuchaman, Hanumangarh, Jhunjhunu, Jodhpur, Nagaur, Phalodi, Sikar in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 14 Nov 2026 21:31:50 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794691906311028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1794682450167028",
       "headline": "Thunderstorm with Lightning, Light to Moderate Rain with Gusty wind(30-40kmph) is very likely to occur at a few places over Bikaner, Churu, Ganganagar, Hanumangarh, Jodhpur, Nagaur, Phalodi in next 3 hours.",
@@ -1054,28 +1076,6 @@
       "area": "",
       "published_utc": "Tue, 10 Nov 2026 21:48:28 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794347190158015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794339839475041",
-      "headline": "Light to Moderate with Thunderstorm and lightning  Rain is likely to occur at isolated places over Mayiladuthurai, Nagapattinam, Ramanathapuram, Karaikal in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 19:46:01 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794339839475041",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794339837426007",
-      "headline": "Light to Moderate with Thunderstorm and lightning  Rain is likely to occur at isolated places over Mayiladuthurai, Nagapattinam, Ramanathapuram, Karaikal in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 10 Nov 2026 19:43:59 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794339837426007",
       "severity": "Moderate",
       "category": "Met-Storm",
       "tags": []

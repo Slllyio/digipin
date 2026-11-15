@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-14T21:05:31Z",
-  "count": 19,
+  "generated_at_iso": "2026-11-15T01:01:27Z",
+  "count": 16,
   "records": [
+    {
+      "id": "us7000tyay",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-14T22:23:46.411000+00:00",
+      "latitude": 3.7323,
+      "longitude": -99.113,
+      "depth_km": 10.0,
+      "place": "east central Pacific Ocean",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyay",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tyan",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-14T21:24:20.159000+00:00",
+      "latitude": -8.3823,
+      "longitude": 120.443,
+      "depth_km": 10.0,
+      "place": "25 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyan",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000ty9z",
       "magnitude": 4.7,
@@ -169,66 +193,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty6e",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000ty59",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-13T23:55:15.232000+00:00",
-      "latitude": -37.922,
-      "longitude": -74.7229,
-      "depth_km": 10.0,
-      "place": "100 km WSW of Lebu, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty59",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ty56",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-13T23:30:38.320000+00:00",
-      "latitude": -1.5038,
-      "longitude": 149.92,
-      "depth_km": 10.0,
-      "place": "153 km NW of Kavieng, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty56",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000ty53",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-13T23:22:54.402000+00:00",
-      "latitude": 29.5604,
-      "longitude": 130.4805,
-      "depth_km": 40.852,
-      "place": "74 km S of Yudomari, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty53",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ty4w",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-13T22:10:42.124000+00:00",
-      "latitude": -32.746,
-      "longitude": -178.6351,
-      "depth_km": 36.931,
-      "place": "south of the Kermadec Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty4w",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000ty4n",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-13T21:19:55.905000+00:00",
-      "latitude": 13.2186,
-      "longitude": -89.4564,
-      "depth_km": 59.125,
-      "place": "33 km SSW of La Libertad, El Salvador",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty4n",
-      "tsunami": 0,
-      "significance": 327
     }
   ]
 }
