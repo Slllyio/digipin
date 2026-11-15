@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-15T07:50:47Z",
-  "count": 11,
+  "generated_at_iso": "2026-11-15T15:20:57Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us7000tyek",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-11-15T13:41:35.701000+00:00",
+      "latitude": 9.7595,
+      "longitude": 126.2,
+      "depth_km": 9.971,
+      "place": "9 km E of Union, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyek",
+      "tsunami": 0,
+      "significance": 471
+    },
+    {
+      "id": "us7000tyd3",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-15T07:36:37.211000+00:00",
+      "latitude": -20.589,
+      "longitude": -175.9354,
+      "depth_km": 177.524,
+      "place": "92 km NW of Houma, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyd3",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tyca",
       "magnitude": 5.5,
@@ -97,42 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9l",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000ty90",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-14T13:17:20.799000+00:00",
-      "latitude": -33.0019,
-      "longitude": -178.3404,
-      "depth_km": 12.019,
-      "place": "south of the Kermadec Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty90",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000ty8u",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-14T12:28:00.653000+00:00",
-      "latitude": 52.3603,
-      "longitude": 160.2984,
-      "depth_km": 17.439,
-      "place": "137 km SE of Petropavlovsk-Kamchatsky, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty8u",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000ty84",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-11-14T09:26:13.073000+00:00",
-      "latitude": 30.122,
-      "longitude": -42.6346,
-      "depth_km": 10.0,
-      "place": "northern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty84",
-      "tsunami": 0,
-      "significance": 465
     }
   ]
 }

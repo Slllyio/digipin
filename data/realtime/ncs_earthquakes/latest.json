@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-15T07:50:43Z",
+  "generated_at_iso": "2026-11-15T15:20:57Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-15 20:02:20|21.231,94.079",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-15 20:02:20",
+      "latitude": 21.231,
+      "longitude": 94.079,
+      "depth_km": 164.0,
+      "region": "Myanmar",
+      "location": "207km WSW of Burma, Myanmar",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-15 18:23:41|36.362,71.540",
+      "magnitude": 4.4,
+      "origin_time": "2026-11-15 18:23:41",
+      "latitude": 36.362,
+      "longitude": 71.54,
+      "depth_km": 125.0,
+      "region": "Afghanistan",
+      "location": "120km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-15 17:52:09|12.337,79.213",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-15 17:52:09",
+      "latitude": 12.337,
+      "longitude": 79.213,
+      "depth_km": 5.0,
+      "region": "Tiruvannamalai, Tamil Nadu",
+      "location": "65km S of Vellore, Tamil Nadu, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-15 15:49:58|24.620,93.272",
+      "magnitude": 2.4,
+      "origin_time": "2026-11-15 15:49:58",
+      "latitude": 24.62,
+      "longitude": 93.272,
+      "depth_km": 25.0,
+      "region": "Noney, Manipur",
+      "location": "49km W of Bishnupur, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-15 15:05:48|20.849,79.225",
+      "magnitude": 2.9,
+      "origin_time": "2026-11-15 15:05:48",
+      "latitude": 20.849,
+      "longitude": 79.225,
+      "depth_km": 5.0,
+      "region": "Nagpur, Maharashtra",
+      "location": "35km SSE of Nagpur, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-15 00:38:27|27.295,90.479",
       "magnitude": 2.4,
@@ -1595,61 +1650,6 @@
       "depth_km": 10.0,
       "region": "Chirang, Assam",
       "location": "122km NNE of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 03:36:02|37.067,71.653",
-      "magnitude": 3.4,
-      "origin_time": "2026-11-02 03:36:02",
-      "latitude": 37.067,
-      "longitude": 71.653,
-      "depth_km": 37.0,
-      "region": "Tajikistan",
-      "location": "97km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 02:22:13|26.954,89.231",
-      "magnitude": 2.9,
-      "origin_time": "2026-11-02 02:22:13",
-      "latitude": 26.954,
-      "longitude": 89.231,
-      "depth_km": 8.0,
-      "region": "Bhutan",
-      "location": "70km SW of Thimphu, Bhutan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 02:04:37|24.824,70.463",
-      "magnitude": 4.0,
-      "origin_time": "2026-11-02 02:04:37",
-      "latitude": 24.824,
-      "longitude": 70.463,
-      "depth_km": 10.0,
-      "region": "Pakistan",
-      "location": "282km N of Rajkot, Gujarat, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 01:53:39|25.669,90.625",
-      "magnitude": 3.4,
-      "origin_time": "2026-11-02 01:53:39",
-      "latitude": 25.669,
-      "longitude": 90.625,
-      "depth_km": 10.0,
-      "region": "East Garo Hills, Meghalaya",
-      "location": "45km ENE of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 01:45:18|39.182,75.122",
-      "magnitude": 3.5,
-      "origin_time": "2026-11-02 01:45:18",
-      "latitude": 39.182,
-      "longitude": 75.122,
-      "depth_km": 142.0,
-      "region": "Xinjiang",
-      "location": "413km S of Bishkek, Kyrgyzstan",
       "review_status": "Reviewed"
     }
   ]
