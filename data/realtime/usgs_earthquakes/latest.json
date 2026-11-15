@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-15T01:01:27Z",
-  "count": 16,
+  "generated_at_iso": "2026-11-15T07:50:47Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000tyca",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-11-15T05:15:02.697000+00:00",
+      "latitude": -19.5554,
+      "longitude": -177.8215,
+      "depth_km": 469.881,
+      "place": "Fiji region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyca",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us7000tybx",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-15T03:59:59.682000+00:00",
+      "latitude": -31.3221,
+      "longitude": -68.6822,
+      "depth_km": 108.94,
+      "place": "19 km NW of Albardón, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tybx",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000tyay",
       "magnitude": 4.7,
@@ -109,90 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty84",
       "tsunami": 0,
       "significance": 465
-    },
-    {
-      "id": "us7000ty7h",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-14T07:02:22.573000+00:00",
-      "latitude": -15.0887,
-      "longitude": -173.446,
-      "depth_km": 10.0,
-      "place": "102 km NNE of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty7h",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ty7d",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-14T06:52:26.706000+00:00",
-      "latitude": 9.7032,
-      "longitude": 147.3631,
-      "depth_km": 10.0,
-      "place": "State of Yap, Federated States of Micronesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty7d",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000ty7b",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-14T06:33:19.009000+00:00",
-      "latitude": -36.4613,
-      "longitude": -97.9575,
-      "depth_km": 10.0,
-      "place": "West Chile Rise",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty7b",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000ty73",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-14T04:59:00.633000+00:00",
-      "latitude": -50.3735,
-      "longitude": 139.6657,
-      "depth_km": 10.0,
-      "place": "western Indian-Antarctic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty73",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000ty6p",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-14T03:18:26.652000+00:00",
-      "latitude": -23.9436,
-      "longitude": -66.7642,
-      "depth_km": 216.092,
-      "place": "54 km NW of San Antonio de los Cobres, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty6p",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000ty6n",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-14T02:59:29.180000+00:00",
-      "latitude": 3.304,
-      "longitude": 92.8261,
-      "depth_km": 10.0,
-      "place": "off the west coast of northern Sumatra",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty6n",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000ty6e",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-14T02:21:07.393000+00:00",
-      "latitude": -19.5803,
-      "longitude": -177.739,
-      "depth_km": 587.447,
-      "place": "Fiji region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty6e",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
