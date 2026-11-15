@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-15T15:20:57Z",
+  "generated_at_iso": "2026-11-15T20:28:19Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-16 00:55:23|36.548,71.313",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-16 00:55:23",
+      "latitude": 36.548,
+      "longitude": 71.313,
+      "depth_km": 175.0,
+      "region": "Afghanistan",
+      "location": "91km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-15 23:37:06|27.243,96.743",
+      "magnitude": 3.3,
+      "origin_time": "2026-11-15 23:37:06",
+      "latitude": 27.243,
+      "longitude": 96.743,
+      "depth_km": 12.0,
+      "region": "Myanmar",
+      "location": "56km S of Changlang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-15 23:18:34|35.998,70.942",
+      "magnitude": 5.1,
+      "origin_time": "2026-11-15 23:18:34",
+      "latitude": 35.998,
+      "longitude": 70.942,
+      "depth_km": 131.0,
+      "region": "Afghanistan",
+      "location": "127km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-15 20:02:20|21.231,94.079",
       "magnitude": 3.9,
@@ -1617,39 +1650,6 @@
       "depth_km": 190.0,
       "region": "Afghanistan",
       "location": "61km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 05:30:06|36.828,70.931",
-      "magnitude": 2.7,
-      "origin_time": "2026-11-02 05:30:06",
-      "latitude": 36.828,
-      "longitude": 70.931,
-      "depth_km": 188.0,
-      "region": "Afghanistan",
-      "location": "45km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 05:11:45|27.275,88.922",
-      "magnitude": 2.2,
-      "origin_time": "2026-11-02 05:11:45",
-      "latitude": 27.275,
-      "longitude": 88.922,
-      "depth_km": 5.0,
-      "region": "Bhutan",
-      "location": "31km E of Gangtok, Sikkim",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 03:52:33|26.589,90.475",
-      "magnitude": 2.5,
-      "origin_time": "2026-11-02 03:52:33",
-      "latitude": 26.589,
-      "longitude": 90.475,
-      "depth_km": 10.0,
-      "region": "Chirang, Assam",
-      "location": "122km NNE of Tura, Meghalaya, India",
       "review_status": "Reviewed"
     }
   ]

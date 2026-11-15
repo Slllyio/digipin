@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-15T15:20:57Z",
-  "count": 10,
+  "generated_at_iso": "2026-11-15T20:28:14Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us7000tyfh",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-15T17:48:36.959000+00:00",
+      "latitude": 36.0947,
+      "longitude": 70.9503,
+      "depth_km": 100.728,
+      "place": "74 km N of Pārūn, Afghanistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyfh",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000tyf4",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-15T15:41:14.978000+00:00",
+      "latitude": 1.7527,
+      "longitude": 122.1345,
+      "depth_km": 487.384,
+      "place": "169 km NW of Gorontalo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyf4",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tyes",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-15T14:17:52.535000+00:00",
+      "latitude": 9.6916,
+      "longitude": 126.3512,
+      "depth_km": 10.0,
+      "place": "27 km ESE of Union, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyes",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000tyek",
       "magnitude": 5.5,
@@ -73,54 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyan",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000ty9z",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-14T18:04:01.078000+00:00",
-      "latitude": -22.2364,
-      "longitude": -63.653,
-      "depth_km": 506.268,
-      "place": "24 km S of Yacuiba, Bolivia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9z",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000ty9v",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-14T16:56:39.533000+00:00",
-      "latitude": 5.5982,
-      "longitude": 126.6097,
-      "depth_km": 65.399,
-      "place": "96 km SSE of Pondaguitan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9v",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ty9n",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-14T16:36:19.635000+00:00",
-      "latitude": -24.049,
-      "longitude": -66.9029,
-      "depth_km": 197.571,
-      "place": "62 km WNW of San Antonio de los Cobres, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9n",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ty9l",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-14T16:04:22.205000+00:00",
-      "latitude": 8.3996,
-      "longitude": 126.2112,
-      "depth_km": 154.123,
-      "place": "7 km SE of Tagbina, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ty9l",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
