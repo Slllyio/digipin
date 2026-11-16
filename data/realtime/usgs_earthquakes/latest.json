@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-11-16T00:14:07Z",
-  "count": 10,
+  "generated_at_iso": "2026-11-16T06:39:45Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us7000tyhr",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-11-16T04:24:11.718000+00:00",
+      "latitude": 37.3664,
+      "longitude": 136.7444,
+      "depth_km": 273.644,
+      "place": "20 km NW of Anamizu, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyhr",
+      "tsunami": 0,
+      "significance": 449
+    },
     {
       "id": "us7000tygk",
       "magnitude": 4.8,
@@ -97,30 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyd3",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000tyca",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-11-15T05:15:02.697000+00:00",
-      "latitude": -19.5554,
-      "longitude": -177.8215,
-      "depth_km": 469.881,
-      "place": "Fiji region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyca",
-      "tsunami": 0,
-      "significance": 465
-    },
-    {
-      "id": "us7000tybx",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-15T03:59:59.682000+00:00",
-      "latitude": -31.3221,
-      "longitude": -68.6822,
-      "depth_km": 108.94,
-      "place": "19 km NW of Albardón, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tybx",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
