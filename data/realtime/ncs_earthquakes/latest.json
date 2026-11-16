@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-16T06:39:51Z",
+  "generated_at_iso": "2026-11-16T16:26:54Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-16 17:30:39|19.834,79.443",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-16 17:30:39",
+      "latitude": 19.834,
+      "longitude": 79.443,
+      "depth_km": 10.0,
+      "region": "Chandrapur, Maharashtra",
+      "location": "150km SSE of Nagpur, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-16 16:14:18|19.874,79.235",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-16 16:14:18",
+      "latitude": 19.874,
+      "longitude": 79.235,
+      "depth_km": 5.0,
+      "region": "Chandrapur, Maharashtra",
+      "location": "142km S of Nagpur, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-16 03:07:20|36.431,70.884",
       "magnitude": 5.1,
@@ -1186,7 +1208,7 @@
       "latitude": 16.452,
       "longitude": 77.414,
       "depth_km": 5.0,
-      "region": "Narayanpet, Telengana",
+      "region": "Narayanpet, Telangana",
       "location": "154km SW of Hyderabad, Telangana, India",
       "review_status": "Reviewed"
     },
@@ -1628,28 +1650,6 @@
       "depth_km": 33.0,
       "region": "Champhai, Mizoram",
       "location": "17km S of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 12:34:34|33.412,78.602",
-      "magnitude": 2.9,
-      "origin_time": "2026-11-02 12:34:34",
-      "latitude": 33.412,
-      "longitude": 78.602,
-      "depth_km": 10.0,
-      "region": "Leh Ladakh, Ladakh",
-      "location": "88km NNW of Hanley, Jammu & Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 12:20:37|31.797,74.203",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-02 12:20:37",
-      "latitude": 31.797,
-      "longitude": 74.203,
-      "depth_km": 9.0,
-      "region": "Pakistan",
-      "location": "65km WNW of Amritsar, Punjab, India",
       "review_status": "Reviewed"
     }
   ]
