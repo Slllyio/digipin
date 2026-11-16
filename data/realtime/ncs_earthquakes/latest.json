@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-15T20:28:19Z",
+  "generated_at_iso": "2026-11-16T00:14:08Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-16 03:07:20|36.431,70.884",
+      "magnitude": 5.1,
+      "origin_time": "2026-11-16 03:07:20",
+      "latitude": 36.431,
+      "longitude": 70.884,
+      "depth_km": 179.0,
+      "region": "Afghanistan",
+      "location": "80km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-16 02:52:23|35.933,70.900",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-16 02:52:23",
+      "latitude": 35.933,
+      "longitude": 70.9,
+      "depth_km": 80.0,
+      "region": "Afghanistan",
+      "location": "133km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-16 00:55:23|36.548,71.313",
       "magnitude": 3.9,
@@ -1628,28 +1650,6 @@
       "depth_km": 9.0,
       "region": "Pakistan",
       "location": "65km WNW of Amritsar, Punjab, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 07:58:28|31.349,80.161",
-      "magnitude": 3.3,
-      "origin_time": "2026-11-02 07:58:28",
-      "latitude": 31.349,
-      "longitude": 80.161,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "105km NNE of Joshimath, Uttarakhand , India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 06:09:21|36.613,70.875",
-      "magnitude": 3.4,
-      "origin_time": "2026-11-02 06:09:21",
-      "latitude": 36.613,
-      "longitude": 70.875,
-      "depth_km": 190.0,
-      "region": "Afghanistan",
-      "location": "61km SSE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
