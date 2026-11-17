@@ -338,6 +338,114 @@ const UrbanLensesMore = (() => {
         };
     }
 
+    // Building fabric (after urbanity / momepy footprint morphology). Overture footprints per block: how big they are,
+    // how many touch a neighbour, how well they line up and how far apart they stand. Packed attached fabric is old
+    // cores, urban villages and slums: little light and air between homes and hard for fire engines; open detached
+    // fabric is bungalows, sheds and the urban edge.
+    const FAB_MIN = 10, FAB_PACKED_ATT = 60, FAB_PACKED_AREA = 70, FAB_LARGE = 250, FAB_GRID_ALIGN = 85, FAB_GRID_ATT = 40, FAB_OPEN_GAP = 4;
+    const FAB_NAMES = ['Open, detached', 'Packed, small and attached', 'Attached rows on a grid', 'Large footprints', 'Mixed'];
+
+    function fabricClass(area, att, align, gap) {
+        if (area >= FAB_LARGE) return 3;
+        if (att >= FAB_PACKED_ATT && area < FAB_PACKED_AREA) return 1;
+        if (att >= FAB_GRID_ATT && align >= FAB_GRID_ALIGN) return 2;
+        if (gap >= FAB_OPEN_GAP) return 0;
+        return 4;
+    }
+
+    function fabric(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, cnt = c['building_form.bf_count'], area = c['building_form.bf_area_m2'];
+        const att = c['building_form.bf_attached_pct'], al = c['building_form.bf_align'], gap = c['building_form.bf_gap_m'];
+        const swr = c['building_form.bf_shared_wall'], pop = c['population.population'], heat = c['surface_heat.uhi_anomaly_c'];
+        if (!cnt || !area || !att || !cnt.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), w = i => v(pop, i);
+        const idx = _residents(fr).filter(i => _fin(cnt[i]) && cnt[i] >= FAB_MIN && _fin(area[i]) && _fin(att[i]));
+        if (idx.length < 5) return null;
+        const cls = new Float64Array(n).fill(NaN), byCls = [0, 0, 0, 0, 0], set = [[], [], [], [], []];
+        let all = 0;
+        for (const i of idx) {
+            const k = fabricClass(area[i], att[i], v(al, i), v(gap, i));
+            cls[i] = k; byCls[k] += w(i); set[k].push(i); all += w(i);
+        }
+        if (!all) return null;
+        const pc = x => `${_round(100 * x / all, 0)}%`;
+        const stats = FAB_NAMES.map((name, k) => ({ label: `Residents in ${name.toLowerCase()} fabric`, value: `${_people(byCls[k])} (${pc(byCls[k])})` }));
+        stats.push({ label: 'Typical resident: footprint area / attached share / gap to the next building',
+            value: `${_round(wquantile(area, pop, idx, 0.5), 0)} m² / ${_round(wquantile(att, pop, idx, 0.5), 0)}% / ${_round(wquantile(gap, pop, idx, 0.5), 1)} m` });
+        if (swr) stats.push({ label: 'Shared wall ratio around the typical resident (share of outline against a neighbour)', value: `${_round(wquantile(swr, pop, idx, 0.5), 0)}%` });
+        if (heat && set[1].length >= 5 && set[0].length >= 5) {
+            const hm = s => wmean(heat, pop, s.filter(i => _fin(heat[i])));
+            stats.push({ label: 'Surface heat vs region, packed attached vs open detached fabric', value: `${_round(hm(set[1]), 1)} °C vs ${_round(hm(set[0]), 1)} °C` });
+        }
+        const score = Float64Array.from({ length: n }, (_, i) => (cls[i] === 1 ? w(i) * v(att, i) / Math.max(20, v(area, i)) : 0));
+        const picks = [];
+        for (const i of set[1].slice().sort((a, b) => score[b] - score[a])) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `Most packed ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(area[i], 0)} m² footprints, ${_round(att[i], 0)}% attached, ${_round(v(gap, i), 1)} m gaps; ${_people(w(i))} residents` }));
+        return {
+            columns: { fabric_class: cls }, idx, weightKey: 'fabric_class', noHotspots: true,
+            metric: { label: 'Residents in packed, small, attached fabric', value: _round(100 * byCls[1] / all, 0), unit: '%', higherIs: 'worse' },
+            headline: `${_people(byCls[1])} residents (${pc(byCls[1])}) live in packed fabric, where most buildings are under ${FAB_PACKED_AREA} m² and touch a neighbour; ${pc(byCls[2])} live in attached rows laid out on a grid, ${pc(byCls[0])} in open, detached fabric and ${pc(byCls[3])} among large footprints (apartment blocks, institutions, sheds). The typical resident's building covers ${_round(wquantile(area, pop, idx, 0.5), 0)} m² and stands ${_round(wquantile(gap, pop, idx, 0.5), 1)} m from the next one.`,
+            stats,
+        };
+    }
+
+    // Street pattern (after urbanity / OSMnx network form). Orientation order says whether streets run on a grid or
+    // every which way; circuity, link length and street-block size say how direct and fine-grained the network is.
+    const SP_GRID = 70, SP_TANGLE = 30, SP_BIG_BLOCK_HA = 5;
+
+    function streetpattern(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, ord = c['street_form.sf_order'], circ = c['street_form.sf_circuity'];
+        const link = c['street_form.sf_link_m'], blk = c['street_form.sf_block_ha'], pop = c['population.population'];
+        if (!ord || !ord.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), w = i => v(pop, i);
+        const idx = _residents(fr).filter(i => _fin(ord[i]));
+        if (idx.length < 5) return null;
+        let all = 0, grid = 0, tangle = 0, big = 0, bigAll = 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            all += w(i); out[i] = Math.round(ord[i]);
+            if (ord[i] >= SP_GRID) grid += w(i);
+            if (ord[i] < SP_TANGLE) tangle += w(i);
+            if (blk && _fin(blk[i])) { bigAll += w(i); if (blk[i] >= SP_BIG_BLOCK_HA) big += w(i); }
+        }
+        if (!all) return null;
+        const pc = (x, t = all) => `${_round(100 * x / (t || 1), 0)}%`, med = wquantile(ord, pop, idx, 0.5);
+        const q = (a, p) => { const s = idx.filter(i => a && _fin(a[i])); return s.length ? wquantile(a, pop, s, p) : NaN; };
+        const stats = [
+            { label: 'Grid order around the typical resident (100 = perfect grid)', value: `${_round(med, 0)}` },
+            { label: `Residents on gridded streets (order ${SP_GRID}+)`, value: `${_people(grid)} (${pc(grid)})` },
+            { label: `Residents on tangled streets (order under ${SP_TANGLE})`, value: `${_people(tangle)} (${pc(tangle)})` },
+        ];
+        if (circ) stats.push({ label: 'Street circuity around the typical resident (1 = dead straight)', value: `${_round(q(circ, 0.5), 2)}` });
+        if (link) stats.push({ label: 'Typical street link between junctions', value: `${_round(q(link, 0.5), 0)} m` });
+        if (blk) stats.push({ label: 'Typical street block (land ringed by streets)', value: `${_round(q(blk, 0.5), 2)} ha` },
+            { label: `Residents where street blocks are ${SP_BIG_BLOCK_HA} ha or more`, value: `${_people(big)} (${pc(big, bigAll)} of those with closed blocks)` });
+        const spacedPick = (score, k) => {
+            const picks = [];
+            for (const i of idx.slice().sort((a, b) => score[b] - score[a])) {
+                if (picks.length >= k || score[i] <= 0) break;
+                if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+                picks.push(i);
+            }
+            return picks;
+        };
+        const gridScore = Float64Array.from({ length: n }, (_, i) => (_fin(ord[i]) && ord[i] >= SP_GRID ? w(i) * ord[i] : 0));
+        const tangleScore = Float64Array.from({ length: n }, (_, i) => (_fin(ord[i]) && ord[i] < SP_TANGLE ? w(i) * (SP_TANGLE - ord[i]) : 0));
+        spacedPick(gridScore, 3).forEach((i, k) => stats.push({ label: `Most gridded ${k + 1}: ${g.codes[i]}`, value: `order ${Math.round(ord[i])}; ${_people(w(i))} residents` }));
+        spacedPick(tangleScore, 3).forEach((i, k) => stats.push({ label: `Most tangled ${k + 1}: ${g.codes[i]}`, value: `order ${Math.round(ord[i])}${circ && _fin(circ[i]) ? `, circuity ${_round(circ[i], 2)}` : ''}; ${_people(w(i))} residents` }));
+        return {
+            columns: { grid_order: out }, idx, weightKey: 'grid_order',
+            metric: { label: 'Grid order around the typical resident', value: _round(med, 0), unit: '0-100', higherIs: null },
+            headline: `Streets around the typical resident score ${_round(med, 0)} of 100 for grid order: ${pc(grid)} of residents live where streets run on a clear grid and ${pc(tangle)} where they run every which way. A grid makes routes easy to read and spreads traffic; a tangle of lanes is typical of old cores and villages the city swallowed.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'deprivation', title: 'Relative deprivation (open index)', icon: '📉',
             question: 'Which parts of my city are most deprived on an open index?',
@@ -393,8 +501,20 @@ const UrbanLensesMore = (() => {
             needs: ['water_colour.wc_water_pct', 'water_colour.wc_weed_pct', 'water_colour.wc_ndci', 'water_colour.wc_ndti', 'population.population'],
             method: `Copernicus Sentinel-2 surface reflectance scenes from March to May 2024 and 2025 (the dry season, when blooms and weed mats peak and cloud is low) are cloud-masked and reduced to a median. Permanent water is where JRC Global Surface Water found water in 60% or more of observations since 1984, minus the sea; the Copernicus DEM GLO-30 water body mask then keeps blocks whose water is mostly river or canal (lakes and tanks are the lake health lens). Narrow streams and nalas under about 30 m wide are not in the mask and are missed. On that water, pixels with NDVI 0.3 or more are floating weeds (mostly water hyacinth) or a dense surface bloom; on the remaining open water (NDVI under 0.1) the Normalised Difference Chlorophyll Index (B5−B4)/(B5+B4) estimates chlorophyll, and 0.15 or more points to eutrophic, nutrient-rich water (Mishra & Mishra 2012). Each L7 block with 5% or more water is classed weed-covered (25%+ of its water), algae-rich, or clearer; residents within about 500 m of such a block count as living next to it. Colour cannot see coliform, BOD or toxic effluent, so treat clearer as "no visible bloom", not as clean.`,
             refs: 'Copernicus Sentinel-2 MSI Level-2A (ESA, free and open); Pekel J.-F. et al. 2016, High-resolution mapping of global surface water and its long-term changes, Nature 540:418 (JRC GSW v1.4, CC BY 4.0); Mishra S. & Mishra D.R. 2012, Normalized difference chlorophyll index, Remote Sens. Environ. 117:394' },
+        { id: 'fabric', title: 'Building fabric: packed, rows or open', icon: '🧩',
+            question: 'Where are buildings packed wall to wall, set in rows, or standing apart?',
+            field: { key: 'fabric_class', label: 'Building fabric (0 open, 1 packed attached, 2 rows on a grid, 3 large footprints, 4 mixed)', unit: 'class', higherIs: null, ramp: 'viridis', domain: [0, 4] },
+            needs: ['building_form.bf_count', 'building_form.bf_area_m2', 'building_form.bf_attached_pct', 'building_form.bf_align', 'building_form.bf_gap_m', 'building_form.bf_shared_wall', 'surface_heat.uhi_anomaly_c', 'population.population'],
+            method: `Overture Maps buildings (release 2026-10-21.0: OpenStreetMap, Google Open Buildings and Microsoft ML footprints) are measured one by one on a local metre grid with the footprint morphology used by urbanity and momepy: area, the share of the outline within 1 m of another footprint (shared wall ratio), the bearing of the long axis of the minimum rotated rectangle, and the distance to the nearest other footprint. Each L7 block with ${FAB_MIN} or more footprints takes medians, the share of footprints within 1 m of another (attached), and grid alignment, the length of the mean four-fold orientation vector (100 when every building sits on one grid). Classes, in order: large footprints (median ${FAB_LARGE} m² or more), packed (${FAB_PACKED_ATT}%+ attached and median under ${FAB_PACKED_AREA} m²), attached rows on a grid (${FAB_GRID_ATT}%+ attached, alignment ${FAB_GRID_ALIGN}+), open detached (median gap ${FAB_OPEN_GAP} m or more), otherwise mixed. ML footprints merge touching roofs in places and miss small sheds, so attached shares are approximate; the How neighbourhoods were built lens gives WRI's planned and unplanned reading of the same ground.`,
+            refs: 'Yap W., Stouffs R. & Biljecki F. 2023, Urbanity: automated modelling and analysis of multidimensional networks in cities, npj Urban Sustainability 3:45 (urbanity, MIT); Fleischmann M. 2019, momepy: Urban Morphology Measuring Toolkit, JOSS 4(43):1807; Hamaina R., Leduc T. & Moreau G. 2012 (shared wall ratio); Overture Maps Foundation buildings theme (ODbL)' },
+        { id: 'streetpattern', title: 'Street pattern: grid or tangle', icon: '🧭',
+            question: 'Do the streets in my area run on a grid, or every which way?',
+            field: { key: 'grid_order', label: 'Street grid order (100 = perfect grid)', unit: '0-100', higherIs: null, ramp: 'viridis', domain: [0, 100] },
+            needs: ['street_form.sf_order', 'street_form.sf_circuity', 'street_form.sf_link_m', 'street_form.sf_block_ha', 'population.population'],
+            method: `Overture Maps transportation segments (from OpenStreetMap, ODbL), public streets only (trunk to residential, unclassified, living and pedestrian). Every straight piece of street adds its length to a 36-bin histogram of compass bearings (both directions), pooled over the 5 × 5 blocks around each block (about 1.2 km, at least 1 km of street). Orientation order is Boeing's 1 − ((H − H_grid) / (H_max − H_grid))², where H is the histogram's entropy, H_max that of uniformly spread bearings and H_grid that of a perfect four-way grid; shown 0-100. Circuity is street length between junctions over the straight distance between them, link length is the median junction-to-junction length, and street blocks are the parcels of land that public streets fully ring (polygonised network, 0.05-50 ha), by the block holding their centre. Grid order ${SP_GRID}+ counts as gridded and under ${SP_TANGLE} as tangled. Lanes mapped as service roads or footpaths are left out, so very fine old-city lanes can read as large blocks.`,
+            refs: 'Boeing G. 2019, Urban spatial order: street network orientation, configuration, and entropy, Applied Network Science 4:67; Boeing G. 2017, OSMnx, Computers, Environment and Urban Systems 65:126; Yap W., Stouffs R. & Biljecki F. 2023, Urbanity, npj Urban Sustainability 3:45 (MIT); Overture Maps Foundation transportation theme' },
     ];
 
-    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975, afternoonheat, riverwater });
+    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975, afternoonheat, riverwater, fabric, streetpattern });
     return { ENTRIES };
 })();

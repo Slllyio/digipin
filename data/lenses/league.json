@@ -1,6 +1,6 @@
 {
  "schema": "digipin.lens-league/1",
- "generated": "2026-11-01",
+ "generated": "2026-11-17",
  "cities": {
   "ahmedabad": {
    "label": "Ahmedabad",
@@ -83,6 +83,18 @@
      "value": 78,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 17,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 38,
+     "unit": "0-100",
+     "higherIs": null
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -1271,6 +1283,18 @@
      "value": 0.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 50,
+     "unit": "0-100",
+     "higherIs": null
     },
     "junctions": {
      "label": "Residents near a junction with 12,000+ peak hour vehicles",
@@ -2814,6 +2838,18 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 14,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 34,
+     "unit": "0-100",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 3.1,
@@ -3995,6 +4031,18 @@
      "value": 84.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 60,
+     "unit": "0-100",
+     "higherIs": null
     },
     "liquefy": {
      "label": "Residents in blocks mostly on ground likely to liquefy",
@@ -5424,6 +5472,18 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 23,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 57,
+     "unit": "0-100",
+     "higherIs": null
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 16,
@@ -6702,6 +6762,18 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 21,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 34,
+     "unit": "0-100",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.1,
@@ -7685,6 +7757,18 @@
      "value": 0.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 38,
+     "unit": "0-100",
+     "higherIs": null
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -9048,6 +9132,18 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 22,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 44,
+     "unit": "0-100",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.3,
@@ -10206,6 +10302,18 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 29,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 53,
+     "unit": "0-100",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 5.9,
@@ -11363,6 +11471,18 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 46,
+     "unit": "0-100",
+     "higherIs": null
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
@@ -12654,6 +12774,18 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 31,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 44,
+     "unit": "0-100",
+     "higherIs": null
+    },
     "unpaved": {
      "label": "Residents where a fifth or more of the known roads are unpaved",
      "value": 9.2,
@@ -13817,6 +13949,18 @@
      "value": 15.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 21,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 30,
+     "unit": "0-100",
+     "higherIs": null
     },
     "challans": {
      "label": "Residents in station areas booking 100+ violations per 1,000 residents",
@@ -15149,6 +15293,18 @@
      "value": 92.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "fabric": {
+     "label": "Residents in packed, small, attached fabric",
+     "value": 7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "streetpattern": {
+     "label": "Grid order around the typical resident",
+     "value": 47,
+     "unit": "0-100",
+     "higherIs": null
     },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",

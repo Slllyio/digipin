@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-01T16:33:08Z",
+  "generated": "2026-11-17T05:22:56Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -3846,6 +3846,358 @@
             "north": 18.64111328125
           },
           "json": "building_dynamics/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "building_form",
+      "title": "Building fabric (footprint shape and arrangement)",
+      "description": "Footprint shape and arrangement per block from Overture Maps buildings (release 2026-10-21.0: OpenStreetMap, Google Open Buildings and Microsoft ML footprints). Medians of footprint area, circular compactness and elongation (ML footprints are almost all rectangles, so rectangularity is not kept); grid alignment of long axes (4-fold orientation order); share of attached footprints and shared wall ratio (within 1 m); median gap to the nearest footprint. Methods after momepy and urbanity (Fleischmann 2019; Yap et al. 2022). Blocks with fewer than 5 footprints left out.",
+      "source": "pipeline/realestate/buildingform.py (Overture Maps buildings)",
+      "license": "ODbL (OpenStreetMap contributors via Overture Maps; Google Open Buildings CC BY 4.0; Microsoft ML Buildings ODbL)",
+      "group": "Buildings",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "bf_count",
+          "label": "Building footprints",
+          "type": "number",
+          "agg": "sum",
+          "unit": "buildings",
+          "domain": [
+            5,
+            785
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "bf_area_m2",
+          "label": "Median footprint area",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m\u00b2",
+          "domain": [
+            7.4092,
+            6499.4798
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "bf_compact",
+          "label": "Footprint compactness (circle = 1)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-1",
+          "domain": [
+            0.1417,
+            0.9782371409116795
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "bf_elong",
+          "label": "Footprint elongation (square = 1)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-1",
+          "domain": [
+            0.1127,
+            0.9971
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "bf_align",
+          "label": "Buildings on one grid",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0.5082554348917042,
+            100.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "bf_attached_pct",
+          "label": "Attached buildings",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of buildings",
+          "domain": [
+            0.0,
+            100.0
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "bf_shared_wall",
+          "label": "Shared wall ratio",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of outline",
+          "domain": [
+            0.0,
+            95.14044742335784
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "bf_gap_m",
+          "label": "Median gap to nearest building",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            0.0,
+            100.0
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "bf_attached_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 6297,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "building_form/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 17688,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "building_form/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 4170,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "building_form/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 7939,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "building_form/chennai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 31555,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "building_form/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 632,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.60009765625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "building_form/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 13291,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "building_form/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 11548,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "building_form/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 7419,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "building_form/jaipur.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 6555,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "building_form/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 6913,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "building_form/lucknow.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 7024,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.989990234375,
+            "north": 19.271728515625
+          },
+          "json": "building_form/mumbai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 8460,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "building_form/pune/{prefix}.json.gz",
           "parquet": null,
           "shards": {
             "prefixLen": 4,
@@ -55799,6 +56151,315 @@
             "north": 19.26953125
           },
           "json": "street_dogs/mumbai.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "street_form",
+      "title": "Street pattern (grid order, circuity, link and block size)",
+      "description": "Street network form per block from Overture Maps transportation segments (release 2026-10-21.0, from OpenStreetMap; public streets trunk to residential, unclassified, living and pedestrian). Orientation order (Boeing 2019) over the surrounding 5 x 5 blocks, circuity and median length of links between junctions, median street-block area (land ringed by streets) and street density. After urbanity (Yap et al. 2022) and OSMnx.",
+      "source": "pipeline/realestate/streetform.py (Overture Maps transportation)",
+      "license": "ODbL (OpenStreetMap contributors, via Overture Maps)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "sf_order",
+          "label": "Street grid order (100 = perfect grid)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            2.9292616582829,
+            99.99999999966101
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "sf_circuity",
+          "label": "Street circuity (1 = straight)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "ratio",
+          "domain": [
+            0.9999999999997425,
+            376.63337491472754
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "sf_link_m",
+          "label": "Median street link length",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            10.063291116428058,
+            16337.34464788734
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "sf_block_ha",
+          "label": "Median street-block size",
+          "type": "number",
+          "agg": "mean",
+          "unit": "ha",
+          "domain": [
+            0.050015107386081954,
+            49.9918424527421
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "sf_km_km2",
+          "label": "Street length per km\u00b2",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km/km\u00b2",
+          "domain": [
+            0.019841397284168272,
+            103.28075190119603
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "sf_order",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 6394,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.7021484375,
+            "north": 23.1279296875
+          },
+          "json": "street_form/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 18137,
+          "bbox": {
+            "west": 77.446044921875,
+            "south": 12.82275390625,
+            "east": 77.784423828125,
+            "north": 13.14794921875
+          },
+          "json": "street_form/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 4622,
+          "bbox": {
+            "west": 77.29443359375,
+            "south": 23.171875,
+            "east": 77.538330078125,
+            "north": 23.332275390625
+          },
+          "json": "street_form/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 7647,
+          "bbox": {
+            "west": 80.09814453125,
+            "south": 12.895263671875,
+            "east": 80.31787109375,
+            "north": 13.189697265625
+          },
+          "json": "street_form/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 35219,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.37939453125,
+            "east": 77.37353515625,
+            "north": 28.88916015625
+          },
+          "json": "street_form/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 798,
+          "bbox": {
+            "west": 77.261474609375,
+            "south": 24.595703125,
+            "east": 77.369140625,
+            "north": 24.685791015625
+          },
+          "json": "street_form/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 13210,
+          "bbox": {
+            "west": 78.289794921875,
+            "south": 17.28759765625,
+            "east": 78.606201171875,
+            "north": 17.562255859375
+          },
+          "json": "street_form/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 14875,
+          "bbox": {
+            "west": 75.57177734375,
+            "south": 22.492919921875,
+            "east": 76.013427734375,
+            "north": 22.906005859375
+          },
+          "json": "street_form/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MM",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC3",
+              "3MC7",
+              "3MC8",
+              "3MC9",
+              "3MCC"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 7545,
+          "bbox": {
+            "west": 75.69482421875,
+            "south": 26.79296875,
+            "east": 75.929931640625,
+            "north": 27.00390625
+          },
+          "json": "street_form/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 6464,
+          "bbox": {
+            "west": 88.25439453125,
+            "south": 22.44677734375,
+            "east": 88.4609375,
+            "north": 22.659912109375
+          },
+          "json": "street_form/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 7377,
+          "bbox": {
+            "west": 80.838623046875,
+            "south": 26.742431640625,
+            "east": 81.0693359375,
+            "north": 26.96875
+          },
+          "json": "street_form/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 6808,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.885009765625,
+            "east": 72.998779296875,
+            "north": 19.27392578125
+          },
+          "json": "street_form/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 8128,
+          "bbox": {
+            "west": 73.723876953125,
+            "south": 18.42138671875,
+            "east": 73.996337890625,
+            "north": 18.64990234375
+          },
+          "json": "street_form/pune.json",
           "parquet": null
         }
       ]
