@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-11-16T16:26:46Z",
-  "count": 9,
+  "generated_at_iso": "2026-11-17T00:23:13Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000tyns",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-16T21:55:58.945000+00:00",
+      "latitude": -20.7669,
+      "longitude": 169.818,
+      "depth_km": 119.853,
+      "place": "146 km SSE of Isangel, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyns",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tymu",
+      "magnitude": 6.6,
+      "origin_time_utc": "2026-11-16T21:11:20.515000+00:00",
+      "latitude": -6.0804,
+      "longitude": 131.4868,
+      "depth_km": 68.0,
+      "place": "148 km WSW of Tual, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tymu",
+      "tsunami": 0,
+      "significance": 674
+    },
+    {
+      "id": "us7000tymc",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-16T19:33:00.666000+00:00",
+      "latitude": -1.7205,
+      "longitude": 149.8061,
+      "depth_km": 10.0,
+      "place": "144 km NW of Kavieng, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tymc",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tym8",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-16T19:26:34.776000+00:00",
+      "latitude": -14.9779,
+      "longitude": -75.8684,
+      "depth_km": 10.0,
+      "place": "77 km WSW of Changuillo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tym8",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tykk",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-16T16:23:18.453000+00:00",
+      "latitude": -14.8364,
+      "longitude": -75.4229,
+      "depth_km": 39.085,
+      "place": "28 km SW of Changuillo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tykk",
+      "tsunami": 0,
+      "significance": 355
+    },
+    {
+      "id": "us7000tykh",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-11-16T16:16:45.265000+00:00",
+      "latitude": -15.0306,
+      "longitude": -76.0259,
+      "depth_km": 10.0,
+      "place": "95 km WSW of Changuillo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tykh",
+      "tsunami": 0,
+      "significance": 449
+    },
     {
       "id": "us7000tyjz",
       "magnitude": 4.6,
@@ -61,54 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyhr",
       "tsunami": 0,
       "significance": 449
-    },
-    {
-      "id": "us7000tygk",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-15T22:38:19.154000+00:00",
-      "latitude": 52.4937,
-      "longitude": 160.494,
-      "depth_km": 10.0,
-      "place": "141 km ESE of Petropavlovsk-Kamchatsky, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tygk",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tyga",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-15T21:37:21.082000+00:00",
-      "latitude": 36.4657,
-      "longitude": 70.9205,
-      "depth_km": 191.363,
-      "place": "44 km S of Jurm, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyga",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tyg6",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-15T20:51:56.298000+00:00",
-      "latitude": -5.9449,
-      "longitude": 128.7523,
-      "depth_km": 305.989,
-      "place": "256 km SSE of Ambon, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyg6",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000tyfh",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-15T17:48:36.959000+00:00",
-      "latitude": 36.0947,
-      "longitude": 70.9503,
-      "depth_km": 100.728,
-      "place": "74 km N of Pārūn, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyfh",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }

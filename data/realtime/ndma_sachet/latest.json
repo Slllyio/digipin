@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-16T16:26:50Z",
+  "generated_at_iso": "2026-11-17T00:23:12Z",
   "count": 98,
   "records": [
+    {
+      "id": "1794853111405010",
+      "headline": "IMD Guwahati has issued forecast for Light to Moderate Rain with thunderstorm which is very likely to occur at a few places over Biswanath in next 2 hours. Issued in Public Interest by ASDMA.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 16 Nov 2026 18:23:27 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794853111405010",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1794850780088010",
+      "headline": "IMD Guwahati has issued forecast for Thunderstorm with Lightning which is very likely to occur at a few places over Kamrup and Kamrup Metropolitan in next 3 hours. Issued in Public Interest by ASDMA.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 16 Nov 2026 17:42:52 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794850780088010",
+      "severity": "Minor",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1794833494909010",
       "headline": "IMD Guwahati has issued forecast for Light Thunderstorms and light to moderate rain which is very likely to occur at many places over Baksa, Biswanath, Chirang, Dhemaji, Dibrugarh, Lakhimpur, Sonitpur, Tamulpur, Tinsukia and Udalguri in next 3 hours. Issued in Public Interest by ASDMA.",
@@ -1054,28 +1076,6 @@
       "area": "",
       "published_utc": "Wed, 11 Nov 2026 09:04:25 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794387782215015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794386701009015",
-      "headline": "Moderate Rain with Thunderstorms and lightning accompanied with surface wind speed reaching 30-40 KMPH is very likely to occur at a few places over Gomati, Sepahijala and West Tripura in next 30 min to 1 hour.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 11 Nov 2026 08:47:11 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794386701009015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794381286299035",
-      "headline": "Thunderstorm/Lightning accompanied with Light to Moderate Rain and Gusty winds with possibility of Hailstorm is very likely to occur at isolated places over East Jaintia Hills, East Khasi Hills, Ri Bhoi, West Jaintia Hills in next 3 hours. Citizens are to be cautious. IMD, SDMA.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 11 Nov 2026 07:59:49 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794381286299035",
       "severity": "Moderate",
       "category": "Met-Storm",
       "tags": []
