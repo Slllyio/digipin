@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-17T00:23:13Z",
+  "generated_at_iso": "2026-11-17T08:17:35Z",
   "count": 11,
   "records": [
+    {
+      "id": "us7000tyqi",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-17T03:52:32.360000+00:00",
+      "latitude": -15.005,
+      "longitude": 167.3139,
+      "depth_km": 126.959,
+      "place": "26 km E of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyqi",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tyq5",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-17T02:00:17.654000+00:00",
+      "latitude": -11.5293,
+      "longitude": 162.5497,
+      "depth_km": 10.0,
+      "place": "137 km SSE of Kirakira, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyq5",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us7000tyns",
       "magnitude": 4.6,
@@ -109,30 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyjx",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000tyil",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-16T07:14:14.483000+00:00",
-      "latitude": 4.7842,
-      "longitude": 125.4267,
-      "depth_km": 10.0,
-      "place": "68 km S of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyil",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000tyhr",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-11-16T04:24:11.718000+00:00",
-      "latitude": 37.3664,
-      "longitude": 136.7444,
-      "depth_km": 273.644,
-      "place": "20 km NW of Anamizu, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyhr",
-      "tsunami": 0,
-      "significance": 449
     }
   ]
 }

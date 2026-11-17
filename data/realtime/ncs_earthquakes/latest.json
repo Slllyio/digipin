@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-17T00:23:15Z",
+  "generated_at_iso": "2026-11-17T08:17:57Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-17 11:16:47|30.139,92.358",
+      "magnitude": 3.8,
+      "origin_time": "2026-11-17 11:16:47",
+      "latitude": 30.139,
+      "longitude": 92.358,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "288km N of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-16 17:30:39|19.834,79.443",
       "magnitude": 2.8,
@@ -1639,17 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tibet",
       "location": "446km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 20:15:27|23.302,93.351",
-      "magnitude": 2.8,
-      "origin_time": "2026-11-02 20:15:27",
-      "latitude": 23.302,
-      "longitude": 93.351,
-      "depth_km": 33.0,
-      "region": "Champhai, Mizoram",
-      "location": "17km S of Champhai, Mizoram, India",
       "review_status": "Reviewed"
     }
   ]
