@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-17T08:17:57Z",
+  "generated_at_iso": "2026-11-17T17:45:25Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-17 22:14:13|24.493,94.561",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-17 22:14:13",
+      "latitude": 24.493,
+      "longitude": 94.561,
+      "depth_km": 102.0,
+      "region": "Myanmar",
+      "location": "49km S of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-17 21:44:46|31.299,77.151",
+      "magnitude": 2.0,
+      "origin_time": "2026-11-17 21:44:46",
+      "latitude": 31.299,
+      "longitude": 77.151,
+      "depth_km": 5.0,
+      "region": "Mandi, Himachal Pradesh",
+      "location": "21km N of Shimla, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-17 20:29:10|37.266,72.131",
+      "magnitude": 4.6,
+      "origin_time": "2026-11-17 20:29:10",
+      "latitude": 37.266,
+      "longitude": 72.131,
+      "depth_km": 93.0,
+      "region": "Tajikistan",
+      "location": "141km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-17 11:16:47|30.139,92.358",
       "magnitude": 3.8,
@@ -1617,39 +1650,6 @@
       "depth_km": 10.0,
       "region": "China",
       "location": "513km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 00:03:09|32.660,93.766",
-      "magnitude": 4.0,
-      "origin_time": "2026-11-03 00:03:09",
-      "latitude": 32.66,
-      "longitude": 93.766,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "522km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 22:56:24|33.292,75.893",
-      "magnitude": 3.1,
-      "origin_time": "2026-11-02 22:56:24",
-      "latitude": 33.292,
-      "longitude": 75.893,
-      "depth_km": 5.0,
-      "region": "Kishtwar, Jammu and Kashmir",
-      "location": "95km ENE of Katra, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-02 21:05:21|31.936,93.763",
-      "magnitude": 4.5,
-      "origin_time": "2026-11-02 21:05:21",
-      "latitude": 31.936,
-      "longitude": 93.763,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "446km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
