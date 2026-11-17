@@ -446,6 +446,116 @@ const UrbanLensesMore = (() => {
         };
     }
 
+    // Map quality (after urbanity's OSM completeness checks). How much of each block was drawn by people rather than
+    // machine-learning footprints, and how much carries heights, building types and street names: the trust level of
+    // every other lens that leans on open maps.
+    const MQ_THIN_OSM = 10, MQ_THIN_NAMED = 30;
+
+    function mapquality(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, nb = c['map_quality.mq_buildings'], osm = c['map_quality.mq_osm_pct'];
+        const ht = c['map_quality.mq_height_pct'], ty = c['map_quality.mq_type_pct'], km = c['map_quality.mq_street_km'];
+        const nm = c['map_quality.mq_named_pct'], pop = c['population.population'];
+        if (!nb || !osm || !nb.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), w = i => v(pop, i);
+        const idx = _residents(fr).filter(i => _fin(nb[i]) && nb[i] > 0);
+        if (idx.length < 5) return null;
+        let B = 0, O = 0, H = 0, T = 0, S = 0, N = 0, all = 0, thin = 0;
+        for (let i = 0; i < n; i++) {
+            const b = v(nb, i); B += b; O += b * v(osm, i) / 100; H += b * v(ht, i) / 100; T += b * v(ty, i) / 100;
+            const k = v(km, i); S += k; N += k * v(nm, i) / 100;
+        }
+        const thinSet = [];
+        for (const i of idx) {
+            all += w(i);
+            if (v(osm, i) < MQ_THIN_OSM && (!km || !_fin(km[i]) || v(nm, i) < MQ_THIN_NAMED)) { thin += w(i); thinSet.push(i); }
+        }
+        if (!all || !B) return null;
+        const pc = (x, t) => `${_round(100 * x / (t || 1), 0)}%`;
+        const stats = [
+            { label: 'Building footprints on the map', value: `${_people(B)}` },
+            { label: '…drawn by OpenStreetMap mappers (rest: Google / Microsoft machine-learning footprints)', value: pc(O, B) },
+            { label: '…with a height or number of floors', value: pc(H, B) },
+            { label: '…with a building type (homes, shop, school…)', value: pc(T, B) },
+            { label: 'Public street length with a name', value: `${pc(N, S)} of ${_round(S, 0)} km` },
+            { label: `Residents in thinly mapped blocks (under ${MQ_THIN_OSM}% hand-drawn buildings and under ${MQ_THIN_NAMED}% named streets)`, value: `${_people(thin)} (${pc(thin, all)})` },
+        ];
+        const score = Float64Array.from({ length: n }, (_, i) => w(i) * (100 - v(osm, i)));
+        const picks = [];
+        for (const i of thinSet.slice().sort((a, b) => score[b] - score[a])) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `Most residents on a thin map ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(v(osm, i), 0)}% hand-drawn buildings, ${_round(v(nm, i), 0)}% named streets; ${_people(w(i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(v(osm, i), 0);
+        return {
+            columns: { osm_drawn_pct: out }, idx, weightKey: 'osm_drawn_pct', noHotspots: true,
+            metric: { label: 'Building footprints drawn by OpenStreetMap mappers', value: _round(100 * O / B, 0), unit: '%', higherIs: 'better' },
+            headline: `${pc(O, B)} of the ${_people(B)} buildings on the map were drawn by OpenStreetMap mappers; the rest are machine-learning footprints from Google and Microsoft, which get the outline but not what the building is. Only ${pc(H, B)} carry a height or floor count and ${pc(T, B)} a building type, and ${pc(N, S)} of street length has a name. ${_people(thin)} residents (${pc(thin, all)}) live in thinly mapped blocks, where lenses built on map tags (shops, schools, building use, street names) deserve the most caution.`,
+            stats,
+        };
+    }
+
+    // Through streets (after urbanity's network centralities; Sevtsuk's local betweenness). Edge betweenness within
+    // 1.2 km says which street links most short walks pass along: where foot traffic, and so shopfronts, gather.
+    const TS_TOP = 0.9, TS_MAPPED = 3;
+
+    function throughstreets(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, mx = c['through_streets.ts_max'], pop = c['population.population'];
+        const food = c['places.food'], shop = c['places.shopping'], anyp = c['places.places'];
+        if (!mx || !mx.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), w = i => v(pop, i);
+        const blocks = [];
+        for (let i = 0; i < n; i++) if (_fin(mx[i])) blocks.push(i);
+        if (blocks.length < 20) return null;
+        const sorted = blocks.map(i => mx[i]).sort((a, b) => a - b);
+        const cut = sorted[Math.floor(TS_TOP * (sorted.length - 1))];
+        const rank = new Float64Array(n).fill(NaN);
+        // percentile rank within the city (ties averaged by binary search on the sorted array)
+        const lower = x => { let lo = 0, hi = sorted.length; while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] < x) lo = m + 1; else hi = m; } return lo; };
+        const upper = x => { let lo = 0, hi = sorted.length; while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] <= x) lo = m + 1; else hi = m; } return lo; };
+        for (const i of blocks) rank[i] = Math.round(100 * ((lower(mx[i]) + upper(mx[i])) / 2) / sorted.length);
+        const top = blocks.filter(i => mx[i] >= cut && mx[i] > 0);
+        const shops = i => v(food, i) + v(shop, i);
+        let shopAll = 0, shopTop = 0;
+        for (const i of blocks) shopAll += shops(i);
+        for (const i of top) shopTop += shops(i);
+        const lived = blocks.filter(i => w(i) > 0);
+        const shopMed = (() => { const a = lived.map(shops).sort((x, y) => x - y); return a.length ? a[Math.floor(a.length / 2)] : 0; })();
+        // Only where the shop map is not itself thin: the 1 km around must hold at least the typical lived-in block's
+        // nearby count, so an empty block reads as a gap in trade, not a gap in the map.
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => shops(i)), 1, false);
+        const nearMed = (() => { const a = lived.map(i => near[i]).sort((x, y) => x - y); return a.length ? a[Math.floor(a.length / 2)] : 0; })();
+        const mapped = i => !anyp || v(anyp, i) >= TS_MAPPED;
+        const untapped = top.filter(i => w(i) > 0 && shops(i) <= shopMed && near[i] >= nearMed && mapped(i));
+        const unmapped = top.filter(i => !mapped(i));
+        const stats = [
+            { label: `Shops and eateries on the busiest tenth of through-street blocks`, value: `${_round(100 * shopTop / (shopAll || 1), 0)}% (from ${_round(100 * top.length / blocks.length, 0)}% of blocks)` },
+            { label: 'Busy through-street blocks with no more shops than a typical lived-in block (untapped frontage)', value: `${untapped.length} blocks` },
+            { label: `Busy through-street blocks with under ${TS_MAPPED} mapped places of any kind (likely a gap in the places map, e.g. old bazaars)`, value: `${unmapped.length} blocks (${_round(100 * unmapped.length / (top.length || 1), 0)}%)` },
+        ];
+        const pick = (set, score, k) => {
+            const out = [];
+            for (const i of set.slice().sort((a, b) => score(b) - score(a))) {
+                if (out.length >= k) break;
+                if (out.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+                out.push(i);
+            }
+            return out;
+        };
+        pick(top, i => mx[i], 3).forEach((i, k) => stats.push({ label: `Busiest through street ${k + 1}: ${g.codes[i]}`, value: `${_round(mx[i], 1)} thousand short walks pass; ${shops(i)} shops and eateries` }));
+        pick(untapped, i => mx[i] * Math.log1p(w(i)), 5).forEach((i, k) => stats.push({ label: `Untapped frontage ${k + 1}: ${g.codes[i]}`, value: `${_round(mx[i], 1)} thousand short walks pass; ${shops(i)} shops and eateries; ${_people(w(i))} residents` }));
+        const idx = _residents(fr).filter(i => _fin(rank[i]));
+        return {
+            columns: { through_rank: rank }, idx: idx.length >= 5 ? idx : blocks, weightKey: 'through_rank',
+            metric: { label: 'Shops and eateries on the busiest tenth of through-street blocks', value: _round(100 * shopTop / (shopAll || 1), 0), unit: '%', higherIs: null },
+            headline: `The busiest tenth of blocks for through-movement on foot (short walks up to 1.2 km passing along their streets) hold ${_round(100 * shopTop / (shopAll || 1), 0)}% of the city's mapped shops and eateries. ${untapped.length} of those busy blocks have no more shops than a typical lived-in block: frontage that walking routes already favour but trade has not yet found, or where the street is hostile to stopping.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'deprivation', title: 'Relative deprivation (open index)', icon: '📉',
             question: 'Which parts of my city are most deprived on an open index?',
@@ -513,8 +623,20 @@ const UrbanLensesMore = (() => {
             needs: ['street_form.sf_order', 'street_form.sf_circuity', 'street_form.sf_link_m', 'street_form.sf_block_ha', 'population.population'],
             method: `Overture Maps transportation segments (from OpenStreetMap, ODbL), public streets only (trunk to residential, unclassified, living and pedestrian). Every straight piece of street adds its length to a 36-bin histogram of compass bearings (both directions), pooled over the 5 × 5 blocks around each block (about 1.2 km, at least 1 km of street). Orientation order is Boeing's 1 − ((H − H_grid) / (H_max − H_grid))², where H is the histogram's entropy, H_max that of uniformly spread bearings and H_grid that of a perfect four-way grid; shown 0-100. Circuity is street length between junctions over the straight distance between them, link length is the median junction-to-junction length, and street blocks are the parcels of land that public streets fully ring (polygonised network, 0.05-50 ha), by the block holding their centre. Grid order ${SP_GRID}+ counts as gridded and under ${SP_TANGLE} as tangled. Lanes mapped as service roads or footpaths are left out, so very fine old-city lanes can read as large blocks.`,
             refs: 'Boeing G. 2019, Urban spatial order: street network orientation, configuration, and entropy, Applied Network Science 4:67; Boeing G. 2017, OSMnx, Computers, Environment and Urban Systems 65:126; Yap W., Stouffs R. & Biljecki F. 2023, Urbanity, npj Urban Sustainability 3:45 (MIT); Overture Maps Foundation transportation theme' },
+        { id: 'mapquality', title: 'How well is my area mapped?', icon: '🗺️',
+            question: 'How complete is the open map here, and how far can I trust map-based answers?',
+            field: { key: 'osm_drawn_pct', label: 'Buildings drawn by OpenStreetMap mappers', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [0, 100] },
+            needs: ['map_quality.mq_buildings', 'map_quality.mq_osm_pct', 'map_quality.mq_height_pct', 'map_quality.mq_type_pct', 'map_quality.mq_street_km', 'map_quality.mq_named_pct', 'population.population'],
+            method: `Overture Maps (release 2026-10-21.0) records where every feature came from. Each L7 block counts its building footprints and the share drawn in OpenStreetMap (the rest come from Google Open Buildings or Microsoft's machine-learning footprints, which have an outline but no use, height or name), the shares carrying a height or floor count and a building type, and the share of public street length (trunk to residential, unclassified, living and pedestrian) with a name. A block is thinly mapped below ${MQ_THIN_OSM}% hand-drawn buildings and ${MQ_THIN_NAMED}% named streets. This is the kind of completeness check urbanity runs on OpenStreetMap before trusting a city's graph; it measures the map, not the place.`,
+            refs: 'Yap W., Stouffs R. & Biljecki F. 2023, Urbanity, npj Urban Sustainability 3:45 (MIT); Barrington-Leigh C. & Millard-Ball A. 2017, The world’s user-generated road map is more than 80% complete, PLOS ONE 12(8):e0180698; Overture Maps Foundation (ODbL)' },
+        { id: 'throughstreets', title: 'Through streets: where foot traffic funnels', icon: '🚶',
+            question: 'Which streets do most short walks pass along, and which of them still lack shops?',
+            field: { key: 'through_rank', label: 'Through-movement on foot, city percentile', unit: 'percentile', higherIs: null, ramp: 'heat', domain: [0, 100] },
+            needs: ['through_streets.ts_max', 'through_streets.ts_mean', 'places.places', 'places.food', 'places.shopping', 'population.population'],
+            method: `Overture Maps public streets (trunk to residential, unclassified, living and pedestrian; ODbL) are split at every connector into links weighted by length. Edge betweenness with a 1.2 km cut-off counts, for every pair of junctions up to 1.2 km apart along the network (about a 15-minute walk), how many shortest paths run along each link: the local through-movement potential that Sevtsuk found predicts where shops locate, and the network centrality urbanity computes on city graphs. Each block takes its busiest link and is ranked 0-100 within the city. The busiest tenth are compared with Overture places (food and shopping, confidence 0.6+): untapped frontage is a busy lived-in block with no more shops than the median lived-in block, counted only where the shops mapped within 1 km reach the median lived-in block's, and only blocks with ${TS_MAPPED} or more mapped places of any kind, so a gap in the map is not read as a gap in trade (Overture places are thin in some old bazaars, such as central Indore). Footpaths and service lanes are left out (mapped too unevenly), and every junction counts equally, not weighted by residents or jobs.`,
+            refs: 'Sevtsuk A. 2014, Location and agglomeration: the distribution of retail and food businesses in dense urban environments, J. Planning Education and Research 34(4):374; Hillier B. et al. 1993, Natural movement, Environment and Planning B 20:29; Yap W., Stouffs R. & Biljecki F. 2023, Urbanity (MIT); Overture Maps Foundation' },
     ];
 
-    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975, afternoonheat, riverwater, fabric, streetpattern });
+    UrbanLenses.register(ENTRIES, { deprivation, ruralrun, forecastcheck, sdgcard, workheat, fossilco2, since1975, afternoonheat, riverwater, fabric, streetpattern, mapquality, throughstreets });
     return { ENTRIES };
 })();

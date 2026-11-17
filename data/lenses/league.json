@@ -96,6 +96,18 @@
      "unit": "0-100",
      "higherIs": null
     },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 23,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 13,
+     "unit": "%",
+     "higherIs": null
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 28,
@@ -1294,6 +1306,18 @@
      "label": "Grid order around the typical resident",
      "value": 50,
      "unit": "0-100",
+     "higherIs": null
+    },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 59,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 27,
+     "unit": "%",
      "higherIs": null
     },
     "junctions": {
@@ -2850,6 +2874,18 @@
      "unit": "0-100",
      "higherIs": null
     },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 56,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 18,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 3.1,
@@ -4042,6 +4078,18 @@
      "label": "Grid order around the typical resident",
      "value": 60,
      "unit": "0-100",
+     "higherIs": null
+    },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 41,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 14,
+     "unit": "%",
      "higherIs": null
     },
     "liquefy": {
@@ -5484,6 +5532,18 @@
      "unit": "0-100",
      "higherIs": null
     },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 22,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 22,
+     "unit": "%",
+     "higherIs": null
+    },
     "since1951": {
      "label": "Unusually hot days a year now (18 in 1951-1980)",
      "value": 16,
@@ -6774,6 +6834,18 @@
      "unit": "0-100",
      "higherIs": null
     },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 55,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.1,
@@ -7768,6 +7840,18 @@
      "label": "Grid order around the typical resident",
      "value": 38,
      "unit": "0-100",
+     "higherIs": null
+    },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 55,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 11,
+     "unit": "%",
      "higherIs": null
     },
     "since1951": {
@@ -9144,6 +9228,18 @@
      "unit": "0-100",
      "higherIs": null
     },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 51,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 45,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 0.3,
@@ -10314,6 +10410,18 @@
      "unit": "0-100",
      "higherIs": null
     },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 8,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 21,
+     "unit": "%",
+     "higherIs": null
+    },
     "slidezone": {
      "label": "Residents on moderate or higher landslide susceptibility",
      "value": 5.9,
@@ -11482,6 +11590,18 @@
      "label": "Grid order around the typical resident",
      "value": 46,
      "unit": "0-100",
+     "higherIs": null
+    },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 47,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 15,
+     "unit": "%",
      "higherIs": null
     },
     "since1951": {
@@ -12786,6 +12906,18 @@
      "unit": "0-100",
      "higherIs": null
     },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 19,
+     "unit": "%",
+     "higherIs": null
+    },
     "unpaved": {
      "label": "Residents where a fifth or more of the known roads are unpaved",
      "value": 9.2,
@@ -13960,6 +14092,18 @@
      "label": "Grid order around the typical resident",
      "value": 30,
      "unit": "0-100",
+     "higherIs": null
+    },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 22,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 21,
+     "unit": "%",
      "higherIs": null
     },
     "challans": {
@@ -15304,6 +15448,18 @@
      "label": "Grid order around the typical resident",
      "value": 47,
      "unit": "0-100",
+     "higherIs": null
+    },
+    "mapquality": {
+     "label": "Building footprints drawn by OpenStreetMap mappers",
+     "value": 46,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "throughstreets": {
+     "label": "Shops and eateries on the busiest tenth of through-street blocks",
+     "value": 31,
+     "unit": "%",
      "higherIs": null
     },
     "since1951": {

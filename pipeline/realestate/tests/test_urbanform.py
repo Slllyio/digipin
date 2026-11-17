@@ -62,3 +62,28 @@ def test_bearing_hist_bins_both_directions():
     k1, k2, _ = sf.bearing_hist(np.array([0.0, 1.0]), np.array([1.0, 0.0]), np.array([1.0, 1.0]))
     assert list(k1) == [0, 9]  # north, east
     assert list(k2) == [18, 27]  # south, west
+
+
+def test_mapquality_aggregate():
+    from pipeline.realestate import mapquality as mq
+    code_of = lambda lat, lng: "A" if lng < 1 else "B"  # noqa: E731
+    b = [(0.5, 0, True, True, False), (0.5, 0, False, False, True), (2, 0, False, False, False)]
+    s = [(0.5, 0, 300.0, True), (0.5, 0, 100.0, False)]
+    rows = {r["digipin"]: r for r in mq.aggregate(b, s, code_of)}
+    assert rows["A"]["mq_buildings"] == 2 and rows["A"]["mq_osm_pct"] == 50 and rows["A"]["mq_type_pct"] == 50
+    assert rows["A"]["mq_street_km"] == pytest.approx(0.4) and rows["A"]["mq_named_pct"] == pytest.approx(75)
+    assert rows["B"]["mq_osm_pct"] == 0 and "mq_street_km" not in rows["B"]
+
+
+def test_local_betweenness_bridge_link_busiest():
+    pytest.importorskip("igraph")
+    from pipeline.realestate import throughstreets as ts
+    # two triangles joined by one link: the bridge carries every cross pair
+    U = ["a", "b", "c", "c", "d", "e", "f"]
+    V = ["b", "c", "a", "d", "e", "f", "d"]
+    L = [100.0] * 7
+    bet = ts.betweenness(U, V, L, radius=1000)
+    assert max(bet) == bet[3]
+    rows = ts.block_rows(["X", "X", None, "Y", "Y", "Y", "Y"], bet, L)
+    assert {r["digipin"] for r in rows} == {"X", "Y"}
+    assert rows[1]["ts_max"] == pytest.approx(bet[3] / 1000)

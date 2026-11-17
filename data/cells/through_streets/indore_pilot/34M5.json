@@ -1,0 +1,1 @@
+{"version":1,"dataset":"through_streets","region":"indore_pilot","level":7,"fields":["ts_max","ts_mean"],"cells":["34M5LT9","34M5ML7","34M5MT9","34M5P5M","34M5PP6","34M5PPC","34M5PTT","34M5TM9","34M5TMF","34M5TP8"],"columns":{"ts_max":[0.001,0,0,0.003,0,0.003,0,0.002,0.002,0],"ts_mean":[0.001,0.0,0.0,0.003,0.0,0.003,0.0,0.002,0.002,0.0]}}
