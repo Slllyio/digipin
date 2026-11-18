@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-17T17:45:25Z",
+  "generated_at_iso": "2026-11-18T00:32:35Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-18 04:50:15|28.086,87.998",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-18 04:50:15",
+      "latitude": 28.086,
+      "longitude": 87.998,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "82km NNW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 03:07:32|36.011,71.620",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-18 03:07:32",
+      "latitude": 36.011,
+      "longitude": 71.62,
+      "depth_km": 30.0,
+      "region": "Pakistan",
+      "location": "154km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-17 22:14:13|24.493,94.561",
       "magnitude": 3.2,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tibet",
       "location": "508km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 00:43:32|27.244,90.876",
-      "magnitude": 2.5,
-      "origin_time": "2026-11-03 00:43:32",
-      "latitude": 27.244,
-      "longitude": 90.876,
-      "depth_km": 5.0,
-      "region": "Bhutan",
-      "location": "105km WSW of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 00:31:29|32.579,93.810",
-      "magnitude": 4.0,
-      "origin_time": "2026-11-03 00:31:29",
-      "latitude": 32.579,
-      "longitude": 93.81,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "513km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-17T17:45:17Z",
-  "count": 13,
+  "generated_at_iso": "2026-11-18T00:32:38Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000tytz",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-17T18:15:19.134000+00:00",
+      "latitude": -17.5637,
+      "longitude": 168.1379,
+      "depth_km": 10.0,
+      "place": "26 km NW of Port-Vila, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tytz",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tyt9",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-17T16:35:58.497000+00:00",
+      "latitude": -1.6653,
+      "longitude": 149.8973,
+      "depth_km": 10.0,
+      "place": "141 km NW of Kavieng, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyt9",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000tyt4",
       "magnitude": 4.9,
@@ -60,7 +84,7 @@
       "place": "8 km WNW of Piti Village, Guam",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tysm",
       "tsunami": 0,
-      "significance": 313
+      "significance": 314
     },
     {
       "id": "us7000tyrw",
@@ -109,54 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyq5",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us7000tyns",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-16T21:55:58.945000+00:00",
-      "latitude": -20.7669,
-      "longitude": 169.818,
-      "depth_km": 119.853,
-      "place": "146 km SSE of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyns",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tymu",
-      "magnitude": 6.6,
-      "origin_time_utc": "2026-11-16T21:11:20.515000+00:00",
-      "latitude": -6.0804,
-      "longitude": 131.4868,
-      "depth_km": 68.0,
-      "place": "148 km WSW of Tual, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tymu",
-      "tsunami": 0,
-      "significance": 674
-    },
-    {
-      "id": "us7000tymc",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-16T19:33:00.666000+00:00",
-      "latitude": -1.7205,
-      "longitude": 149.8061,
-      "depth_km": 10.0,
-      "place": "144 km NW of Kavieng, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tymc",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tym8",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-16T19:26:34.776000+00:00",
-      "latitude": -14.9779,
-      "longitude": -75.8684,
-      "depth_km": 10.0,
-      "place": "77 km WSW of Changuillo, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tym8",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
