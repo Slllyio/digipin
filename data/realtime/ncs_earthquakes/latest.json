@@ -1,7 +1,106 @@
 {
-  "generated_at_iso": "2026-11-18T00:32:35Z",
+  "generated_at_iso": "2026-11-18T07:56:52Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-18 13:07:20|29.896,92.476",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-18 13:07:20",
+      "latitude": 29.896,
+      "longitude": 92.476,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "264km NNE of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 11:02:49|29.380,94.790",
+      "magnitude": 3.6,
+      "origin_time": "2026-11-18 11:02:49",
+      "latitude": 29.38,
+      "longitude": 94.79,
+      "depth_km": 19.0,
+      "region": "Tibet",
+      "location": "145km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 10:55:30|36.602,71.570",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-18 10:55:30",
+      "latitude": 36.602,
+      "longitude": 71.57,
+      "depth_km": 177.0,
+      "region": "Afghanistan",
+      "location": "106km ESE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 10:52:48|30.340,79.499",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-18 10:52:48",
+      "latitude": 30.34,
+      "longitude": 79.499,
+      "depth_km": 5.0,
+      "region": "Chamoli, Uttarakhand",
+      "location": "24km SSW of Joshimath, Uttarakhand , India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 10:21:11|30.380,79.581",
+      "magnitude": 4.1,
+      "origin_time": "2026-11-18 10:21:11",
+      "latitude": 30.38,
+      "longitude": 79.581,
+      "depth_km": 10.0,
+      "region": "Chamoli, Uttarakhand",
+      "location": "19km S of Joshimath, Uttarakhand , India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 09:44:00|25.104,95.128",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-18 09:44:00",
+      "latitude": 25.104,
+      "longitude": 95.128,
+      "depth_km": 144.0,
+      "region": "Myanmar",
+      "location": "68km ENE of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 07:43:48|24.719,93.991",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-18 07:43:48",
+      "latitude": 24.719,
+      "longitude": 93.991,
+      "depth_km": 58.0,
+      "region": "Imphal East, Manipur",
+      "location": "12km SSE of Imphal, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 07:25:44|35.572,70.362",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-18 07:25:44",
+      "latitude": 35.572,
+      "longitude": 70.362,
+      "depth_km": 140.0,
+      "region": "Afghanistan",
+      "location": "154km NE of Kabul , Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 06:16:32|39.118,71.274",
+      "magnitude": 4.8,
+      "origin_time": "2026-11-18 06:16:32",
+      "latitude": 39.118,
+      "longitude": 71.274,
+      "depth_km": 15.0,
+      "region": "Tajikistan",
+      "location": "224km ENE of Dushanbe, Tajikistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-18 04:50:15|28.086,87.998",
       "magnitude": 2.8,
@@ -1551,105 +1650,6 @@
       "depth_km": 10.0,
       "region": "Nepal",
       "location": "112km WNW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 19:02:35|36.690,71.338",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-03 19:02:35",
-      "latitude": 36.69,
-      "longitude": 71.338,
-      "depth_km": 184.0,
-      "region": "Afghanistan",
-      "location": "83km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 11:05:46|37.940,73.599",
-      "magnitude": 4.6,
-      "origin_time": "2026-11-03 11:05:46",
-      "latitude": 37.94,
-      "longitude": 73.599,
-      "depth_km": 95.0,
-      "region": "Tajikistan",
-      "location": "284km ENE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 10:53:46|23.848,94.333",
-      "magnitude": 4.9,
-      "origin_time": "2026-11-03 10:53:46",
-      "latitude": 23.848,
-      "longitude": 94.333,
-      "depth_km": 112.0,
-      "region": "Myanmar",
-      "location": "91km SE of Moirang, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 07:26:14|25.546,90.696",
-      "magnitude": 2.8,
-      "origin_time": "2026-11-03 07:26:14",
-      "latitude": 25.546,
-      "longitude": 90.696,
-      "depth_km": 10.0,
-      "region": "East Garo Hills, Meghalaya",
-      "location": "49km E of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 06:43:16|28.038,93.115",
-      "magnitude": 3.0,
-      "origin_time": "2026-11-03 06:43:16",
-      "latitude": 28.038,
-      "longitude": 93.115,
-      "depth_km": 10.0,
-      "region": "Kurung Kumey, Arunachal Pradesh",
-      "location": "116km NNW of Itanagar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 05:57:21|31.603,93.514",
-      "magnitude": 4.1,
-      "origin_time": "2026-11-03 05:57:21",
-      "latitude": 31.603,
-      "longitude": 93.514,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "418km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 02:30:17|26.129,95.640",
-      "magnitude": 3.7,
-      "origin_time": "2026-11-03 02:30:17",
-      "latitude": 26.129,
-      "longitude": 95.64,
-      "depth_km": 110.0,
-      "region": "Myanmar",
-      "location": "114km E of Mokokchung, Nagaland, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 02:24:56|32.369,93.831",
-      "magnitude": 4.2,
-      "origin_time": "2026-11-03 02:24:56",
-      "latitude": 32.369,
-      "longitude": 93.831,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "490km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 01:50:14|32.537,93.825",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-03 01:50:14",
-      "latitude": 32.537,
-      "longitude": 93.825,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "508km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

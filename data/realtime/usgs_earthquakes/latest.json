@@ -1,7 +1,139 @@
 {
-  "generated_at_iso": "2026-11-18T00:32:38Z",
-  "count": 11,
+  "generated_at_iso": "2026-11-18T07:56:47Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us7000tyy8",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-11-18T06:07:42.780000+00:00",
+      "latitude": -15.1438,
+      "longitude": -75.9238,
+      "depth_km": 21.895,
+      "place": "85 km WNW of San Juan, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyy8",
+      "tsunami": 0,
+      "significance": 537
+    },
+    {
+      "id": "us7000tyxz",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-18T05:25:43.280000+00:00",
+      "latitude": 0.4346,
+      "longitude": -103.0838,
+      "depth_km": 10.0,
+      "place": "Galapagos Triple Junction region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyxz",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000tyy2",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-18T05:24:55.060000+00:00",
+      "latitude": -8.0301,
+      "longitude": 120.6485,
+      "depth_km": 10.0,
+      "place": "67 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyy2",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tyxi",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-11-18T04:41:32.015000+00:00",
+      "latitude": -8.2501,
+      "longitude": 120.5285,
+      "depth_km": 10.0,
+      "place": "40 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyxi",
+      "tsunami": 0,
+      "significance": 518
+    },
+    {
+      "id": "us7000tyxc",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-18T04:21:35.658000+00:00",
+      "latitude": -8.151,
+      "longitude": 120.6489,
+      "depth_km": 10.0,
+      "place": "54 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyxc",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000tyx2",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-11-18T03:42:34.269000+00:00",
+      "latitude": -5.7009,
+      "longitude": 146.5479,
+      "depth_km": 52.291,
+      "place": "99 km ESE of Madang, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyx2",
+      "tsunami": 0,
+      "significance": 519
+    },
+    {
+      "id": "us7000tywx",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-18T03:23:58.023000+00:00",
+      "latitude": -2.9907,
+      "longitude": 136.6576,
+      "depth_km": 10.0,
+      "place": "134 km ENE of Nabire, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tywx",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tywi",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-11-18T02:22:56.671000+00:00",
+      "latitude": 12.1387,
+      "longitude": 143.8866,
+      "depth_km": 10.0,
+      "place": "150 km SW of Merizo Village, Guam",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tywi",
+      "tsunami": 0,
+      "significance": 520
+    },
+    {
+      "id": "us7000tyw8",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-11-18T00:48:56.089000+00:00",
+      "latitude": 45.6863,
+      "longitude": 26.452,
+      "depth_km": 130.266,
+      "place": "16 km ESE of Comandău, Romania",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyw8",
+      "tsunami": 0,
+      "significance": 601
+    },
+    {
+      "id": "us7000tyw6",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-11-18T00:46:31.418000+00:00",
+      "latitude": 39.1912,
+      "longitude": 71.5875,
+      "depth_km": 10.0,
+      "place": "7 km SE of Karakenja, Tajikistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyw6",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us7000tyvt",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-17T23:25:33.527000+00:00",
+      "latitude": 13.022,
+      "longitude": 57.6884,
+      "depth_km": 10.0,
+      "place": "Owen Fracture Zone region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyvt",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tytz",
       "magnitude": 4.5,
@@ -108,31 +240,7 @@
       "place": "43 km NW of Oxford, New Zealand",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyrv",
       "tsunami": 0,
-      "significance": 381
-    },
-    {
-      "id": "us7000tyqi",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-17T03:52:32.360000+00:00",
-      "latitude": -15.005,
-      "longitude": 167.3139,
-      "depth_km": 126.959,
-      "place": "26 km E of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyqi",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tyq5",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-17T02:00:17.654000+00:00",
-      "latitude": -11.5293,
-      "longitude": 162.5497,
-      "depth_km": 10.0,
-      "place": "137 km SSE of Kirakira, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyq5",
-      "tsunami": 0,
-      "significance": 385
+      "significance": 382
     }
   ]
 }
