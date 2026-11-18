@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-18T07:56:52Z",
+  "generated_at_iso": "2026-11-18T17:00:32Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-18 17:56:24|22.314,94.178",
+      "magnitude": 4.5,
+      "origin_time": "2026-11-18 17:56:24",
+      "latitude": 22.314,
+      "longitude": 94.178,
+      "depth_km": 120.0,
+      "region": "Myanmar",
+      "location": "154km SE of Champhai, Mizoram, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-18 13:07:20|29.896,92.476",
       "magnitude": 3.9,
@@ -1639,17 +1650,6 @@
       "depth_km": 10.0,
       "region": "West Kameng, Arunachal Pradesh",
       "location": "45km ESE of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 20:49:00|27.786,87.177",
-      "magnitude": 3.1,
-      "origin_time": "2026-11-03 20:49:00",
-      "latitude": 27.786,
-      "longitude": 87.177,
-      "depth_km": 10.0,
-      "region": "Nepal",
-      "location": "112km WNW of Yuksom, Sikkim, India",
       "review_status": "Reviewed"
     }
   ]

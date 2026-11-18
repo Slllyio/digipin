@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-18T07:56:47Z",
-  "count": 20,
+  "generated_at_iso": "2026-11-18T17:00:18Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us7000tz1a",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-11-18T16:06:51.220000+00:00",
+      "latitude": 12.0918,
+      "longitude": 143.9927,
+      "depth_km": 10.0,
+      "place": "149 km SSW of Merizo Village, Guam",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz1a",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us7000tyza",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-18T11:10:57.037000+00:00",
+      "latitude": -39.6909,
+      "longitude": -91.5033,
+      "depth_km": 10.0,
+      "place": "West Chile Rise",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyza",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tyyw",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-18T09:37:00.617000+00:00",
+      "latitude": 38.7192,
+      "longitude": 137.8725,
+      "depth_km": 10.0,
+      "place": "86 km NW of Ryōtsu-minato, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyyw",
+      "tsunami": 0,
+      "significance": 416
+    },
     {
       "id": "us7000tyy8",
       "magnitude": 5.9,
@@ -108,7 +144,7 @@
       "place": "16 km ESE of Comandău, Romania",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyw8",
       "tsunami": 0,
-      "significance": 601
+      "significance": 614
     },
     {
       "id": "us7000tyw6",
@@ -145,102 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tytz",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000tyt9",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-17T16:35:58.497000+00:00",
-      "latitude": -1.6653,
-      "longitude": 149.8973,
-      "depth_km": 10.0,
-      "place": "141 km NW of Kavieng, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyt9",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tyt4",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-17T15:49:27.642000+00:00",
-      "latitude": 51.712,
-      "longitude": 158.4777,
-      "depth_km": 83.167,
-      "place": "135 km S of Vilyuchinsk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyt4",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tyt3",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-17T15:48:48.868000+00:00",
-      "latitude": 51.9624,
-      "longitude": 157.7885,
-      "depth_km": 87.3,
-      "place": "102 km ENE of Ozernovskiy, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyt3",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tysq",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-17T14:20:36.814000+00:00",
-      "latitude": -32.3057,
-      "longitude": 179.8423,
-      "depth_km": 337.077,
-      "place": "south of the Kermadec Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tysq",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000tysa",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-17T12:26:16.641000+00:00",
-      "latitude": -10.2678,
-      "longitude": 149.5845,
-      "depth_km": 10.0,
-      "place": "95 km W of Alotau, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tysa",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tysm",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-17T11:12:59.760000+00:00",
-      "latitude": 13.4806,
-      "longitude": 144.6211,
-      "depth_km": 106.835,
-      "place": "8 km WNW of Piti Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tysm",
-      "tsunami": 0,
-      "significance": 314
-    },
-    {
-      "id": "us7000tyrw",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-17T10:32:58.639000+00:00",
-      "latitude": 40.6353,
-      "longitude": 143.7461,
-      "depth_km": 26.644,
-      "place": "173 km ENE of Noda, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyrw",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tyrv",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-17T10:30:48.773000+00:00",
-      "latitude": -43.0226,
-      "longitude": 171.805,
-      "depth_km": 14.237,
-      "place": "43 km NW of Oxford, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyrv",
-      "tsunami": 0,
-      "significance": 382
     }
   ]
 }
