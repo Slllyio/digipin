@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-18T17:00:32Z",
+  "generated_at_iso": "2026-11-18T23:22:46Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-19 00:52:18|24.891,94.305",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-19 00:52:18",
+      "latitude": 24.891,
+      "longitude": 94.305,
+      "depth_km": 59.0,
+      "region": "Kamjong, Manipur",
+      "location": "18km WSW of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 23:53:25|27.389,92.840",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-18 23:53:25",
+      "latitude": 27.389,
+      "longitude": 92.84,
+      "depth_km": 5.0,
+      "region": "East Kameng, Arunachal Pradesh",
+      "location": "82km N of Tezpur, Assam, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-18 23:14:22|26.688,90.398",
+      "magnitude": 2.9,
+      "origin_time": "2026-11-18 23:14:22",
+      "latitude": 26.688,
+      "longitude": 90.398,
+      "depth_km": 8.0,
+      "region": "Chirang, Assam",
+      "location": "115km SE of Thimphu, Bhutan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-18 17:56:24|22.314,94.178",
       "magnitude": 4.5,
@@ -1617,39 +1650,6 @@
       "depth_km": 182.0,
       "region": "Tajikistan",
       "location": "113km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 23:24:50|33.141,75.705",
-      "magnitude": 2.8,
-      "origin_time": "2026-11-03 23:24:50",
-      "latitude": 33.141,
-      "longitude": 75.705,
-      "depth_km": 5.0,
-      "region": "Doda, Jammu and Kashmir",
-      "location": "73km ENE of Katra, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 22:37:51|29.056,60.249",
-      "magnitude": 4.2,
-      "origin_time": "2026-11-03 22:37:51",
-      "latitude": 29.056,
-      "longitude": 60.249,
-      "depth_km": 10.0,
-      "region": "Iran",
-      "location": "635km NNE of Muscat, Oman",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 22:14:26|27.411,92.297",
-      "magnitude": 3.4,
-      "origin_time": "2026-11-03 22:14:26",
-      "latitude": 27.411,
-      "longitude": 92.297,
-      "depth_km": 10.0,
-      "region": "West Kameng, Arunachal Pradesh",
-      "location": "45km ESE of Tawang, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

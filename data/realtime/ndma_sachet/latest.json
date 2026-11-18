@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-11-18T17:00:17Z",
+  "generated_at_iso": "2026-11-18T23:22:36Z",
   "count": 100,
   "records": [
+    {
+      "id": "1795040432375008",
+      "headline": "బంగాళాఖాతంలోని అక్వాన్ తుపాను ప్రభావంతో ఈ రోజు మీ ప్రాంతంలో ఈదురుగాలులతో కూడిన భారీ వర్షాలు కురిసే అవకాశం ఉంది.ప్రజలు అప్రమత్తంగా ఉండి తగిన జాగ్రత్తలు తీసుకోవాలి-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 18 Nov 2026 22:53:28 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795040432375008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1795041656904008",
+      "headline": "Heavy Rain with Gale wind speed reaching 60-70 Kmph Gusting to 80 Kmph  is very likely to occur at a few places over Anakapalli, Kakinada, Srikakulam, Visakhapatnam, Vizianagaram in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 18 Nov 2026 22:40:59 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795041656904008",
+      "severity": "Severe",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795041240659015",
+      "headline": "Light to Moderate Rain is very likely to occur at many places over Unakoti in next 30 minutes to 1 hour.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 18 Nov 2026 22:34:02 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795041240659015",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795040226348008",
+      "headline": "Extremely Heavy Rain is very likely to occur at isolated places over Alluri Sitharama Raju, Anakapalli, Kakinada, Srikakulam, Visakhapatnam, Vizianagaram in next 24 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 18 Nov 2026 22:17:10 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795040226348008",
+      "severity": "Extreme",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795039977725008",
+      "headline": "The SEVERE CYCLONIC STORM AKVAN with maximum wind speed of 90-100 gusting to 110 Kmph lays centred at 2330 IST of 18.11.26 near latitude 13.9N and longitude 85.3E, 510 Km south-southeast of Kalingapatnam, Andhra Pradesh. Cyclone Warning for ASR, PVP Manyam, Srikakulam, VSKP, Vizianagaram, AKP.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 18 Nov 2026 22:13:07 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795039977725008",
+      "severity": "Severe",
+      "category": "Met-Cyclone",
+      "tags": []
+    },
+    {
+      "id": "1795038751023015",
+      "headline": "Light to Moderate Rain is very likely to occur at a few places over Dhalai, North Tripura in next 30 minutes to 1 hour.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 18 Nov 2026 21:52:32 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795038751023015",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1795018046372012",
       "headline": "ଭାରତ ପାଣିପାଗ ବିଭାଗର ସୂଚନା ଅନୁଯାୟୀ, ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ବଜ୍ରପାତ ସହିତ ମଧ୍ୟମ ଧରଣର ବର୍ଷା ହେବାର ସମ୍ଭାବନା ଅଛି । ଏଥିପ୍ରତି ସତର୍କ ରହିବାକୁ ଅନୁରୋଧ । SRC, Odisha",
@@ -1032,72 +1098,6 @@
       "area": "",
       "published_utc": "Wed, 11 Nov 2026 09:49:53 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794389806879037",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794389306217011",
-      "headline": "Heavy Rain is Likely to occur over 4 districts of Jammu and Kashmir. Please follow SDMA guidelines.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 11 Nov 2026 09:29:49 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794389306217011",
-      "severity": "Severe",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794389225351017",
-      "headline": "দার্জিলিং জেলার কিছু অংশে দুপুর ২:৪৯ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে হালকা থেকে মাঝারি বজ্রবিদ্যুৎ ও বিদ্যুৎ চমকানো সহ হালকা থেকে মাঝারি বৃষ্টির প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 11 Nov 2026 09:28:34 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794389225351017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794389077372017",
-      "headline": "বেলা ২:৪১ থেকে পরবর্তী ২-৩ ঘণ্টায় দক্ষিণ ২৪ পরগনা জেলার কিছু অংশে হালকা থেকে মাঝারি বৃষ্টিসহ বজ্রবিদ্যুৎ ও ঝড় হওয়ার সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 11 Nov 2026 09:26:48 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794389077372017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794388708984017",
-      "headline": "দুপুর ২:৪১ থেকে পরবর্তী ২-৩ ঘণ্টায় দক্ষিণ ২৪ পরগনা জেলার কিছু অংশে হালকা থেকে মাঝারি বৃষ্টিসহ বজ্রবিদ্যুৎ ও হালকা থেকে মাঝারি ঝড়ের সম্ভাবনা।",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 11 Nov 2026 09:21:58 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794388708984017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1794377277619038",
-      "headline": "Heavy  rain (07-11 cm) accompanied with thunderstorm and lightning are very likely to occur at one or two places over Andaman and Nicobar Islands in the next 24 hours. People are advised to stay at safe places.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 11 Nov 2026 06:23:25 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794377277619038",
-      "severity": "Severe",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1794375480207035",
-      "headline": "Thunderstorm/Lightning accompanied with Light to Moderate Rain and Gusty winds with possibility of Hailstorm is very likely to occur  at isolated places over Eastern West Khasi Hills, East Khasi Hills, Ri Bhoi, West Jaintia Hills, West Khasi Hills in next 24 hours. Citizens are to be cautious. IMD, SDMA.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 11 Nov 2026 06:01:41 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1794375480207035",
       "severity": "Moderate",
       "category": "Met-Storm",
       "tags": []
