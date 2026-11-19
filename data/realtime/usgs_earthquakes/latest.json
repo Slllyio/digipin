@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-19T13:42:06Z",
-  "count": 15,
+  "generated_at_iso": "2026-11-19T21:49:37Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us6000uc2q",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-11-19T20:07:49.383000+00:00",
+      "latitude": -55.0035,
+      "longitude": -33.5069,
+      "depth_km": 10.0,
+      "place": "South Georgia Island region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc2q",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000uc2t",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-19T20:07:09.754000+00:00",
+      "latitude": -9.1894,
+      "longitude": -109.9127,
+      "depth_km": 10.0,
+      "place": "central East Pacific Rise",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc2t",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000uc26",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-19T18:41:19.631000+00:00",
+      "latitude": 27.9346,
+      "longitude": 102.1326,
+      "depth_km": 10.0,
+      "place": "13 km WNW of Xichang, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc26",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000uc1x",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-19T18:09:46.530000+00:00",
+      "latitude": -31.8465,
+      "longitude": -72.1843,
+      "depth_km": 10.0,
+      "place": "99 km WSW of Illapel, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc1x",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us6000ubzm",
       "magnitude": 4.9,
@@ -97,90 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubwa",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000ubw3",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-18T21:28:47.088000+00:00",
-      "latitude": 51.3379,
-      "longitude": 172.8596,
-      "depth_km": 10.0,
-      "place": "169 km S of Attu Station, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubw3",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000ubvu",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-18T20:38:39.129000+00:00",
-      "latitude": -2.9421,
-      "longitude": 146.4693,
-      "depth_km": 16.856,
-      "place": "134 km SW of Lorengau, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubvu",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tz37",
-      "magnitude": 6.1,
-      "origin_time_utc": "2026-11-18T19:14:23.713000+00:00",
-      "latitude": -57.7514,
-      "longitude": -146.746,
-      "depth_km": 10.0,
-      "place": "Pacific-Antarctic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz37",
-      "tsunami": 0,
-      "significance": 572
-    },
-    {
-      "id": "us7000tz33",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-18T18:46:53.317000+00:00",
-      "latitude": -21.411,
-      "longitude": -68.368,
-      "depth_km": 133.871,
-      "place": "23 km SSW of Ollagüe, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz33",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tz2w",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-18T18:08:00.785000+00:00",
-      "latitude": -5.4599,
-      "longitude": 35.1065,
-      "depth_km": 10.0,
-      "place": "46 km NNE of Kilimatinde, Tanzania",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz2w",
-      "tsunami": 0,
-      "significance": 386
-    },
-    {
-      "id": "us7000tz1n",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-11-18T17:22:23.454000+00:00",
-      "latitude": 32.2779,
-      "longitude": 130.4609,
-      "depth_km": 10.0,
-      "place": "4 km NNW of Tsunagi, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz1n",
-      "tsunami": 0,
-      "significance": 436
-    },
-    {
-      "id": "us7000tz1a",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-11-18T16:06:51.220000+00:00",
-      "latitude": 12.0918,
-      "longitude": 143.9927,
-      "depth_km": 10.0,
-      "place": "149 km SSW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz1a",
-      "tsunami": 0,
-      "significance": 432
     }
   ]
 }
