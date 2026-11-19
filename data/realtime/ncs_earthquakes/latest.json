@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-18T23:22:46Z",
+  "generated_at_iso": "2026-11-19T04:21:34Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-19 07:04:52|0.470,96.728",
+      "magnitude": 5.2,
+      "origin_time": "2026-11-19 07:04:52",
+      "latitude": 0.47,
+      "longitude": 96.728,
+      "depth_km": 28.0,
+      "region": "Indian Ocean",
+      "location": "625km WSW of Kuala Lumpur, Malaysia",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-19 00:52:18|24.891,94.305",
       "magnitude": 3.1,
@@ -1639,17 +1650,6 @@
       "depth_km": 24.0,
       "region": "Champhai, Mizoram",
       "location": "13km SSW of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 23:26:34|37.150,71.824",
-      "magnitude": 3.3,
-      "origin_time": "2026-11-03 23:26:34",
-      "latitude": 37.15,
-      "longitude": 71.824,
-      "depth_km": 182.0,
-      "region": "Tajikistan",
-      "location": "113km E of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]

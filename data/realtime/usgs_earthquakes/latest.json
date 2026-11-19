@@ -1,18 +1,66 @@
 {
-  "generated_at_iso": "2026-11-18T23:22:32Z",
-  "count": 20,
+  "generated_at_iso": "2026-11-19T04:21:29Z",
+  "count": 18,
   "records": [
     {
-      "id": "us6000ubw3",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-18T21:28:47.873000+00:00",
-      "latitude": 51.445,
-      "longitude": 172.9,
+      "id": "us6000ubxg",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-19T02:11:23.115000+00:00",
+      "latitude": -5.5431,
+      "longitude": 35.0812,
       "depth_km": 10.0,
-      "place": "157 km S of Attu Station, Alaska",
+      "place": "36 km NNE of Kilimatinde, Tanzania",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubxg",
+      "tsunami": 0,
+      "significance": 370
+    },
+    {
+      "id": "us6000ubxb",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-19T01:34:52.352000+00:00",
+      "latitude": 0.5231,
+      "longitude": 96.5298,
+      "depth_km": 37.003,
+      "place": "141 km W of Teluk Dalam, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubxb",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000ubxa",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-19T01:29:33.145000+00:00",
+      "latitude": -5.5109,
+      "longitude": 35.0903,
+      "depth_km": 10.0,
+      "place": "40 km NNE of Kilimatinde, Tanzania",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubxa",
+      "tsunami": 0,
+      "significance": 355
+    },
+    {
+      "id": "us6000ubwa",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-18T22:06:52.958000+00:00",
+      "latitude": 15.9616,
+      "longitude": -95.4267,
+      "depth_km": 35.0,
+      "place": "11 km SSW of Santa Gertrudis Miramar, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubwa",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000ubw3",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-18T21:28:47.088000+00:00",
+      "latitude": 51.3379,
+      "longitude": 172.8596,
+      "depth_km": 10.0,
+      "place": "169 km S of Attu Station, Alaska",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubw3",
       "tsunami": 0,
-      "significance": 400
+      "significance": 416
     },
     {
       "id": "us6000ubvu",
@@ -60,7 +108,7 @@
       "place": "46 km NNE of Kilimatinde, Tanzania",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz2w",
       "tsunami": 0,
-      "significance": 385
+      "significance": 386
     },
     {
       "id": "us7000tz1n",
@@ -169,78 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyxc",
       "tsunami": 0,
       "significance": 416
-    },
-    {
-      "id": "us7000tyx2",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-11-18T03:42:34.269000+00:00",
-      "latitude": -5.7009,
-      "longitude": 146.5479,
-      "depth_km": 52.291,
-      "place": "99 km ESE of Madang, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyx2",
-      "tsunami": 0,
-      "significance": 519
-    },
-    {
-      "id": "us7000tywx",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-18T03:23:58.023000+00:00",
-      "latitude": -2.9907,
-      "longitude": 136.6576,
-      "depth_km": 10.0,
-      "place": "134 km ENE of Nabire, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tywx",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tywi",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-11-18T02:22:56.671000+00:00",
-      "latitude": 12.1387,
-      "longitude": 143.8866,
-      "depth_km": 10.0,
-      "place": "150 km SW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tywi",
-      "tsunami": 0,
-      "significance": 520
-    },
-    {
-      "id": "us7000tyw8",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-11-18T00:48:56.089000+00:00",
-      "latitude": 45.6863,
-      "longitude": 26.452,
-      "depth_km": 130.266,
-      "place": "16 km ESE of Comandău, Romania",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyw8",
-      "tsunami": 0,
-      "significance": 617
-    },
-    {
-      "id": "us7000tyw6",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-11-18T00:46:31.418000+00:00",
-      "latitude": 39.1912,
-      "longitude": 71.5875,
-      "depth_km": 10.0,
-      "place": "7 km SE of Karakenja, Tajikistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyw6",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us7000tyvt",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-17T23:25:33.527000+00:00",
-      "latitude": 13.022,
-      "longitude": 57.6884,
-      "depth_km": 10.0,
-      "place": "Owen Fracture Zone region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyvt",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
