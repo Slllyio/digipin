@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-19T04:21:34Z",
+  "generated_at_iso": "2026-11-19T13:42:10Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-19 18:25:27|27.770,87.973",
+      "magnitude": 2.9,
+      "origin_time": "2026-11-19 18:25:27",
+      "latitude": 27.77,
+      "longitude": 87.973,
+      "depth_km": 25.0,
+      "region": "Nepal",
+      "location": "50km NNW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-19 16:42:28|36.548,70.951",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-19 16:42:28",
+      "latitude": 36.548,
+      "longitude": 70.951,
+      "depth_km": 183.0,
+      "region": "Afghanistan",
+      "location": "71km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-19 07:04:52|0.470,96.728",
       "magnitude": 5.2,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Tajikistan",
       "location": "352km NE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-04 03:04:12|39.402,73.441",
-      "magnitude": 5.3,
-      "origin_time": "2026-11-04 03:04:12",
-      "latitude": 39.402,
-      "longitude": 73.441,
-      "depth_km": 55.0,
-      "region": "Tajikistan",
-      "location": "359km NE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-03 23:45:12|23.343,93.280",
-      "magnitude": 3.7,
-      "origin_time": "2026-11-03 23:45:12",
-      "latitude": 23.343,
-      "longitude": 93.28,
-      "depth_km": 24.0,
-      "region": "Champhai, Mizoram",
-      "location": "13km SSW of Champhai, Mizoram, India",
       "review_status": "Reviewed"
     }
   ]

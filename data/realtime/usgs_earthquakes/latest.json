@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-19T04:21:29Z",
-  "count": 18,
+  "generated_at_iso": "2026-11-19T13:42:06Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000ubzm",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-19T13:05:22.466000+00:00",
+      "latitude": 51.6797,
+      "longitude": -174.66,
+      "depth_km": 46.052,
+      "place": "65 km SSW of Atka, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubzm",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000ubz1",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-19T10:53:07.767000+00:00",
+      "latitude": -4.2965,
+      "longitude": 151.8945,
+      "depth_km": 194.803,
+      "place": "31 km WSW of Rabaul, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubz1",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000ubyt",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-19T09:08:13.359000+00:00",
+      "latitude": -15.3841,
+      "longitude": -76.0248,
+      "depth_km": 10.0,
+      "place": "92 km W of San Juan, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubyt",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000uby4",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-19T05:49:26.623000+00:00",
+      "latitude": -2.4019,
+      "longitude": -79.8204,
+      "depth_km": 69.493,
+      "place": "23 km SSE of Guayaquil, Ecuador",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uby4",
+      "tsunami": 0,
+      "significance": 361
+    },
     {
       "id": "us6000ubxg",
       "magnitude": 4.9,
@@ -17,11 +65,11 @@
     {
       "id": "us6000ubxb",
       "magnitude": 5.2,
-      "origin_time_utc": "2026-11-19T01:34:52.352000+00:00",
-      "latitude": 0.5231,
-      "longitude": 96.5298,
-      "depth_km": 37.003,
-      "place": "141 km W of Teluk Dalam, Indonesia",
+      "origin_time_utc": "2026-11-19T01:34:48.394000+00:00",
+      "latitude": 0.5027,
+      "longitude": 96.6318,
+      "depth_km": 10.0,
+      "place": "130 km W of Teluk Dalam, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubxb",
       "tsunami": 0,
       "significance": 416
@@ -120,7 +168,7 @@
       "place": "4 km NNW of Tsunagi, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz1n",
       "tsunami": 0,
-      "significance": 434
+      "significance": 436
     },
     {
       "id": "us7000tz1a",
@@ -133,90 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tz1a",
       "tsunami": 0,
       "significance": 432
-    },
-    {
-      "id": "us7000tyza",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-18T11:10:57.037000+00:00",
-      "latitude": -39.6909,
-      "longitude": -91.5033,
-      "depth_km": 10.0,
-      "place": "West Chile Rise",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyza",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tyyw",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-18T09:37:00.617000+00:00",
-      "latitude": 38.7192,
-      "longitude": 137.8725,
-      "depth_km": 10.0,
-      "place": "86 km NW of Ryōtsu-minato, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyyw",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000tyy8",
-      "magnitude": 5.9,
-      "origin_time_utc": "2026-11-18T06:07:42.780000+00:00",
-      "latitude": -15.1438,
-      "longitude": -75.9238,
-      "depth_km": 21.895,
-      "place": "85 km WNW of San Juan, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyy8",
-      "tsunami": 0,
-      "significance": 537
-    },
-    {
-      "id": "us7000tyxz",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-18T05:25:43.280000+00:00",
-      "latitude": 0.4346,
-      "longitude": -103.0838,
-      "depth_km": 10.0,
-      "place": "Galapagos Triple Junction region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyxz",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000tyy2",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-18T05:24:55.060000+00:00",
-      "latitude": -8.0301,
-      "longitude": 120.6485,
-      "depth_km": 10.0,
-      "place": "67 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyy2",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tyxi",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-11-18T04:41:32.015000+00:00",
-      "latitude": -8.2501,
-      "longitude": 120.5285,
-      "depth_km": 10.0,
-      "place": "40 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyxi",
-      "tsunami": 0,
-      "significance": 518
-    },
-    {
-      "id": "us7000tyxc",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-18T04:21:35.658000+00:00",
-      "latitude": -8.151,
-      "longitude": 120.6489,
-      "depth_km": 10.0,
-      "place": "54 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tyxc",
-      "tsunami": 0,
-      "significance": 416
     }
   ]
 }
