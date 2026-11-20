@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-20T02:50:01Z",
+  "generated_at_iso": "2026-11-20T10:55:14Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-20 14:38:54|29.601,94.758",
+      "magnitude": 3.8,
+      "origin_time": "2026-11-20 14:38:54",
+      "latitude": 29.601,
+      "longitude": 94.758,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "169km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-20 02:09:20|39.314,73.362",
       "magnitude": 3.6,
@@ -1639,17 +1650,6 @@
       "depth_km": 25.0,
       "region": "Myanmar",
       "location": "55km S of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-04 15:47:24|26.935,91.500",
-      "magnitude": 2.8,
-      "origin_time": "2026-11-04 15:47:24",
-      "latitude": 26.935,
-      "longitude": 91.5,
-      "depth_km": 10.0,
-      "region": "Bhutan",
-      "location": "80km SSW of Tawang, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-11-20T02:49:57Z",
-  "count": 10,
+  "generated_at_iso": "2026-11-20T10:54:57Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us6000uc8g",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-20T10:30:01.069000+00:00",
+      "latitude": -24.7463,
+      "longitude": 171.4327,
+      "depth_km": 10.0,
+      "place": "southeast of the Loyalty Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc8g",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000uc82",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-11-20T08:44:11.644000+00:00",
+      "latitude": 9.7949,
+      "longitude": 57.7485,
+      "depth_km": 10.0,
+      "place": "Carlsberg Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc82",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000uc81",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-20T08:42:54.187000+00:00",
+      "latitude": 9.7529,
+      "longitude": 57.8408,
+      "depth_km": 10.0,
+      "place": "Carlsberg Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc81",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "nc75468702",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-20T06:49:16.530000+00:00",
+      "latitude": 36.5934982299805,
+      "longitude": -121.220664978027,
+      "depth_km": 6.69999980926514,
+      "place": "10 km NW of Pinnacles, CA",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75468702",
+      "tsunami": 1,
+      "significance": 1005
+    },
+    {
+      "id": "us6000uc6c",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-20T05:17:45.106000+00:00",
+      "latitude": -5.219,
+      "longitude": 145.2974,
+      "depth_km": 97.583,
+      "place": "54 km W of Madang, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc6c",
+      "tsunami": 0,
+      "significance": 370
+    },
+    {
+      "id": "us6000uc5s",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-20T02:57:18.070000+00:00",
+      "latitude": -31.4302,
+      "longitude": -69.1883,
+      "depth_km": 113.86,
+      "place": "24 km ESE of Calingasta, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc5s",
+      "tsunami": 0,
+      "significance": 355
+    },
     {
       "id": "us6000uc4v",
       "magnitude": 5.6,
@@ -85,42 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubzm",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000ubz1",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-19T10:53:07.767000+00:00",
-      "latitude": -4.2965,
-      "longitude": 151.8945,
-      "depth_km": 194.803,
-      "place": "31 km WSW of Rabaul, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubz1",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000ubyt",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-19T09:08:13.359000+00:00",
-      "latitude": -15.3841,
-      "longitude": -76.0248,
-      "depth_km": 10.0,
-      "place": "92 km W of San Juan, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubyt",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000uby4",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-19T05:49:26.623000+00:00",
-      "latitude": -2.4019,
-      "longitude": -79.8204,
-      "depth_km": 69.493,
-      "place": "23 km SSE of Guayaquil, Ecuador",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uby4",
-      "tsunami": 0,
-      "significance": 361
     }
   ]
 }
