@@ -1,7 +1,95 @@
 {
-  "generated_at_iso": "2026-11-20T10:55:14Z",
+  "generated_at_iso": "2026-11-20T18:57:37Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-21 00:13:11|26.724,92.355",
+      "magnitude": 2.7,
+      "origin_time": "2026-11-21 00:13:11",
+      "latitude": 26.724,
+      "longitude": 92.355,
+      "depth_km": 10.0,
+      "region": "Sonitpur, Assam",
+      "location": "44km W of Tezpur, Assam, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-20 22:38:48|28.575,94.966",
+      "magnitude": 2.6,
+      "origin_time": "2026-11-20 22:38:48",
+      "latitude": 28.575,
+      "longitude": 94.966,
+      "depth_km": 7.0,
+      "region": "Upper Siang, Arunachal Pradesh",
+      "location": "56km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-20 19:18:59|29.859,92.364",
+      "magnitude": 3.8,
+      "origin_time": "2026-11-20 19:18:59",
+      "latitude": 29.859,
+      "longitude": 92.364,
+      "depth_km": 12.0,
+      "region": "Tibet",
+      "location": "258km N of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-20 18:42:55|30.034,92.407",
+      "magnitude": 3.8,
+      "origin_time": "2026-11-20 18:42:55",
+      "latitude": 30.034,
+      "longitude": 92.407,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "277km N of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-20 18:16:22|18.669,73.897",
+      "magnitude": 2.4,
+      "origin_time": "2026-11-20 18:16:22",
+      "latitude": 18.669,
+      "longitude": 73.897,
+      "depth_km": 5.0,
+      "region": "Pune, Maharashtra",
+      "location": "17km NNE of Pune, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-20 18:00:05|29.974,80.067",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-20 18:00:05",
+      "latitude": 29.974,
+      "longitude": 80.067,
+      "depth_km": 10.0,
+      "region": "Bageshwar, Uttarakhand",
+      "location": "45km NNW of Pithoragarh, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-20 17:55:32|26.053,90.687",
+      "magnitude": 2.4,
+      "origin_time": "2026-11-20 17:55:32",
+      "latitude": 26.053,
+      "longitude": 90.687,
+      "depth_km": 5.0,
+      "region": "Goalpara, Assam",
+      "location": "77km NE of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-20 17:18:08|27.054,92.561",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-20 17:18:08",
+      "latitude": 27.054,
+      "longitude": 92.561,
+      "depth_km": 30.0,
+      "region": "West Kameng, Arunachal Pradesh",
+      "location": "50km NNW of Tezpur, Assam, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-20 14:38:54|29.601,94.758",
       "magnitude": 3.8,
@@ -1562,94 +1650,6 @@
       "depth_km": 164.0,
       "region": "Xinjiang",
       "location": "167km NNE of Leh, Laddakh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-05 19:54:57|9.170,74.393",
-      "magnitude": 3.2,
-      "origin_time": "2026-11-05 19:54:57",
-      "latitude": 9.17,
-      "longitude": 74.393,
-      "depth_km": 10.0,
-      "region": "Laccadive Sea",
-      "location": "178km NE of Minicoy, Lakshsdweep Island, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-05 18:33:20|28.386,77.258",
-      "magnitude": 2.9,
-      "origin_time": "2026-11-05 18:33:20",
-      "latitude": 28.386,
-      "longitude": 77.258,
-      "depth_km": 5.0,
-      "region": "Faridabad, Haryana",
-      "location": "6km WSW of Faridabad, Haryana, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-05 08:27:23|24.851,95.345",
-      "magnitude": 3.8,
-      "origin_time": "2026-11-05 08:27:23",
-      "latitude": 24.851,
-      "longitude": 95.345,
-      "depth_km": 120.0,
-      "region": "Myanmar",
-      "location": "87km E of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-05 06:19:17|32.592,94.291",
-      "magnitude": 4.4,
-      "origin_time": "2026-11-05 06:19:17",
-      "latitude": 32.592,
-      "longitude": 94.291,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "503km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-05 00:24:49|36.335,70.812",
-      "magnitude": 4.2,
-      "origin_time": "2026-11-05 00:24:49",
-      "latitude": 36.335,
-      "longitude": 70.812,
-      "depth_km": 200.0,
-      "region": "Afghanistan",
-      "location": "88km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-04 23:23:03|27.497,92.063",
-      "magnitude": 2.7,
-      "origin_time": "2026-11-04 23:23:03",
-      "latitude": 27.497,
-      "longitude": 92.063,
-      "depth_km": 5.0,
-      "region": "West Kameng, Arunachal Pradesh",
-      "location": "20km ESE of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-04 20:20:57|39.497,73.149",
-      "magnitude": 3.7,
-      "origin_time": "2026-11-04 20:20:57",
-      "latitude": 39.497,
-      "longitude": 73.149,
-      "depth_km": 10.0,
-      "region": "Kyrgyzstan",
-      "location": "349km NE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-04 19:48:59|24.435,94.537",
-      "magnitude": 3.0,
-      "origin_time": "2026-11-04 19:48:59",
-      "latitude": 24.435,
-      "longitude": 94.537,
-      "depth_km": 25.0,
-      "region": "Myanmar",
-      "location": "55km S of Ukhrul, Manipur, India",
       "review_status": "Reviewed"
     }
   ]
