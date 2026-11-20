@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-19T21:49:37Z",
-  "count": 12,
+  "generated_at_iso": "2026-11-20T02:49:57Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us6000uc4v",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-11-20T00:49:14.102000+00:00",
+      "latitude": -24.6996,
+      "longitude": 171.2326,
+      "depth_km": 10.0,
+      "place": "southeast of the Loyalty Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc4v",
+      "tsunami": 0,
+      "significance": 482
+    },
+    {
+      "id": "us6000uc3v",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-19T21:49:33.219000+00:00",
+      "latitude": -6.0263,
+      "longitude": 130.6505,
+      "depth_km": 124.788,
+      "place": "236 km W of Tual, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc3v",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000uc2q",
       "magnitude": 5.3,
@@ -97,54 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uby4",
       "tsunami": 0,
       "significance": 361
-    },
-    {
-      "id": "us6000ubxg",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-19T02:11:23.115000+00:00",
-      "latitude": -5.5431,
-      "longitude": 35.0812,
-      "depth_km": 10.0,
-      "place": "36 km NNE of Kilimatinde, Tanzania",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubxg",
-      "tsunami": 0,
-      "significance": 370
-    },
-    {
-      "id": "us6000ubxb",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-19T01:34:48.394000+00:00",
-      "latitude": 0.5027,
-      "longitude": 96.6318,
-      "depth_km": 10.0,
-      "place": "130 km W of Teluk Dalam, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubxb",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000ubxa",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-19T01:29:33.145000+00:00",
-      "latitude": -5.5109,
-      "longitude": 35.0903,
-      "depth_km": 10.0,
-      "place": "40 km NNE of Kilimatinde, Tanzania",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubxa",
-      "tsunami": 0,
-      "significance": 355
-    },
-    {
-      "id": "us6000ubwa",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-18T22:06:52.958000+00:00",
-      "latitude": 15.9616,
-      "longitude": -95.4267,
-      "depth_km": 35.0,
-      "place": "11 km SSW of Santa Gertrudis Miramar, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ubwa",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
