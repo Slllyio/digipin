@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-20T18:57:37Z",
+  "generated_at_iso": "2026-11-21T00:40:51Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-21 03:17:26|24.215,94.216",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-21 03:17:26",
+      "latitude": 24.215,
+      "longitude": 94.216,
+      "depth_km": 60.0,
+      "region": "Tengnoupal, Manipur",
+      "location": "54km SE of Moirang, Manipur, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-21 00:13:11|26.724,92.355",
       "magnitude": 2.7,
@@ -1639,17 +1650,6 @@
       "depth_km": 5.0,
       "region": "Narayanpet, Telangana",
       "location": "154km SW of Hyderabad, Telangana, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-05 22:26:26|35.587,78.130",
-      "magnitude": 5.0,
-      "origin_time": "2026-11-05 22:26:26",
-      "latitude": 35.587,
-      "longitude": 78.13,
-      "depth_km": 164.0,
-      "region": "Xinjiang",
-      "location": "167km NNE of Leh, Laddakh, India",
       "review_status": "Reviewed"
     }
   ]

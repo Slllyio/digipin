@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-20T18:57:27Z",
-  "count": 15,
+  "generated_at_iso": "2026-11-21T00:40:51Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us6000ucfm",
+      "magnitude": 6.7,
+      "origin_time_utc": "2026-11-21T00:09:19.667000+00:00",
+      "latitude": -10.8548,
+      "longitude": -75.9779,
+      "depth_km": 107.991,
+      "place": "9 km NE of Carhuamayo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucfm",
+      "tsunami": 1,
+      "significance": 698
+    },
+    {
+      "id": "us6000ucf0",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-20T22:34:39.096000+00:00",
+      "latitude": -20.3204,
+      "longitude": -173.4099,
+      "depth_km": 10.0,
+      "place": "113 km ESE of Pangai, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucf0",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000ucd6",
       "magnitude": 5.1,
@@ -36,7 +60,7 @@
       "place": "15 km SSW of Balangonan, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc96",
       "tsunami": 0,
-      "significance": 400
+      "significance": 401
     },
     {
       "id": "us6000uc8k",
@@ -132,7 +156,7 @@
       "place": "24 km ESE of Calingasta, Argentina",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc5s",
       "tsunami": 0,
-      "significance": 355
+      "significance": 356
     },
     {
       "id": "us6000uc4v",
@@ -145,42 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc4v",
       "tsunami": 0,
       "significance": 482
-    },
-    {
-      "id": "us6000uc3v",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-19T21:49:33.219000+00:00",
-      "latitude": -6.0263,
-      "longitude": 130.6505,
-      "depth_km": 124.788,
-      "place": "236 km W of Tual, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc3v",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000uc2q",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-11-19T20:07:49.383000+00:00",
-      "latitude": -55.0035,
-      "longitude": -33.5069,
-      "depth_km": 10.0,
-      "place": "South Georgia Island region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc2q",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us6000uc2t",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-19T20:07:09.754000+00:00",
-      "latitude": -9.1894,
-      "longitude": -109.9127,
-      "depth_km": 10.0,
-      "place": "central East Pacific Rise",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc2t",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
