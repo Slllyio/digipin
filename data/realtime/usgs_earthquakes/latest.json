@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-21T07:43:05Z",
-  "count": 15,
+  "generated_at_iso": "2026-11-21T15:38:26Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us6000ucly",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-11-21T10:45:33.230000+00:00",
+      "latitude": 37.1958,
+      "longitude": 96.6398,
+      "depth_km": 10.0,
+      "place": "238 km SW of Yanglong, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucly",
+      "tsunami": 0,
+      "significance": 650
+    },
+    {
+      "id": "us6000ucky",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-21T10:09:05.474000+00:00",
+      "latitude": 34.0109,
+      "longitude": 140.2109,
+      "depth_km": 10.0,
+      "place": "112 km SSE of Tateyama, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucky",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000ucij",
+      "magnitude": 6.8,
+      "origin_time_utc": "2026-11-21T09:42:09.120000+00:00",
+      "latitude": -7.7324,
+      "longitude": 127.5407,
+      "depth_km": 132.055,
+      "place": "105 km NE of Lospalos, Timor Leste",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucij",
+      "tsunami": 0,
+      "significance": 725
+    },
     {
       "id": "us6000uci2",
       "magnitude": 4.9,
@@ -24,7 +60,7 @@
       "place": "0 km NE of Carhuamayo, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uchd",
       "tsunami": 0,
-      "significance": 387
+      "significance": 388
     },
     {
       "id": "us6000ucgj",
@@ -72,7 +108,7 @@
       "place": "9 km NE of Carhuamayo, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucfm",
       "tsunami": 1,
-      "significance": 746
+      "significance": 748
     },
     {
       "id": "us6000ucf0",
@@ -97,90 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucd6",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us6000uc9c",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-20T14:16:15.225000+00:00",
-      "latitude": -31.7842,
-      "longitude": -72.1485,
-      "depth_km": 10.0,
-      "place": "94 km W of Illapel, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc9c",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000uc96",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-20T13:09:04.057000+00:00",
-      "latitude": 5.4441,
-      "longitude": 125.2986,
-      "depth_km": 73.392,
-      "place": "15 km SSW of Balangonan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc96",
-      "tsunami": 0,
-      "significance": 402
-    },
-    {
-      "id": "us6000uc8k",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-20T10:48:44.362000+00:00",
-      "latitude": -24.6606,
-      "longitude": 171.1906,
-      "depth_km": 10.0,
-      "place": "southeast of the Loyalty Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc8k",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000uc8g",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-20T10:30:01.069000+00:00",
-      "latitude": -24.7463,
-      "longitude": 171.4327,
-      "depth_km": 10.0,
-      "place": "southeast of the Loyalty Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc8g",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000uc8d",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-20T10:16:14.294000+00:00",
-      "latitude": 36.4406,
-      "longitude": 22.082,
-      "depth_km": 41.976,
-      "place": "40 km SSE of Koróni, Greece",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc8d",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000uc82",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-11-20T08:44:11.644000+00:00",
-      "latitude": 9.7949,
-      "longitude": 57.7485,
-      "depth_km": 10.0,
-      "place": "Carlsberg Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc82",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000uc81",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-20T08:42:54.187000+00:00",
-      "latitude": 9.7529,
-      "longitude": 57.8408,
-      "depth_km": 10.0,
-      "place": "Carlsberg Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uc81",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }

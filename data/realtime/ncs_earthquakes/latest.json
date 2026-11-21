@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-21T07:43:09Z",
+  "generated_at_iso": "2026-11-21T15:38:25Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-21 16:15:37|37.099,96.482",
+      "magnitude": 5.7,
+      "origin_time": "2026-11-21 16:15:37",
+      "latitude": 37.099,
+      "longitude": 96.482,
+      "depth_km": 80.0,
+      "region": "China",
+      "location": "1002km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-21 15:40:30|36.527,71.095",
+      "magnitude": 4.6,
+      "origin_time": "2026-11-21 15:40:30",
+      "latitude": 36.527,
+      "longitude": 71.095,
+      "depth_km": 159.0,
+      "region": "Afghanistan",
+      "location": "80km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-21 03:17:26|24.215,94.216",
       "magnitude": 3.1,
@@ -1628,28 +1650,6 @@
       "depth_km": 11.0,
       "region": "Nepal",
       "location": "168km E of Pithoragarh, Uttarakhand, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-06 06:44:39|17.970,94.711",
-      "magnitude": 4.0,
-      "origin_time": "2026-11-06 06:44:39",
-      "latitude": 17.97,
-      "longitude": 94.711,
-      "depth_km": 10.0,
-      "region": "Myanmar",
-      "location": "199km NW of Yangon, Myanmar",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-06 06:16:46|16.452,77.414",
-      "magnitude": 2.5,
-      "origin_time": "2026-11-06 06:16:46",
-      "latitude": 16.452,
-      "longitude": 77.414,
-      "depth_km": 5.0,
-      "region": "Narayanpet, Telangana",
-      "location": "154km SW of Hyderabad, Telangana, India",
       "review_status": "Reviewed"
     }
   ]
