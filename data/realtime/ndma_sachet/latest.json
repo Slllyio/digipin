@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-11-21T00:40:51Z",
+  "generated_at_iso": "2026-11-21T07:43:07Z",
   "count": 100,
   "records": [
+    {
+      "id": "1795243516776015",
+      "headline": "Light Rain is very likely to occur at a few places over Southern parts of Dhalai in next 30mts to 1 hour.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 21 Nov 2026 07:29:26 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795243516776015",
+      "severity": "Minor",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795235578261035",
+      "headline": "Moderate Rain with TS is very likely to occur at many places over Eastern West Khasi Hills, East Garo Hills, East Jaintia Hills, East Khasi Hills, North Garo Hills, Ri Bhoi, South Garo Hills, South West Khasi Hills, West Garo Hills, West Jaintia Hills, West Khasi Hills in next 3 hours. IMD, SDMA.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 21 Nov 2026 05:40:58 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795235578261035",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795239015118015",
+      "headline": "Light to Moderate spells of Rain is very likely to occur at a few places over Gomati, Sepahijala, South Tripura in next 30 minutes to 1 hour.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 21 Nov 2026 05:31:44 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795239015118015",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795235577467035",
+      "headline": "Light Rain with TS is very likely to occur at most places over Eastern West Khasi Hills, East Garo Hills, East Jaintia Hills, East Khasi Hills, North Garo Hills, Ri Bhoi, South Garo Hills, South West Garo Hills, South West Khasi Hills, West Garo Hills, West Jaintia Hills, West Khasi Hills in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 21 Nov 2026 04:32:59 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795235577467035",
+      "severity": "Minor",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795233973318017",
+      "headline": "২১-১১-২০২৬ তারিখ সকাল ০৯:৩০ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে নদিয়া ও দক্ষিণ ২৪ পরগনা জেলার কিছু অংশে হালকা থেকে মাঝারি বৃষ্টি অথবা বজ্রসহ বৃষ্টির প্রবল সম্ভাবনা রয়েছে।",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 21 Nov 2026 04:12:20 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795233973318017",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1795224301422012",
+      "headline": "River Jalaka at Mathani Road Bridge in Balasore district of Odisha continues to flow in above normal flood situation at 6:00 am today.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 21 Nov 2026 01:25:03 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795224301422012",
+      "severity": "Minor",
+      "category": "Met-Flood",
+      "tags": []
+    },
     {
       "id": "1795218758374015",
       "headline": "Light to moderate Rain is very likely to continue at a few places over Dhalai, Gomati, Khowai, North Tripura, Sepahijala, South Tripura, Unakoti, West Tripura  for next 1 to 2 hours.",
@@ -1034,72 +1100,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795084881697020",
       "severity": "Minor",
       "category": "Fire",
-      "tags": []
-    },
-    {
-      "id": "1795083588474015",
-      "headline": "Light to Moderate Rain is very likely to continue at many places over Dhalai, Khowai, North Tripura, Unakoti for next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 10:22:32 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795083588474015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795083340956015",
-      "headline": "Moderate Rain is very likely to continue at many places over Gomati, Sepahijala, South Tripura, West Tripura in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 10:18:40 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795083340956015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795078859954015",
-      "headline": "Light to Moderate Rain is very likely to occur at a few places over Dhalai, North Tripura in next 30 minutes to 1 hour.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 09:03:19 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795078859954015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795078209488008",
-      "headline": "బంగాళాఖాతంలోని అక్వాన్ తుపాను ప్రభావంతో ఈ రోజు మీ ప్రాంతంలో ఈదురుగాలులతో కూడిన భారీ వర్షాలు కురిసే అవకాశం ఉంది.ప్రజలు అప్రమత్తంగా ఉండి తగిన జాగ్రత్తలు తీసుకోవాలి-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 08:51:04 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795078209488008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1795077705945017",
-      "headline": "১৯ নভেম্বর ১৪:০০ থেকে আগামী ২৪ ঘণ্টার মধ্যে উত্তর ২৪ পরগনা, কলকাতা, হাওড়া, হুগলী, পশ্চিম মেদিনীপুর এবং ঝাড়গ্রাম জেলার এক-দু'টি জায়গায় ভারী বৃষ্টিপাত (০৭-১১ সেমি) হওয়ার প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 08:46:24 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795077705945017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1795076518848015",
-      "headline": "Light to Moderate Rain is very likely to occur at a few places over Khowai, West Tripura in next 30 mimutes to 1 hour.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 08:24:02 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795076518848015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
       "tags": []
     }
   ]
