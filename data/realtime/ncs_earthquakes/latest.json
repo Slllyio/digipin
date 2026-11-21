@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-21T15:38:25Z",
+  "generated_at_iso": "2026-11-21T21:10:40Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-22 00:15:18|27.632,92.063",
+      "magnitude": 2.6,
+      "origin_time": "2026-11-22 00:15:18",
+      "latitude": 27.632,
+      "longitude": 92.063,
+      "depth_km": 10.0,
+      "region": "Tawang, Arunachal Pradesh",
+      "location": "19km ENE of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-21 21:08:30|26.269,92.934",
+      "magnitude": 3.6,
+      "origin_time": "2026-11-21 21:08:30",
+      "latitude": 26.269,
+      "longitude": 92.934,
+      "depth_km": 34.0,
+      "region": "Karbi Anglong, Assam",
+      "location": "44km SSE of Tezpur, Assam, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-21 16:15:37|37.099,96.482",
       "magnitude": 5.7,
@@ -1628,28 +1650,6 @@
       "depth_km": 15.0,
       "region": "Tibet",
       "location": "498km NNW of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-06 06:59:46|32.719,76.123",
-      "magnitude": 3.2,
-      "origin_time": "2026-11-06 06:59:46",
-      "latitude": 32.719,
-      "longitude": 76.123,
-      "depth_km": 15.0,
-      "region": "Chamba, Himachal Pradesh",
-      "location": "58km NNW of Dharamshala, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-06 06:55:26|29.803,81.940",
-      "magnitude": 3.7,
-      "origin_time": "2026-11-06 06:55:26",
-      "latitude": 29.803,
-      "longitude": 81.94,
-      "depth_km": 11.0,
-      "region": "Nepal",
-      "location": "168km E of Pithoragarh, Uttarakhand, India",
       "review_status": "Reviewed"
     }
   ]

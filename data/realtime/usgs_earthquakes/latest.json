@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-21T15:38:26Z",
-  "count": 11,
+  "generated_at_iso": "2026-11-21T21:10:44Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us6000ucni",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-21T19:03:04.170000+00:00",
+      "latitude": -23.0294,
+      "longitude": -66.519,
+      "depth_km": 209.784,
+      "place": "88 km WNW of El Aguilar, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucni",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000ucn8",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-21T17:30:44.504000+00:00",
+      "latitude": 34.4089,
+      "longitude": 140.131,
+      "depth_km": 65.465,
+      "place": "68 km SSE of Tateyama, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucn8",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000ucn2",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-21T17:14:21.477000+00:00",
+      "latitude": 8.0091,
+      "longitude": -80.988,
+      "depth_km": 10.0,
+      "place": "0 km SSW of La Colorada, Panama",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucn2",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "pr2026325000",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-21T15:00:13.140000+00:00",
+      "latitude": 18.3416,
+      "longitude": -68.8265,
+      "depth_km": 104.0,
+      "place": "18 km ESE of La Romana, Dominican Republic",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/pr2026325000",
+      "tsunami": 0,
+      "significance": 328
+    },
     {
       "id": "us6000ucly",
       "magnitude": 5.9,
@@ -108,7 +156,7 @@
       "place": "9 km NE of Carhuamayo, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucfm",
       "tsunami": 1,
-      "significance": 748
+      "significance": 747
     },
     {
       "id": "us6000ucf0",
@@ -121,18 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucf0",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000ucd6",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-20T17:53:15.442000+00:00",
-      "latitude": -14.835,
-      "longitude": 167.29,
-      "depth_km": 94.53,
-      "place": "32 km NE of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucd6",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
