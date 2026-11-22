@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-11-22T16:35:10Z",
-  "count": 9,
+  "generated_at_iso": "2026-11-22T22:03:10Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us6000ucuf",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-11-22T21:35:30.974000+00:00",
+      "latitude": -10.8352,
+      "longitude": -76.0152,
+      "depth_km": 108.768,
+      "place": "9 km NNE of Carhuamayo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucuf",
+      "tsunami": 0,
+      "significance": 450
+    },
+    {
+      "id": "us6000ucu8",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-22T20:59:41.943000+00:00",
+      "latitude": -22.0776,
+      "longitude": -178.1773,
+      "depth_km": 381.828,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucu8",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000ucu7",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-22T20:54:52.753000+00:00",
+      "latitude": -19.6421,
+      "longitude": 169.0592,
+      "depth_km": 115.367,
+      "place": "25 km WSW of Isangel, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucu7",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000uctj",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-22T18:03:24.057000+00:00",
+      "latitude": -24.8265,
+      "longitude": 179.6648,
+      "depth_km": 533.96,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uctj",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000uct0",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-22T15:05:46.361000+00:00",
+      "latitude": 28.7784,
+      "longitude": 56.8102,
+      "depth_km": 10.0,
+      "place": "55 km S of Kūh Sefīd, Iran",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uct0",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000ucs1",
       "magnitude": 4.9,
@@ -60,7 +120,7 @@
       "place": "15 km NNE of Carhuamayo, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucqu",
       "tsunami": 0,
-      "significance": 389
+      "significance": 390
     },
     {
       "id": "us6000ucpj",
@@ -73,42 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucpj",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000ucni",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-21T19:03:04.170000+00:00",
-      "latitude": -23.0294,
-      "longitude": -66.519,
-      "depth_km": 209.784,
-      "place": "88 km WNW of El Aguilar, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucni",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000ucn8",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-21T17:30:44.504000+00:00",
-      "latitude": 34.4089,
-      "longitude": 140.131,
-      "depth_km": 65.465,
-      "place": "68 km SSE of Tateyama, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucn8",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000ucn2",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-21T17:14:21.477000+00:00",
-      "latitude": 8.0091,
-      "longitude": -80.988,
-      "depth_km": 10.0,
-      "place": "0 km SSW of La Colorada, Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucn2",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
