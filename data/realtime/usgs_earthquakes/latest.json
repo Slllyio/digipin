@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-11-21T21:10:44Z",
-  "count": 14,
+  "generated_at_iso": "2026-11-22T01:18:18Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us6000ucpj",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-21T23:16:05.571000+00:00",
+      "latitude": -2.442,
+      "longitude": 140.1129,
+      "depth_km": 31.078,
+      "place": "60 km WNW of Abepura, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucpj",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000ucni",
       "magnitude": 4.9,
@@ -84,7 +96,7 @@
       "place": "105 km NE of Lospalos, Timor Leste",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucij",
       "tsunami": 0,
-      "significance": 725
+      "significance": 726
     },
     {
       "id": "us6000uci2",
@@ -108,7 +120,7 @@
       "place": "0 km NE of Carhuamayo, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uchd",
       "tsunami": 0,
-      "significance": 388
+      "significance": 389
     },
     {
       "id": "us6000ucgj",
@@ -145,30 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucg8",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000ucfm",
-      "magnitude": 6.7,
-      "origin_time_utc": "2026-11-21T00:09:19.667000+00:00",
-      "latitude": -10.8548,
-      "longitude": -75.9779,
-      "depth_km": 107.991,
-      "place": "9 km NE of Carhuamayo, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucfm",
-      "tsunami": 1,
-      "significance": 747
-    },
-    {
-      "id": "us6000ucf0",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-20T22:34:39.096000+00:00",
-      "latitude": -20.3204,
-      "longitude": -173.4099,
-      "depth_km": 10.0,
-      "place": "113 km ESE of Pangai, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucf0",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
