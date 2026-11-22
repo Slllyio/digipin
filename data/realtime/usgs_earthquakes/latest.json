@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-22T01:18:18Z",
-  "count": 13,
+  "generated_at_iso": "2026-11-22T08:30:07Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us6000ucrb",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-11-22T07:54:40.056000+00:00",
+      "latitude": 3.0314,
+      "longitude": 126.3861,
+      "depth_km": 43.705,
+      "place": "224 km NE of Bitung, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucrb",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000ucr3",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-22T07:06:58.521000+00:00",
+      "latitude": 4.56,
+      "longitude": 127.5165,
+      "depth_km": 5.573,
+      "place": "246 km ESE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucr3",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000ucqu",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-22T05:51:58.624000+00:00",
+      "latitude": -10.7957,
+      "longitude": -75.9635,
+      "depth_km": 108.134,
+      "place": "15 km NNE of Carhuamayo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucqu",
+      "tsunami": 0,
+      "significance": 386
+    },
     {
       "id": "us6000ucpj",
       "magnitude": 4.6,
@@ -97,66 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucij",
       "tsunami": 0,
       "significance": 726
-    },
-    {
-      "id": "us6000uci2",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-21T07:20:44.218000+00:00",
-      "latitude": -17.1789,
-      "longitude": 168.0998,
-      "depth_km": 43.228,
-      "place": "65 km NNW of Port-Vila, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uci2",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000uchd",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-21T05:12:04.898000+00:00",
-      "latitude": -10.913,
-      "longitude": -76.0308,
-      "depth_km": 110.928,
-      "place": "0 km NE of Carhuamayo, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uchd",
-      "tsunami": 0,
-      "significance": 389
-    },
-    {
-      "id": "us6000ucgj",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-21T02:24:37.289000+00:00",
-      "latitude": 58.5457,
-      "longitude": -31.857,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucgj",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000ucga",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-21T01:26:19.109000+00:00",
-      "latitude": 58.3017,
-      "longitude": -31.7606,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucga",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000ucg8",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-21T01:24:09.274000+00:00",
-      "latitude": -22.2307,
-      "longitude": -68.6409,
-      "depth_km": 120.01,
-      "place": "38 km NE of Calama, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucg8",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }

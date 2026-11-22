@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-22T01:18:18Z",
+  "generated_at_iso": "2026-11-22T08:30:05Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-22 11:43:06|26.456,93.328",
+      "magnitude": 2.4,
+      "origin_time": "2026-11-22 11:43:06",
+      "latitude": 26.456,
+      "longitude": 93.328,
+      "depth_km": 29.0,
+      "region": "Karbi Anglong, Assam",
+      "location": "57km ESE of Tezpur, Assam, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-22 09:18:03|32.794,69.745",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-22 09:18:03",
+      "latitude": 32.794,
+      "longitude": 69.745,
+      "depth_km": 13.0,
+      "region": "Pakistan",
+      "location": "202km SSE of Kabul , Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-22 07:14:50|18.770,95.152",
+      "magnitude": 3.8,
+      "origin_time": "2026-11-22 07:14:50",
+      "latitude": 18.77,
+      "longitude": 95.152,
+      "depth_km": 162.0,
+      "region": "Myanmar",
+      "location": "238km NNW of Rangoon, Myanmar",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-22 06:29:02|31.422,77.783",
       "magnitude": 2.8,
@@ -1617,39 +1650,6 @@
       "depth_km": 110.0,
       "region": "Tibet",
       "location": "310km ENE of Hanley, Jammu & Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-07 03:52:52|25.744,95.507",
-      "magnitude": 3.5,
-      "origin_time": "2026-11-07 03:52:52",
-      "latitude": 25.744,
-      "longitude": 95.507,
-      "depth_km": 10.0,
-      "region": "Myanmar",
-      "location": "118km ESE of Mokokchung, Nagaland, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-07 02:45:39|37.836,72.872",
-      "magnitude": 3.4,
-      "origin_time": "2026-11-07 02:45:39",
-      "latitude": 37.836,
-      "longitude": 72.872,
-      "depth_km": 10.0,
-      "region": "Tajikistan",
-      "location": "220km ENE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-06 21:08:50|36.310,71.329",
-      "magnitude": 3.8,
-      "origin_time": "2026-11-06 21:08:50",
-      "latitude": 36.31,
-      "longitude": 71.329,
-      "depth_km": 118.0,
-      "region": "Afghanistan",
-      "location": "112km SE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
