@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-22T08:30:05Z",
+  "generated_at_iso": "2026-11-22T16:35:06Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-22 21:20:40|36.286,71.213",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-22 21:20:40",
+      "latitude": 36.286,
+      "longitude": 71.213,
+      "depth_km": 90.0,
+      "region": "Afghanistan",
+      "location": "108km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-22 18:50:32|25.271,93.562",
+      "magnitude": 2.2,
+      "origin_time": "2026-11-22 18:50:32",
+      "latitude": 25.271,
+      "longitude": 93.562,
+      "depth_km": 10.0,
+      "region": "Peren, Nagaland",
+      "location": "62km SSW of Chumukedima, Nagaland, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-22 11:43:06|26.456,93.328",
       "magnitude": 2.4,
@@ -1628,28 +1650,6 @@
       "depth_km": 159.0,
       "region": "Myanmar",
       "location": "218km ESE of Mokokchung, Nagaland, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-07 12:24:17|6.360,93.703",
-      "magnitude": 4.0,
-      "origin_time": "2026-11-07 12:24:17",
-      "latitude": 6.36,
-      "longitude": 93.703,
-      "depth_km": 80.0,
-      "region": "Bay of Bengal",
-      "location": "75km SSW of Campbell Bay, Andaman and Nicobar island, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-07 05:50:00|33.785,82.035",
-      "magnitude": 3.7,
-      "origin_time": "2026-11-07 05:50:00",
-      "latitude": 33.785,
-      "longitude": 82.035,
-      "depth_km": 110.0,
-      "region": "Tibet",
-      "location": "310km ENE of Hanley, Jammu & Kashmir, India",
       "review_status": "Reviewed"
     }
   ]

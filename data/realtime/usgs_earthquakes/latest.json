@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-22T08:30:07Z",
-  "count": 11,
+  "generated_at_iso": "2026-11-22T16:35:10Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us6000ucs1",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-22T10:46:07.004000+00:00",
+      "latitude": -24.3316,
+      "longitude": -176.3814,
+      "depth_km": 82.906,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucs1",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000ucrp",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-22T09:08:28.009000+00:00",
+      "latitude": 43.4743,
+      "longitude": 87.9381,
+      "depth_km": 10.0,
+      "place": "45 km SE of Ürümqi, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucrp",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us6000ucrb",
       "magnitude": 5.4,
@@ -36,7 +60,7 @@
       "place": "15 km NNE of Carhuamayo, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucqu",
       "tsunami": 0,
-      "significance": 386
+      "significance": 389
     },
     {
       "id": "us6000ucpj",
@@ -85,54 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucn2",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "pr2026325000",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-21T15:00:13.140000+00:00",
-      "latitude": 18.3416,
-      "longitude": -68.8265,
-      "depth_km": 104.0,
-      "place": "18 km ESE of La Romana, Dominican Republic",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/pr2026325000",
-      "tsunami": 0,
-      "significance": 328
-    },
-    {
-      "id": "us6000ucly",
-      "magnitude": 5.9,
-      "origin_time_utc": "2026-11-21T10:45:33.230000+00:00",
-      "latitude": 37.1958,
-      "longitude": 96.6398,
-      "depth_km": 10.0,
-      "place": "238 km SW of Yanglong, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucly",
-      "tsunami": 0,
-      "significance": 650
-    },
-    {
-      "id": "us6000ucky",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-21T10:09:05.474000+00:00",
-      "latitude": 34.0109,
-      "longitude": 140.2109,
-      "depth_km": 10.0,
-      "place": "112 km SSE of Tateyama, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucky",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000ucij",
-      "magnitude": 6.8,
-      "origin_time_utc": "2026-11-21T09:42:09.120000+00:00",
-      "latitude": -7.7324,
-      "longitude": 127.5407,
-      "depth_km": 132.055,
-      "place": "105 km NE of Lospalos, Timor Leste",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucij",
-      "tsunami": 0,
-      "significance": 726
     }
   ]
 }
