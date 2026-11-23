@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-23T11:19:17Z",
-  "count": 19,
+  "generated_at_iso": "2026-11-23T22:49:00Z",
+  "count": 16,
   "records": [
+    {
+      "id": "us6000ucz2",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-23T15:10:57.877000+00:00",
+      "latitude": -57.3058,
+      "longitude": -25.881,
+      "depth_km": 103.295,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucz2",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000ucyd",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-23T11:24:31.100000+00:00",
+      "latitude": 1.3368,
+      "longitude": 132.0172,
+      "depth_km": 10.0,
+      "place": "209 km SSE of Tobi Village, Palau",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucyd",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us6000ucy7",
       "magnitude": 4.6,
@@ -63,6 +87,18 @@
       "significance": 449
     },
     {
+      "id": "us6000ucwx",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-23T06:47:36.803000+00:00",
+      "latitude": -7.035,
+      "longitude": 129.4851,
+      "depth_km": 117.725,
+      "place": "Kepulauan Babar, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucwx",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
       "id": "us6000ucws",
       "magnitude": 4.7,
       "origin_time_utc": "2026-11-23T06:28:32.358000+00:00",
@@ -73,6 +109,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucws",
       "tsunami": 0,
       "significance": 340
+    },
+    {
+      "id": "us6000ucwm",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-23T05:22:28.689000+00:00",
+      "latitude": 49.834,
+      "longitude": 157.92,
+      "depth_km": 18.644,
+      "place": "158 km SE of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucwm",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us6000ucwd",
@@ -145,90 +193,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucv2",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000ucuk",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-22T21:58:15.571000+00:00",
-      "latitude": -14.1955,
-      "longitude": 165.7555,
-      "depth_km": 10.0,
-      "place": "170 km WNW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucuk",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000ucuj",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-22T21:47:32.112000+00:00",
-      "latitude": -21.9972,
-      "longitude": -68.7311,
-      "depth_km": 123.268,
-      "place": "54 km NNE of Calama, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucuj",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000ucuf",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-11-22T21:35:31.763000+00:00",
-      "latitude": -10.8345,
-      "longitude": -76.0169,
-      "depth_km": 117.396,
-      "place": "9 km N of Carhuamayo, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucuf",
-      "tsunami": 0,
-      "significance": 456
-    },
-    {
-      "id": "us6000ucu8",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-22T20:59:41.943000+00:00",
-      "latitude": -22.0776,
-      "longitude": -178.1773,
-      "depth_km": 381.828,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucu8",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000ucu7",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-22T20:54:52.753000+00:00",
-      "latitude": -19.6421,
-      "longitude": 169.0592,
-      "depth_km": 115.367,
-      "place": "25 km WSW of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucu7",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000uctj",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-22T18:03:24.057000+00:00",
-      "latitude": -24.8265,
-      "longitude": 179.6648,
-      "depth_km": 533.96,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uctj",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000uct0",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-22T15:05:46.361000+00:00",
-      "latitude": 28.7784,
-      "longitude": 56.8102,
-      "depth_km": 10.0,
-      "place": "55 km S of Kūh Sefīd, Iran",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uct0",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }

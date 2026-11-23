@@ -1,7 +1,128 @@
 {
-  "generated_at_iso": "2026-11-23T11:19:15Z",
+  "generated_at_iso": "2026-11-23T22:49:00Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-24 03:39:13|25.743,93.355",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-24 03:39:13",
+      "latitude": 25.743,
+      "longitude": 93.355,
+      "depth_km": 15.0,
+      "region": "Karbi Anglong, Assam",
+      "location": "40km W of Chumukedima, Nagaland, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-24 02:24:59|24.233,91.088",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-24 02:24:59",
+      "latitude": 24.233,
+      "longitude": 91.088,
+      "depth_km": 9.0,
+      "region": "Bangladesh",
+      "location": "41km NNW of Agartala,Tripura,India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-24 01:16:53|37.385,72.214",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-24 01:16:53",
+      "latitude": 37.385,
+      "longitude": 72.214,
+      "depth_km": 190.0,
+      "region": "Tajikistan",
+      "location": "150km ENE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-24 00:56:32|36.760,71.245",
+      "magnitude": 3.6,
+      "origin_time": "2026-11-24 00:56:32",
+      "latitude": 36.76,
+      "longitude": 71.245,
+      "depth_km": 56.0,
+      "region": "Afghanistan",
+      "location": "72km ESE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-24 00:13:11|27.168,89.150",
+      "magnitude": 2.4,
+      "origin_time": "2026-11-24 00:13:11",
+      "latitude": 27.168,
+      "longitude": 89.15,
+      "depth_km": 4.0,
+      "region": "Bhutan",
+      "location": "56km ESE of Gangtok, Sikkim",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-23 23:03:56|37.353,69.311",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-23 23:03:56",
+      "latitude": 37.353,
+      "longitude": 69.311,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "113km WNW of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-23 23:00:51|32.222,76.947",
+      "magnitude": 2.3,
+      "origin_time": "2026-11-23 23:00:51",
+      "latitude": 32.222,
+      "longitude": 76.947,
+      "depth_km": 10.0,
+      "region": "Kangra, Himachal Pradesh",
+      "location": "22km W of Manali, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-23 20:52:06|39.327,73.296",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-23 20:52:06",
+      "latitude": 39.327,
+      "longitude": 73.296,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "344km NE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-23 19:28:02|29.705,94.925",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-23 19:28:02",
+      "latitude": 29.705,
+      "longitude": 94.925,
+      "depth_km": 5.0,
+      "region": "Tibet",
+      "location": "177km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-23 19:20:41|34.506,76.496",
+      "magnitude": 2.6,
+      "origin_time": "2026-11-23 19:20:41",
+      "latitude": 34.506,
+      "longitude": 76.496,
+      "depth_km": 6.0,
+      "region": "Kargil, Ladakh",
+      "location": "33km E of Kargil, Laddakh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-23 16:28:13|27.601,92.653",
+      "magnitude": 2.5,
+      "origin_time": "2026-11-23 16:28:13",
+      "latitude": 27.601,
+      "longitude": 92.653,
+      "depth_km": 5.0,
+      "region": "Bichom, Arunachal Pradesh",
+      "location": "76km E of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-23 13:21:08|36.064,70.679",
       "magnitude": 3.1,
@@ -1529,127 +1650,6 @@
       "depth_km": 5.0,
       "region": "Barpeta, Assam",
       "location": "68km W of Guwahati, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 09:23:24|33.980,88.632",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-08 09:23:24",
-      "latitude": 33.98,
-      "longitude": 88.632,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "699km N of Lachung, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 08:52:00|31.068,77.476",
-      "magnitude": 2.7,
-      "origin_time": "2026-11-08 08:52:00",
-      "latitude": 31.068,
-      "longitude": 77.476,
-      "depth_km": 5.0,
-      "region": "Shimla, Himachal Pradesh",
-      "location": "29km E of Shimla, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 08:20:10|38.371,73.248",
-      "magnitude": 4.5,
-      "origin_time": "2026-11-08 08:20:10",
-      "latitude": 38.371,
-      "longitude": 73.248,
-      "depth_km": 90.0,
-      "region": "Tajikistan",
-      "location": "276km ENE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 05:39:59|24.818,94.932",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-08 05:39:59",
-      "latitude": 24.818,
-      "longitude": 94.932,
-      "depth_km": 117.0,
-      "region": "Myanmar",
-      "location": "47km ESE of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 05:28:01|39.250,73.381",
-      "magnitude": 3.7,
-      "origin_time": "2026-11-08 05:28:01",
-      "latitude": 39.25,
-      "longitude": 73.381,
-      "depth_km": 10.0,
-      "region": "Tajikistan",
-      "location": "344km NE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 05:23:19|34.261,74.155",
-      "magnitude": 3.3,
-      "origin_time": "2026-11-08 05:23:19",
-      "latitude": 34.261,
-      "longitude": 74.155,
-      "depth_km": 20.0,
-      "region": "Baramulla, Jammu & Kashmir",
-      "location": "31km NW of Gulmarg, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 04:44:36|39.379,73.311",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-08 04:44:36",
-      "latitude": 39.379,
-      "longitude": 73.311,
-      "depth_km": 10.0,
-      "region": "Tajikistan",
-      "location": "349km NE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 03:01:21|37.284,72.455",
-      "magnitude": 3.3,
-      "origin_time": "2026-11-08 03:01:21",
-      "latitude": 37.284,
-      "longitude": 72.455,
-      "depth_km": 220.0,
-      "region": "Tajikistan",
-      "location": "170km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 02:47:57|34.306,74.310",
-      "magnitude": 3.1,
-      "origin_time": "2026-11-08 02:47:57",
-      "latitude": 34.306,
-      "longitude": 74.31,
-      "depth_km": 5.0,
-      "region": "Baramulla, Jammu & Kashmir",
-      "location": "29km NNW of Gulmarg, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 02:44:18|10.120,83.352",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-08 02:44:18",
-      "latitude": 10.12,
-      "longitude": 83.352,
-      "depth_km": 10.0,
-      "region": "Bay of Bengal",
-      "location": "470km SE of Chennai, Tamil Nadu, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 02:07:35|29.499,70.492",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-08 02:07:35",
-      "latitude": 29.499,
-      "longitude": 70.492,
-      "depth_km": 10.0,
-      "region": "Pakistan",
-      "location": "320km WNW of Bikaner, Rajasthan, India",
       "review_status": "Reviewed"
     }
   ]
