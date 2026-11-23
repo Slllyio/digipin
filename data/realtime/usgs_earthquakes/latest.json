@@ -1,7 +1,127 @@
 {
-  "generated_at_iso": "2026-11-23T02:44:20Z",
-  "count": 14,
+  "generated_at_iso": "2026-11-23T11:19:17Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us6000ucy7",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-23T10:39:26.056000+00:00",
+      "latitude": -6.7526,
+      "longitude": 147.6543,
+      "depth_km": 56.968,
+      "place": "30 km SW of Finschhafen, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucy7",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000ucy6",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-23T10:39:20.320000+00:00",
+      "latitude": 49.7598,
+      "longitude": 131.5672,
+      "depth_km": 14.86,
+      "place": "52 km SW of Tyrma, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucy6",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000ucxy",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-23T09:35:10.713000+00:00",
+      "latitude": -13.7025,
+      "longitude": 170.8708,
+      "depth_km": 651.657,
+      "place": "Vanuatu region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucxy",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000ucxi",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-11-23T08:01:26.457000+00:00",
+      "latitude": -60.6317,
+      "longitude": 153.8482,
+      "depth_km": 10.0,
+      "place": "west of Macquarie Island",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucxi",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us6000ucx6",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-11-23T07:36:21.052000+00:00",
+      "latitude": -7.4408,
+      "longitude": 128.2414,
+      "depth_km": 119.267,
+      "place": "181 km NE of Lospalos, Timor Leste",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucx6",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000ucws",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-23T06:28:32.358000+00:00",
+      "latitude": 1.3824,
+      "longitude": 126.1133,
+      "depth_km": 69.131,
+      "place": "109 km E of Bitung, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucws",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000ucwd",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-23T04:18:19.641000+00:00",
+      "latitude": -4.7591,
+      "longitude": 153.6467,
+      "depth_km": 98.944,
+      "place": "159 km ESE of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucwd",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000ucw1",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-23T03:07:52.031000+00:00",
+      "latitude": -13.5634,
+      "longitude": 172.2236,
+      "depth_km": 595.973,
+      "place": "Vanuatu region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucw1",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000ucvm",
+      "magnitude": 6.5,
+      "origin_time_utc": "2026-11-23T02:40:58.052000+00:00",
+      "latitude": -13.5846,
+      "longitude": 172.2672,
+      "depth_km": 598.0,
+      "place": "Vanuatu region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucvm",
+      "tsunami": 1,
+      "significance": 650
+    },
+    {
+      "id": "us6000ucvh",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-11-23T02:14:59.561000+00:00",
+      "latitude": 41.9264,
+      "longitude": 82.544,
+      "depth_km": 10.0,
+      "place": "39 km NW of Kuqa, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucvh",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000ucv4",
       "magnitude": 4.7,
@@ -109,66 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uct0",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000ucs1",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-22T10:46:07.004000+00:00",
-      "latitude": -24.3316,
-      "longitude": -176.3814,
-      "depth_km": 82.906,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucs1",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000ucrp",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-22T09:08:28.009000+00:00",
-      "latitude": 43.4743,
-      "longitude": 87.9381,
-      "depth_km": 10.0,
-      "place": "45 km SE of Ürümqi, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucrp",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000ucrb",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-11-22T07:54:40.056000+00:00",
-      "latitude": 3.0314,
-      "longitude": 126.3861,
-      "depth_km": 43.705,
-      "place": "224 km NE of Bitung, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucrb",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000ucr3",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-22T07:06:58.521000+00:00",
-      "latitude": 4.56,
-      "longitude": 127.5165,
-      "depth_km": 5.573,
-      "place": "246 km ESE of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucr3",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000ucqu",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-22T05:51:58.624000+00:00",
-      "latitude": -10.7957,
-      "longitude": -75.9635,
-      "depth_km": 108.134,
-      "place": "15 km NNE of Carhuamayo, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucqu",
-      "tsunami": 0,
-      "significance": 390
     }
   ]
 }

@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-23T02:44:24Z",
+  "generated_at_iso": "2026-11-23T11:19:15Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-23 13:21:08|36.064,70.679",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-23 13:21:08",
+      "latitude": 36.064,
+      "longitude": 70.679,
+      "depth_km": 35.0,
+      "region": "Afghanistan",
+      "location": "115km S of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-23 08:34:06|31.569,78.226",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-23 08:34:06",
+      "latitude": 31.569,
+      "longitude": 78.226,
+      "depth_km": 5.0,
+      "region": "Kinnaur, Himachal Pradesh",
+      "location": "95km NNW of Uttarkashi, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-23 02:49:34|36.043,71.259",
       "magnitude": 4.0,
@@ -55,6 +77,17 @@
       "depth_km": 10.0,
       "region": "Peren, Nagaland",
       "location": "62km SSW of Chumukedima, Nagaland, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-22 13:28:40|23.400,70.003",
+      "magnitude": 3.2,
+      "origin_time": "2026-11-22 13:28:40",
+      "latitude": 23.4,
+      "longitude": 70.003,
+      "depth_km": 20.0,
+      "region": "Kachchh, Gujarat",
+      "location": "146km NW of Rajkot, Gujarat, India",
       "review_status": "Reviewed"
     },
     {
@@ -1617,39 +1650,6 @@
       "depth_km": 10.0,
       "region": "Pakistan",
       "location": "320km WNW of Bikaner, Rajasthan, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-08 00:21:53|24.942,93.834",
-      "magnitude": 2.5,
-      "origin_time": "2026-11-08 00:21:53",
-      "latitude": 24.942,
-      "longitude": 93.834,
-      "depth_km": 15.0,
-      "region": "Kangpokpi, Manipur",
-      "location": "17km NW of Imphal, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-07 22:22:12|37.078,71.234",
-      "magnitude": 3.3,
-      "origin_time": "2026-11-07 22:22:12",
-      "latitude": 37.078,
-      "longitude": 71.234,
-      "depth_km": 85.0,
-      "region": "Afghanistan",
-      "location": "60km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-07 18:35:27|20.096,72.945",
-      "magnitude": 2.8,
-      "origin_time": "2026-11-07 18:35:27",
-      "latitude": 20.096,
-      "longitude": 72.945,
-      "depth_km": 5.0,
-      "region": "Palghar, Maharashtra",
-      "location": "88km W of Nashik, Maharashtra, India",
       "review_status": "Reviewed"
     }
   ]

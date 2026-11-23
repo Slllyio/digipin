@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-23T02:44:23Z",
+  "generated_at_iso": "2026-11-23T11:19:10Z",
   "count": 100,
   "records": [
+    {
+      "id": "1795432299246015",
+      "headline": "Light to Moderate Rain accompanied with Light Thunderstorm and Lightning is very likely to occur at isolated places over Dhalai, Khowai, North Tripura, Unakoti, West Tripura in next 30 minutes to 1 hour.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 23 Nov 2026 11:14:28 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795432299246015",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795420125237010",
+      "headline": "IMD Guwahati has issued forecast for Thunderstorms with Lightning accompanied with gusty wind and light to moderate rain which is very likely to occur at a few places over Cachar, Dima Hasao, Hailakandi and Sribhumi in next 3 hours. Issued in Public Interest by ASDMA.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 23 Nov 2026 07:52:50 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795420125237010",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795418203411041",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightning is very likely to occur at isolated places over Chengalpattu, Chennai, Cuddalore, Mayiladuthurai, Nagapattinam, Thiruvallur, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 23 Nov 2026 07:20:23 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795418203411041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795418201557007",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightning is very likely to occur at isolated places over Chengalpattu, Chennai, Cuddalore, Mayiladuthurai, Nagapattinam, Thiruvallur, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 23 Nov 2026 07:16:44 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795418201557007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795412147369018",
+      "headline": "Dense Fog is likely to occur at isolated places over Bemetara, Khairgarh Chhuikhadan Gandai, Raipur, Rajnandgaon in next 24 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 23 Nov 2026 05:56:55 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795412147369018",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1795398369948041",
       "headline": "Light to Moderate Rain with light Thunderstorm and lightning is likely to occur at isolated places over Chengalpattu, Chennai, Kancheepuram, Nagapattinam, Namakkal, Tenkasi, Thiruvallur, Karaikal in next 3 hours.",
@@ -1045,61 +1100,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795103529559012",
       "severity": "Minor",
       "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1795105748824015",
-      "headline": "Light to moderate Rain is very likely to continue at many places over West, Sipahijala, Gomati, South, Khowai, Dhalai, Unakoti and North Tripura districts for next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 16:30:32 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795105748824015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795102505212012",
-      "headline": "ଭାରତ ପାଣିପାଗ ବିଭାଗର ତଥ୍ୟ ଅନୁଯାୟୀ, ଆଗାମୀ ତିନି ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ପ୍ରବଳ ବର୍ଷା  ହେବାର ସମ୍ଭାବନା ଅଛି । ଏଥିପ୍ରତି ସତର୍କ ରହିବାକୁ ଅନୁରୋଧ । SRC, Odisha",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 15:39:46 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795102505212012",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1795100701269032",
-      "headline": "Light thunderstorm with light to moderate rain is very likely to occur at a few places over Aizawl, Champhai, Khawzawl, Kolasib, Lunglei, Mamit, Saitual, Serchhip in next 1-3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 15:05:03 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795100701269032",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795098264458017",
-      "headline": "১৯.১১.২৬ রাত ৭:৫৪ থেকে ২-৩ ঘণ্টা পূর্ব ও পশ্চিম মেদিনীপুর, পূর্ব বর্ধমান, হুগলি, হাওড়া, কলকাতা, নদীয়া, উত্তর ও দক্ষিণ ২৪ পরগনা ও ঝাড়গ্রামে হালকা-মাঝারি বজ্রবিদ্যুৎসহ বৃষ্টির সম্ভাবনা।",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 14:31:20 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795098264458017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1795096772647015",
-      "headline": "Light to moderate Rain is very likely to continue at many places over North , Unakoti,  Dhalai and Khowai districts for next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 19 Nov 2026 14:00:51 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795096772647015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
       "tags": []
     }
   ]
