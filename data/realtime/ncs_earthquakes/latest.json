@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-24T06:44:53Z",
+  "generated_at_iso": "2026-11-24T18:22:42Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-24 23:26:41|36.341,71.143",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-24 23:26:41",
+      "latitude": 36.341,
+      "longitude": 71.143,
+      "depth_km": 125.0,
+      "region": "Afghanistan",
+      "location": "99km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-24 21:23:25|37.261,71.926",
+      "magnitude": 3.5,
+      "origin_time": "2026-11-24 21:23:25",
+      "latitude": 37.261,
+      "longitude": 71.926,
+      "depth_km": 175.0,
+      "region": "Tajikistan",
+      "location": "123km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-24 18:16:13|29.749,80.500",
+      "magnitude": 3.6,
+      "origin_time": "2026-11-24 18:16:13",
+      "latitude": 29.749,
+      "longitude": 80.5,
+      "depth_km": 5.0,
+      "region": "Nepal",
+      "location": "33km NE of Pithoragarh, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-24 12:25:53|32.672,93.810",
+      "magnitude": 4.2,
+      "origin_time": "2026-11-24 12:25:53",
+      "latitude": 32.672,
+      "longitude": 93.81,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "522km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-24 12:15:56|32.169,93.900",
+      "magnitude": 4.1,
+      "origin_time": "2026-11-24 12:15:56",
+      "latitude": 32.169,
+      "longitude": 93.9,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "466km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-24 08:23:31|36.638,71.420",
       "magnitude": 3.9,
@@ -1595,61 +1650,6 @@
       "depth_km": 14.0,
       "region": "Bhutan",
       "location": "39km ESE of Thimphu, Bhutan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-09 16:03:22|38.038,73.358",
-      "magnitude": 4.3,
-      "origin_time": "2026-11-09 16:03:22",
-      "latitude": 38.038,
-      "longitude": 73.358,
-      "depth_km": 194.0,
-      "region": "Tajikistan",
-      "location": "268km ENE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-09 15:28:57|21.279,79.142",
-      "magnitude": 1.9,
-      "origin_time": "2026-11-09 15:28:57",
-      "latitude": 21.279,
-      "longitude": 79.142,
-      "depth_km": 4.0,
-      "region": "Nagpur, Maharashtra",
-      "location": "15km NNE of Nagpur, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-09 15:03:04|20.470,78.350",
-      "magnitude": 3.0,
-      "origin_time": "2026-11-09 15:03:04",
-      "latitude": 20.47,
-      "longitude": 78.35,
-      "depth_km": 5.0,
-      "region": "Yavatmal, Maharashtra",
-      "location": "107km SW of Nagpur, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-09 14:41:22|33.713,86.192",
-      "magnitude": 4.1,
-      "origin_time": "2026-11-09 14:41:22",
-      "latitude": 33.713,
-      "longitude": 86.192,
-      "depth_km": 180.0,
-      "region": "Tibet",
-      "location": "671km N of Kathmandu, Nepal",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-09 12:25:18|22.561,93.449",
-      "magnitude": 3.5,
-      "origin_time": "2026-11-09 12:25:18",
-      "latitude": 22.561,
-      "longitude": 93.449,
-      "depth_km": 90.0,
-      "region": "Myanmar",
-      "location": "100km S of Champhai, Mizoram, India",
       "review_status": "Reviewed"
     }
   ]
