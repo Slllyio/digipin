@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-23T22:49:00Z",
-  "count": 16,
+  "generated_at_iso": "2026-11-24T06:45:02Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us6000ud3m",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-24T01:55:57.417000+00:00",
+      "latitude": 7.5171,
+      "longitude": -80.6224,
+      "depth_km": 15.655,
+      "place": "9 km NNW of La Tronosa, Panama",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud3m",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000ud3i",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-11-24T01:32:42.417000+00:00",
+      "latitude": 27.8328,
+      "longitude": 87.9467,
+      "depth_km": 10.0,
+      "place": "67 km WNW of Mangan, India",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud3i",
+      "tsunami": 0,
+      "significance": 453
+    },
+    {
+      "id": "us6000ud2y",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-23T21:25:33.408000+00:00",
+      "latitude": 12.276,
+      "longitude": 144.0194,
+      "depth_km": 35.0,
+      "place": "130 km SSW of Merizo Village, Guam",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud2y",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000ucz2",
       "magnitude": 4.7,
@@ -97,102 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucwx",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000ucws",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-23T06:28:32.358000+00:00",
-      "latitude": 1.3824,
-      "longitude": 126.1133,
-      "depth_km": 69.131,
-      "place": "109 km E of Bitung, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucws",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000ucwm",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-23T05:22:28.689000+00:00",
-      "latitude": 49.834,
-      "longitude": 157.92,
-      "depth_km": 18.644,
-      "place": "158 km SE of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucwm",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000ucwd",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-23T04:18:19.641000+00:00",
-      "latitude": -4.7591,
-      "longitude": 153.6467,
-      "depth_km": 98.944,
-      "place": "159 km ESE of Kokopo, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucwd",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000ucw1",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-23T03:07:52.031000+00:00",
-      "latitude": -13.5634,
-      "longitude": 172.2236,
-      "depth_km": 595.973,
-      "place": "Vanuatu region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucw1",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000ucvm",
-      "magnitude": 6.5,
-      "origin_time_utc": "2026-11-23T02:40:58.052000+00:00",
-      "latitude": -13.5846,
-      "longitude": 172.2672,
-      "depth_km": 598.0,
-      "place": "Vanuatu region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucvm",
-      "tsunami": 1,
-      "significance": 650
-    },
-    {
-      "id": "us6000ucvh",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-11-23T02:14:59.561000+00:00",
-      "latitude": 41.9264,
-      "longitude": 82.544,
-      "depth_km": 10.0,
-      "place": "39 km NW of Kuqa, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucvh",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000ucv4",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-23T00:08:00.906000+00:00",
-      "latitude": 2.9773,
-      "longitude": 126.4079,
-      "depth_km": 50.25,
-      "place": "221 km NE of Bitung, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucv4",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000ucv2",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-22T23:50:44.048000+00:00",
-      "latitude": 3.0639,
-      "longitude": 126.468,
-      "depth_km": 40.004,
-      "place": "226 km NW of Tobelo, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ucv2",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
