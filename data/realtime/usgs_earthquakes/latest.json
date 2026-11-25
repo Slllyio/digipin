@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-24T18:22:50Z",
-  "count": 8,
+  "generated_at_iso": "2026-11-25T02:42:57Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us6000udd1",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-11-25T01:38:45.672000+00:00",
+      "latitude": -63.0918,
+      "longitude": 170.9371,
+      "depth_km": 10.0,
+      "place": "Balleny Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udd1",
+      "tsunami": 0,
+      "significance": 536
+    },
+    {
+      "id": "us6000udck",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-24T23:29:55.097000+00:00",
+      "latitude": 10.9039,
+      "longitude": 122.4796,
+      "depth_km": 35.846,
+      "place": "2 km NNW of Cabatuan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udck",
+      "tsunami": 0,
+      "significance": 341
+    },
+    {
+      "id": "us6000udbn",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-24T21:11:41.618000+00:00",
+      "latitude": -5.6002,
+      "longitude": 153.6843,
+      "depth_km": 10.0,
+      "place": "209 km SE of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udbn",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000udb8",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-24T20:27:57.411000+00:00",
+      "latitude": -30.9455,
+      "longitude": -71.5206,
+      "depth_km": 50.858,
+      "place": "49 km SW of Ovalle, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udb8",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000ud7z",
       "magnitude": 4.7,
@@ -61,42 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud6h",
       "tsunami": 0,
       "significance": 630
-    },
-    {
-      "id": "us6000ud3m",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-24T01:55:57.417000+00:00",
-      "latitude": 7.5171,
-      "longitude": -80.6224,
-      "depth_km": 15.655,
-      "place": "9 km NNW of La Tronosa, Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud3m",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000ud3i",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-11-24T01:32:42.417000+00:00",
-      "latitude": 27.8328,
-      "longitude": 87.9467,
-      "depth_km": 10.0,
-      "place": "67 km WNW of Mangan, India",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud3i",
-      "tsunami": 0,
-      "significance": 455
-    },
-    {
-      "id": "us6000ud2y",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-23T21:25:33.408000+00:00",
-      "latitude": 12.276,
-      "longitude": 144.0194,
-      "depth_km": 35.0,
-      "place": "130 km SSW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud2y",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }

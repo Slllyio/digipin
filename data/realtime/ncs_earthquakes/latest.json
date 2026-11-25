@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-24T18:22:42Z",
+  "generated_at_iso": "2026-11-25T02:42:42Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-25 06:30:40|24.551,93.324",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-25 06:30:40",
+      "latitude": 24.551,
+      "longitude": 93.324,
+      "depth_km": 45.0,
+      "region": "Pherzawl, Manipur",
+      "location": "44km WSW of Bishnupur, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-25 03:09:02|26.155,95.519",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-25 03:09:02",
+      "latitude": 26.155,
+      "longitude": 95.519,
+      "depth_km": 98.0,
+      "region": "Myanmar",
+      "location": "102km E of Mokokchung, Nagaland, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-25 00:11:33|25.012,92.207",
+      "magnitude": 2.9,
+      "origin_time": "2026-11-25 00:11:33",
+      "latitude": 25.012,
+      "longitude": 92.207,
+      "depth_km": 15.0,
+      "region": "Bangladesh",
+      "location": "56km ESE of Cherrapunjee, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-24 23:26:41|36.341,71.143",
       "magnitude": 4.2,
@@ -1617,39 +1650,6 @@
       "depth_km": 124.0,
       "region": "Myanmar",
       "location": "66km ESE of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 02:56:41|36.193,71.118",
-      "magnitude": 3.4,
-      "origin_time": "2026-11-10 02:56:41",
-      "latitude": 36.193,
-      "longitude": 71.118,
-      "depth_km": 95.0,
-      "region": "Afghanistan",
-      "location": "112km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 01:44:19|37.284,72.201",
-      "magnitude": 3.9,
-      "origin_time": "2026-11-10 01:44:19",
-      "latitude": 37.284,
-      "longitude": 72.201,
-      "depth_km": 16.0,
-      "region": "Tajikistan",
-      "location": "147km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-09 19:59:00|27.396,90.023",
-      "magnitude": 2.6,
-      "origin_time": "2026-11-09 19:59:00",
-      "latitude": 27.396,
-      "longitude": 90.023,
-      "depth_km": 14.0,
-      "region": "Bhutan",
-      "location": "39km ESE of Thimphu, Bhutan",
       "review_status": "Reviewed"
     }
   ]

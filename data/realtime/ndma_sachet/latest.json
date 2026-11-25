@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-11-24T18:22:40Z",
+  "generated_at_iso": "2026-11-25T02:42:44Z",
   "count": 100,
   "records": [
+    {
+      "id": "1795569371764041",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightning is very likely to occur at isolated places over Chengalpattu, Chennai, Cuddalore, Kallakurichi, Kpuram, Kkumari, Mthurai, Npattinam, Rpuram, Thanjavur, Thiruvallur, Thiruvarur, Tkudi, Tveli, Tvamalai, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 25 Nov 2026 01:18:45 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795569371764041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795569368498007",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightning is very likely to occur at isolated places over Chengalpattu, Chennai, Cuddalore, Kallakurichi, Kpuram, Kkumari, Mthurai, Npattinam, Rpuram, Thanjavur, Thiruvallur, Thiruvarur, Tkudi, Tveli, Tvamalai, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 25 Nov 2026 01:16:12 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795569368498007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795559788051041",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightmimh is very likely to occur at isolated places over Chengalpattu, Chennai, Cuddalore, Kanchi, Kkumari, Mayiladuthurai, Nagapattinam, Thanjavur, Thiruvallur, Thiruvarur, Thoothukkudi, Tirunelveli, Tmalai, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 24 Nov 2026 22:59:36 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795559788051041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795559785771007",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightmimh is very likely to occur at isolated places over Chengalpattu, Chennai, Cuddalore, Kanchi, Kkumari, Mayiladuthurai, Nagapattinam, Thanjavur, Thiruvallur, Thiruvarur, Thoothukkudi, Tirunelveli, Tmalai, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 24 Nov 2026 22:36:29 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795559785771007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1795554530117008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 24 Nov 2026 21:09:57 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795554530117008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1795536928824008",
       "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
@@ -1045,61 +1100,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795243516776015",
       "severity": "Minor",
       "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795235578261035",
-      "headline": "Moderate Rain with TS is very likely to occur at many places over Eastern West Khasi Hills, East Garo Hills, East Jaintia Hills, East Khasi Hills, North Garo Hills, Ri Bhoi, South Garo Hills, South West Khasi Hills, West Garo Hills, West Jaintia Hills, West Khasi Hills in next 3 hours. IMD, SDMA.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 21 Nov 2026 05:40:58 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795235578261035",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795239015118015",
-      "headline": "Light to Moderate spells of Rain is very likely to occur at a few places over Gomati, Sepahijala, South Tripura in next 30 minutes to 1 hour.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 21 Nov 2026 05:31:44 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795239015118015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795235577467035",
-      "headline": "Light Rain with TS is very likely to occur at most places over Eastern West Khasi Hills, East Garo Hills, East Jaintia Hills, East Khasi Hills, North Garo Hills, Ri Bhoi, South Garo Hills, South West Garo Hills, South West Khasi Hills, West Garo Hills, West Jaintia Hills, West Khasi Hills in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 21 Nov 2026 04:32:59 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795235577467035",
-      "severity": "Minor",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1795233973318017",
-      "headline": "২১-১১-২০২৬ তারিখ সকাল ০৯:৩০ থেকে পরবর্তী ২-৩ ঘণ্টার মধ্যে নদিয়া ও দক্ষিণ ২৪ পরগনা জেলার কিছু অংশে হালকা থেকে মাঝারি বৃষ্টি অথবা বজ্রসহ বৃষ্টির প্রবল সম্ভাবনা রয়েছে।",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 21 Nov 2026 04:12:20 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795233973318017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1795224301422012",
-      "headline": "River Jalaka at Mathani Road Bridge in Balasore district of Odisha continues to flow in above normal flood situation at 6:00 am today.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 21 Nov 2026 01:25:03 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795224301422012",
-      "severity": "Minor",
-      "category": "Met-Flood",
       "tags": []
     }
   ]
