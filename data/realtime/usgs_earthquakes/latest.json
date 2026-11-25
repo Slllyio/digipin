@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-25T02:42:57Z",
-  "count": 9,
+  "generated_at_iso": "2026-11-25T11:45:10Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us6000udef",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-11-25T08:47:16.394000+00:00",
+      "latitude": 21.8162,
+      "longitude": 121.5241,
+      "depth_km": 10.0,
+      "place": "83 km ESE of Hengchun, Taiwan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udef",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000ude3",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-25T06:34:08.672000+00:00",
+      "latitude": -36.0191,
+      "longitude": 178.3688,
+      "depth_km": 25.327,
+      "place": "175 km N of Hicks Bay, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ude3",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000uddj",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-25T04:30:32.480000+00:00",
+      "latitude": -6.3544,
+      "longitude": 151.5376,
+      "depth_km": 10.0,
+      "place": "178 km ESE of Kimbe, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uddj",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000udd1",
       "magnitude": 5.9,
@@ -24,7 +60,19 @@
       "place": "2 km NNW of Cabatuan, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udck",
       "tsunami": 0,
-      "significance": 341
+      "significance": 343
+    },
+    {
+      "id": "us6000udcc",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-24T22:36:30.355000+00:00",
+      "latitude": -15.3841,
+      "longitude": -75.766,
+      "depth_km": 10.0,
+      "place": "64 km W of San Juan, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udcc",
+      "tsunami": 0,
+      "significance": 312
     },
     {
       "id": "us6000udbn",
@@ -97,18 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud6z",
       "tsunami": 0,
       "significance": 416
-    },
-    {
-      "id": "us6000ud6h",
-      "magnitude": 6.4,
-      "origin_time_utc": "2026-11-24T11:06:14.036000+00:00",
-      "latitude": -17.7049,
-      "longitude": 65.6995,
-      "depth_km": 10.0,
-      "place": "Mauritius - Reunion region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud6h",
-      "tsunami": 0,
-      "significance": 630
     }
   ]
 }

@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-25T02:42:42Z",
+  "generated_at_iso": "2026-11-25T11:45:24Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-25 08:33:28|26.633,90.541",
+      "magnitude": 2.8,
+      "origin_time": "2026-11-25 08:33:28",
+      "latitude": 26.633,
+      "longitude": 90.541,
+      "depth_km": 5.0,
+      "region": "Chirang, Assam",
+      "location": "128km NNE of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-25 06:30:40|24.551,93.324",
       "magnitude": 3.0,
@@ -1639,17 +1650,6 @@
       "depth_km": 132.0,
       "region": "Tajikistan",
       "location": "103km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 03:07:37|24.609,95.028",
-      "magnitude": 3.6,
-      "origin_time": "2026-11-10 03:07:37",
-      "latitude": 24.609,
-      "longitude": 95.028,
-      "depth_km": 124.0,
-      "region": "Myanmar",
-      "location": "66km ESE of Ukhrul, Manipur, India",
       "review_status": "Reviewed"
     }
   ]
