@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-25T11:45:24Z",
+  "generated_at_iso": "2026-11-25T21:03:49Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-25 23:50:10|39.521,74.566",
+      "magnitude": 3.9,
+      "origin_time": "2026-11-25 23:50:10",
+      "latitude": 39.521,
+      "longitude": 74.566,
+      "depth_km": 81.0,
+      "region": "Xinjiang",
+      "location": "372km S of Bishkek, Kyrgyzstan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-25 22:46:07|36.044,76.547",
+      "magnitude": 3.6,
+      "origin_time": "2026-11-25 22:46:07",
+      "latitude": 36.044,
+      "longitude": 76.547,
+      "depth_km": 15.0,
+      "region": "Leh, Ladakh",
+      "location": "169km NNE of Kargil, Laddakh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-25 08:33:28|26.633,90.541",
       "magnitude": 2.8,
@@ -1628,28 +1650,6 @@
       "depth_km": 88.0,
       "region": "Myanmar",
       "location": "65km ENE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 04:47:48|36.836,69.652",
-      "magnitude": 3.4,
-      "origin_time": "2026-11-10 04:47:48",
-      "latitude": 36.836,
-      "longitude": 69.652,
-      "depth_km": 159.0,
-      "region": "Afghanistan",
-      "location": "85km WSW of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 04:45:02|37.241,71.701",
-      "magnitude": 4.1,
-      "origin_time": "2026-11-10 04:45:02",
-      "latitude": 37.241,
-      "longitude": 71.701,
-      "depth_km": 132.0,
-      "region": "Tajikistan",
-      "location": "103km E of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]

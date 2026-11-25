@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-25T11:45:10Z",
-  "count": 12,
+  "generated_at_iso": "2026-11-25T21:03:46Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us6000udht",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-25T18:59:29.141000+00:00",
+      "latitude": -17.6508,
+      "longitude": 168.224,
+      "depth_km": 51.54,
+      "place": "13 km NW of Port-Vila, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udht",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000udf2",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-25T12:08:12.731000+00:00",
+      "latitude": -0.3849,
+      "longitude": 123.0018,
+      "depth_km": 106.384,
+      "place": "67 km NNE of Luwuk, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udf2",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000udef",
       "magnitude": 5.3,
@@ -85,66 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udbn",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us6000udb8",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-24T20:27:57.411000+00:00",
-      "latitude": -30.9455,
-      "longitude": -71.5206,
-      "depth_km": 50.858,
-      "place": "49 km SW of Ovalle, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udb8",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000ud7z",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-24T15:39:43.392000+00:00",
-      "latitude": 37.0918,
-      "longitude": 27.779,
-      "depth_km": 10.0,
-      "place": "18 km ESE of Güvercinlik, Turkey",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud7z",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000ud7h",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-24T13:22:38.945000+00:00",
-      "latitude": -28.6118,
-      "longitude": -71.4886,
-      "depth_km": 33.412,
-      "place": "71 km W of Vallenar, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud7h",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000ud73",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-24T11:55:13.018000+00:00",
-      "latitude": 13.5637,
-      "longitude": 144.4957,
-      "depth_km": 107.571,
-      "place": "24 km WNW of Piti Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud73",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000ud6z",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-24T11:51:44.702000+00:00",
-      "latitude": 14.442,
-      "longitude": -93.2417,
-      "depth_km": 35.0,
-      "place": "93 km WSW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ud6z",
-      "tsunami": 0,
-      "significance": 416
     }
   ]
 }
