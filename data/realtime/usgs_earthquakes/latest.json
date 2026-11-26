@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-26T13:11:00Z",
-  "count": 8,
+  "generated_at_iso": "2026-11-26T22:20:41Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us6000udry",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-26T19:33:08.628000+00:00",
+      "latitude": 28.3661,
+      "longitude": 141.2639,
+      "depth_km": 84.59,
+      "place": "Bonin Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udry",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000udqa",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-26T16:18:00.760000+00:00",
+      "latitude": 4.6618,
+      "longitude": 125.9086,
+      "depth_km": 173.297,
+      "place": "95 km SSE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udqa",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000udq5",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-11-26T15:26:44.294000+00:00",
+      "latitude": 19.8135,
+      "longitude": -109.2958,
+      "depth_km": 10.0,
+      "place": "Revilla Gigedo Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udq5",
+      "tsunami": 0,
+      "significance": 500
+    },
     {
       "id": "us6000udmc",
       "magnitude": 5.2,
@@ -73,30 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udjx",
       "tsunami": 0,
       "significance": 416
-    },
-    {
-      "id": "us6000udib",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-25T21:32:33.545000+00:00",
-      "latitude": -35.8989,
-      "longitude": 178.5511,
-      "depth_km": 10.0,
-      "place": "190 km N of Hicks Bay, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udib",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000udht",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-25T18:59:29.141000+00:00",
-      "latitude": -17.6508,
-      "longitude": 168.224,
-      "depth_km": 51.54,
-      "place": "13 km NW of Port-Vila, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udht",
-      "tsunami": 0,
-      "significance": 341
     }
   ]
 }

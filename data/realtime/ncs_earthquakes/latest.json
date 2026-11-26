@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-11-26T13:11:09Z",
+  "generated_at_iso": "2026-11-26T22:20:46Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-26 20:39:42|28.335,94.681",
+      "magnitude": 3.1,
+      "origin_time": "2026-11-26 20:39:42",
+      "latitude": 28.335,
+      "longitude": 94.681,
+      "depth_km": 24.0,
+      "region": "West Siang, Arunachal Pradesh",
+      "location": "39km N of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-26 19:28:39|25.273,95.020",
+      "magnitude": 4.0,
+      "origin_time": "2026-11-26 19:28:39",
+      "latitude": 25.273,
+      "longitude": 95.02,
+      "depth_km": 103.0,
+      "region": "Myanmar",
+      "location": "62km ENE of Shirui, Manipur, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-26 16:26:39|36.389,71.456",
       "magnitude": 4.0,
@@ -1628,28 +1650,6 @@
       "depth_km": 115.0,
       "region": "Tibet",
       "location": "276km NNE of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 06:23:36|33.442,75.650",
-      "magnitude": 2.5,
-      "origin_time": "2026-11-10 06:23:36",
-      "latitude": 33.442,
-      "longitude": 75.65,
-      "depth_km": 9.0,
-      "region": "Kishtwar, Jammu and Kashmir",
-      "location": "71km SSE of Pahalgam, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 05:11:03|20.086,72.947",
-      "magnitude": 2.7,
-      "origin_time": "2026-11-10 05:11:03",
-      "latitude": 20.086,
-      "longitude": 72.947,
-      "depth_km": 5.0,
-      "region": "Palghar, Maharashtra",
-      "location": "88km W of Nashik, Maharashtra, India",
       "review_status": "Reviewed"
     }
   ]
