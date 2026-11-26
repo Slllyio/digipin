@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-25T21:03:47Z",
+  "generated_at_iso": "2026-11-26T03:33:31Z",
   "count": 100,
   "records": [
+    {
+      "id": "1795654079613009",
+      "headline": "अगले 3 घंटो में टिहरी, पौड़ी, हरिद्वार, अल्मोड़ा, बागेश्वर, चम्पावत, नैनीताल, पिथौरागढ़, उधम सिंह नगर में कहीं-कहीं घना कोहरा छाने की संभावना है |",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 26 Nov 2026 00:51:50 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795654079613009",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1795635191725041",
       "headline": "Light to Moderate Rain with thunderstorm and lightning is likely to occur at isolated places over Chengalpattu, Cuddalore, Kanniyakumari, Mayiladuthurai, Nagapattinam, Namakkal, Perambalur, Pudukkottai, Salem, Tenkasi, Thanjavur, Thiruvarur, Tirunelveli, Karaikal, Pondicherry in next 3 hours.",
@@ -1087,17 +1098,6 @@
       "area": "",
       "published_utc": "Tue, 24 Nov 2026 12:40:04 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795523973441008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1795523859776008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 24 Nov 2026 12:38:10 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795523859776008",
       "severity": "Minor",
       "category": "Other",
       "tags": []

@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-11-25T21:03:46Z",
-  "count": 9,
+  "generated_at_iso": "2026-11-26T03:33:29Z",
+  "count": 8,
   "records": [
+    {
+      "id": "us6000udjz",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-26T02:09:17.972000+00:00",
+      "latitude": -35.934,
+      "longitude": 178.26,
+      "depth_km": 10.0,
+      "place": "184 km N of Hicks Bay, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udjz",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000udjx",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-26T01:48:44.213000+00:00",
+      "latitude": -35.9665,
+      "longitude": 178.6429,
+      "depth_km": 12.687,
+      "place": "183 km N of Hicks Bay, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udjx",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000udib",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-25T21:32:33.545000+00:00",
+      "latitude": -35.8989,
+      "longitude": 178.5511,
+      "depth_km": 10.0,
+      "place": "190 km N of Hicks Bay, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udib",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us6000udht",
       "magnitude": 4.7,
@@ -12,7 +48,7 @@
       "place": "13 km NW of Port-Vila, Vanuatu",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udht",
       "tsunami": 0,
-      "significance": 340
+      "significance": 341
     },
     {
       "id": "us6000udf2",
@@ -61,54 +97,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uddj",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000udd1",
-      "magnitude": 5.9,
-      "origin_time_utc": "2026-11-25T01:38:45.672000+00:00",
-      "latitude": -63.0918,
-      "longitude": 170.9371,
-      "depth_km": 10.0,
-      "place": "Balleny Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udd1",
-      "tsunami": 0,
-      "significance": 536
-    },
-    {
-      "id": "us6000udck",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-24T23:29:55.097000+00:00",
-      "latitude": 10.9039,
-      "longitude": 122.4796,
-      "depth_km": 35.846,
-      "place": "2 km NNW of Cabatuan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udck",
-      "tsunami": 0,
-      "significance": 343
-    },
-    {
-      "id": "us6000udcc",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-24T22:36:30.355000+00:00",
-      "latitude": -15.3841,
-      "longitude": -75.766,
-      "depth_km": 10.0,
-      "place": "64 km W of San Juan, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udcc",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000udbn",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-24T21:11:41.618000+00:00",
-      "latitude": -5.6002,
-      "longitude": 153.6843,
-      "depth_km": 10.0,
-      "place": "209 km SE of Kokopo, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udbn",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
