@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-26T03:33:29Z",
+  "generated_at_iso": "2026-11-26T13:11:00Z",
   "count": 8,
   "records": [
+    {
+      "id": "us6000udmc",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-26T09:22:45.352000+00:00",
+      "latitude": -20.5363,
+      "longitude": -177.7629,
+      "depth_km": 493.861,
+      "place": "265 km WNW of Houma, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udmc",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000udm8",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-11-26T09:08:40.640000+00:00",
+      "latitude": -10.5618,
+      "longitude": 117.1955,
+      "depth_km": 15.139,
+      "place": "204 km S of Taliwang, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udm8",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us6000udm5",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-26T09:00:41.073000+00:00",
+      "latitude": -10.773,
+      "longitude": 117.1007,
+      "depth_km": 10.0,
+      "place": "225 km S of Taliwang, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udm5",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000udki",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-26T03:30:28.511000+00:00",
+      "latitude": 14.164,
+      "longitude": -93.126,
+      "depth_km": 10.0,
+      "place": "97 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udki",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000udjz",
       "magnitude": 5.0,
@@ -49,54 +97,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udht",
       "tsunami": 0,
       "significance": 341
-    },
-    {
-      "id": "us6000udf2",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-25T12:08:12.731000+00:00",
-      "latitude": -0.3849,
-      "longitude": 123.0018,
-      "depth_km": 106.384,
-      "place": "67 km NNE of Luwuk, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udf2",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000udef",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-11-25T08:47:16.394000+00:00",
-      "latitude": 21.8162,
-      "longitude": 121.5241,
-      "depth_km": 10.0,
-      "place": "83 km ESE of Hengchun, Taiwan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udef",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us6000ude3",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-25T06:34:08.672000+00:00",
-      "latitude": -36.0191,
-      "longitude": 178.3688,
-      "depth_km": 25.327,
-      "place": "175 km N of Hicks Bay, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ude3",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000uddj",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-11-25T04:30:32.480000+00:00",
-      "latitude": -6.3544,
-      "longitude": 151.5376,
-      "depth_km": 10.0,
-      "place": "178 km ESE of Kimbe, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000uddj",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
