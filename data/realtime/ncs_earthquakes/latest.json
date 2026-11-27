@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-11-27T04:24:51Z",
+  "generated_at_iso": "2026-11-27T14:08:34Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-11-27 19:17:07|27.980,93.082",
+      "magnitude": 3.7,
+      "origin_time": "2026-11-27 19:17:07",
+      "latitude": 27.98,
+      "longitude": 93.082,
+      "depth_km": 5.0,
+      "region": "Kurung Kumey, Arunachal Pradesh",
+      "location": "112km NNW of Itanagar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-27 14:30:38|25.728,94.178",
+      "magnitude": 3.0,
+      "origin_time": "2026-11-27 14:30:38",
+      "latitude": 25.728,
+      "longitude": 94.178,
+      "depth_km": 21.0,
+      "region": "Kohima, Nagaland",
+      "location": "9km NE of Kohima, Nagaland, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-11-27 13:03:21|36.589,70.980",
+      "magnitude": 4.1,
+      "origin_time": "2026-11-27 13:03:21",
+      "latitude": 36.589,
+      "longitude": 70.98,
+      "depth_km": 209.0,
+      "region": "Afghanistan",
+      "location": "68km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-11-26 20:39:42|28.335,94.681",
       "magnitude": 3.1,
@@ -1617,39 +1650,6 @@
       "depth_km": 5.0,
       "region": "Upper Subansiri, Arunachal Pradesh",
       "location": "118km WNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 12:59:39|17.276,73.745",
-      "magnitude": 2.3,
-      "origin_time": "2026-11-10 12:59:39",
-      "latitude": 17.276,
-      "longitude": 73.745,
-      "depth_km": 10.0,
-      "region": "Sangli, Maharashtra",
-      "location": "82km NW of Kolhapur, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 08:53:55|34.265,76.533",
-      "magnitude": 3.2,
-      "origin_time": "2026-11-10 08:53:55",
-      "latitude": 34.265,
-      "longitude": 76.533,
-      "depth_km": 10.0,
-      "region": "Kargil, Ladakh",
-      "location": "48km SE of Kargil, Laddakh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-11-10 08:39:48|30.265,96.759",
-      "magnitude": 4.7,
-      "origin_time": "2026-11-10 08:39:48",
-      "latitude": 30.265,
-      "longitude": 96.759,
-      "depth_km": 115.0,
-      "region": "Tibet",
-      "location": "276km NNE of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

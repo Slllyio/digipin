@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-11-27T04:24:48Z",
-  "count": 8,
+  "generated_at_iso": "2026-11-27T14:08:33Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us6000udwh",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-27T12:48:16.841000+00:00",
+      "latitude": -18.3294,
+      "longitude": -175.1805,
+      "depth_km": 271.603,
+      "place": "131 km WNW of Neiafu, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udwh",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000udw4",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-27T11:02:25.335000+00:00",
+      "latitude": 51.3928,
+      "longitude": 159.3662,
+      "depth_km": 35.488,
+      "place": "183 km SSE of Vilyuchinsk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udw4",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000udua",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-27T04:44:36.196000+00:00",
+      "latitude": -44.568,
+      "longitude": -79.7614,
+      "depth_km": 10.0,
+      "place": "Off the coast of Aisen, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udua",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000udu6",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-27T04:17:10.107000+00:00",
+      "latitude": 2.0437,
+      "longitude": 126.6462,
+      "depth_km": 42.538,
+      "place": "155 km WNW of Tobelo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udu6",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000udtu",
       "magnitude": 5.0,
@@ -61,42 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udq5",
       "tsunami": 0,
       "significance": 500
-    },
-    {
-      "id": "us6000udmc",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-26T09:22:45.352000+00:00",
-      "latitude": -20.5363,
-      "longitude": -177.7629,
-      "depth_km": 493.861,
-      "place": "265 km WNW of Houma, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udmc",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000udm8",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-11-26T09:08:40.640000+00:00",
-      "latitude": -10.5618,
-      "longitude": 117.1955,
-      "depth_km": 15.139,
-      "place": "204 km S of Taliwang, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udm8",
-      "tsunami": 0,
-      "significance": 465
-    },
-    {
-      "id": "us6000udm5",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-11-26T09:00:41.073000+00:00",
-      "latitude": -10.773,
-      "longitude": 117.1007,
-      "depth_km": 10.0,
-      "place": "225 km S of Taliwang, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udm5",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
