@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-11-27T14:08:33Z",
-  "count": 9,
+  "generated_at_iso": "2026-11-27T22:42:15Z",
+  "count": 6,
   "records": [
     {
       "id": "us6000udwh",
@@ -73,42 +73,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udt9",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us6000udry",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-26T19:33:08.628000+00:00",
-      "latitude": 28.3661,
-      "longitude": 141.2639,
-      "depth_km": 84.59,
-      "place": "Bonin Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udry",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000udqa",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-11-26T16:18:00.760000+00:00",
-      "latitude": 4.6618,
-      "longitude": 125.9086,
-      "depth_km": 173.297,
-      "place": "95 km SSE of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udqa",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000udq5",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-11-26T15:26:44.294000+00:00",
-      "latitude": 19.8135,
-      "longitude": -109.2958,
-      "depth_km": 10.0,
-      "place": "Revilla Gigedo Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udq5",
-      "tsunami": 0,
-      "significance": 500
     }
   ]
 }
