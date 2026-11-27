@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-11-26T22:20:41Z",
-  "count": 9,
+  "generated_at_iso": "2026-11-27T04:24:48Z",
+  "count": 8,
   "records": [
+    {
+      "id": "us6000udtu",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-11-27T02:13:21.018000+00:00",
+      "latitude": -14.6253,
+      "longitude": 167.8571,
+      "depth_km": 8.982,
+      "place": "89 km SSE of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udtu",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000udt9",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-27T00:07:00.857000+00:00",
+      "latitude": -9.5793,
+      "longitude": 161.2358,
+      "depth_km": 74.064,
+      "place": "107 km SSE of Auki, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udt9",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us6000udry",
       "magnitude": 5.1,
@@ -73,42 +97,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udm5",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000udki",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-11-26T03:30:28.511000+00:00",
-      "latitude": 14.164,
-      "longitude": -93.126,
-      "depth_km": 10.0,
-      "place": "97 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udki",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000udjz",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-26T02:09:17.972000+00:00",
-      "latitude": -35.934,
-      "longitude": 178.26,
-      "depth_km": 10.0,
-      "place": "184 km N of Hicks Bay, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udjz",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000udjx",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-11-26T01:48:44.213000+00:00",
-      "latitude": -35.9665,
-      "longitude": 178.6429,
-      "depth_km": 12.687,
-      "place": "183 km N of Hicks Bay, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udjx",
-      "tsunami": 0,
-      "significance": 416
     }
   ]
 }

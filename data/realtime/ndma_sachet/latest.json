@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-11-26T22:20:45Z",
+  "generated_at_iso": "2026-11-27T04:24:50Z",
   "count": 100,
   "records": [
+    {
+      "id": "1795743691038007",
+      "headline": "Light Rain is likely to occur at isolated places over Kanniyakumari, Ramanathapuram, Tenkasi, Thoothukkudi, Tirunelveli in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 27 Nov 2026 01:41:33 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795743691038007",
+      "severity": "Minor",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1795724688034007",
       "headline": "Light to Moderate Rain with Thunderstorm with Lightning is likely to occur at isolated places over Coimbatore, Cuddalore, Dharmapuri, Dindigul, Erode, Mayiladuthurai, Ramanathapuram, Salem, Tenkasi, Theni, The Nilgiris, Thoothukkudi, Tirunelveli in next 3 hours.",
@@ -1087,17 +1098,6 @@
       "area": "",
       "published_utc": "Wed, 25 Nov 2026 06:33:35 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795588383783008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1795587673086008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 25 Nov 2026 06:21:46 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1795587673086008",
       "severity": "Minor",
       "category": "Other",
       "tags": []
