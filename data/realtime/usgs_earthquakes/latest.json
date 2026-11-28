@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-11-27T22:42:15Z",
-  "count": 6,
+  "generated_at_iso": "2026-11-28T04:16:38Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us6000ue1k",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-11-28T02:55:35.595000+00:00",
+      "latitude": -18.945,
+      "longitude": -70.2869,
+      "depth_km": 78.805,
+      "place": "26 km NNW of Cuya, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ue1k",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000ue1h",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-11-28T02:25:05.520000+00:00",
+      "latitude": -24.299,
+      "longitude": -67.2363,
+      "depth_km": 174.617,
+      "place": "93 km W of San Antonio de los Cobres, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ue1h",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000ue1d",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-11-28T01:36:46.461000+00:00",
+      "latitude": 2.2665,
+      "longitude": 125.9667,
+      "depth_km": 55.237,
+      "place": "130 km NE of Bitung, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ue1d",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000ue1b",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-11-28T01:17:42.722000+00:00",
+      "latitude": 22.2546,
+      "longitude": 101.7463,
+      "depth_km": 10.0,
+      "place": "73 km NNW of Phôngsali, Laos",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ue1b",
+      "tsunami": 0,
+      "significance": 401
+    },
+    {
+      "id": "us6000ue1a",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-11-28T01:08:45.950000+00:00",
+      "latitude": -36.0927,
+      "longitude": 178.3785,
+      "depth_km": 10.0,
+      "place": "167 km N of Hicks Bay, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ue1a",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000ue0a",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-11-27T21:47:28.211000+00:00",
+      "latitude": 31.1518,
+      "longitude": 140.3307,
+      "depth_km": 10.0,
+      "place": "Izu Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ue0a",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000udwh",
       "magnitude": 4.5,
@@ -49,30 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udu6",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000udtu",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-11-27T02:13:21.018000+00:00",
-      "latitude": -14.6253,
-      "longitude": 167.8571,
-      "depth_km": 8.982,
-      "place": "89 km SSE of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udtu",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000udt9",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-11-27T00:07:00.857000+00:00",
-      "latitude": -9.5793,
-      "longitude": 161.2358,
-      "depth_km": 74.064,
-      "place": "107 km SSE of Auki, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000udt9",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
